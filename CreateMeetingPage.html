@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Meeting</title>
+</head>
+<body>
+<h1 style="text-align: center">Welcome to Scheduler</h1>
+<div style="text-align: center; margin-top: 5%;">
+    <form>
+        <label style="margin-bottom: 15px; display: block;">
+            Schedule Name:
+            <input type="text" required>
+
+        </label>
+
+        <br>
+        <label style="margin-bottom: 15px; display: block;">
+        Start Date:
+        <input type="date" required>
+        </label>
+
+        <br>
+        <label style="margin-bottom: 15px; display: block;">
+        End Date:
+        <input type="date" required>
+        </label>
+
+        <br>
+        <label style="margin-bottom: 15px; display: block;">
+        Start Time:
+        <input type="time" id="start"
+               min="9:00" max="18:00" required>
+        </label>
+
+        <label style="margin-bottom: 15px; display: block;">
+        <br>
+        End Time:
+        <input type="time" id="end"
+               min="9:00" max="18:00" required>
+        <br>
+        </label>
+
+        <label style="margin-bottom: 15px; display: block;">
+            <br>
+            Time Increments (in Minutes):
+            <select name="cars">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+            </select>
+            <br>
+        </label>
+
+        <label style="margin-bottom: 15px; display: block;">
+        <input type="submit">
+        <br>
+        </label>
+
+    </form>
+</div>
+
+<div style="position: fixed; left: 0; bottom: 15px; width: 100%; color: white; text-align: center;">
+    <a href="#">Enter the Admin Panel by clicking here!</a>
+</div>
+
+</body>
+</html>
