@@ -33,7 +33,7 @@ public class Schedule
 		this.timeSlotDuration = timeSlotDuration;
 	}
 	
-	ArrayList<Timeslot> createTimeSlots(Date startDate, Date endDate, Time startTime, Time endTime,
+	ArrayList<Timeslot> createTimeslots(Date startDate, Date endDate, Time startTime, Time endTime,
 									int duration)
 	{
 		ArrayList<Timeslot> timeslots = new ArrayList<Timeslot>();
@@ -42,7 +42,8 @@ public class Schedule
 		long longDuration = (long) duration;
 		long numTimeSlotsPerDay = dailyTime/longDuration;
 		
-		int numDays = 2; // TODO: Change this to be variable based on the startDate and endDate.
+		
+		long numDays = (endDate.getTime() - startDate.getTime())/3600000;
 		
 		for (int i = 0; i < numDays; i++)
 		{
