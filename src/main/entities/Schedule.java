@@ -1,7 +1,9 @@
 package main.entities;
 
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.sql.Date;
 
 public class Schedule
@@ -31,28 +33,44 @@ public class Schedule
 		this.timeSlotDuration = timeSlotDuration;
 	}
 	
-	@SuppressWarnings("deprecation")
-	List<Timeslot> createTimeSlots(Date startDate, Date endDate, Time startTime, Time endTime,
+	ArrayList<Timeslot> createTimeSlots(Date startDate, Date endDate, Time startTime, Time endTime,
 									int duration)
 	{
+		ArrayList<Timeslot> timeslots = new ArrayList<Timeslot>();
+		
 		long dailyTime = endTime.getTime() - startTime.getTime();
 		long longDuration = (long) duration;
 		long numTimeSlotsPerDay = dailyTime/longDuration;
 		
+		int numDays = 2; // TODO: Change this to be variable based on the startDate and endDate.
+		
+		for (int i = 0; i < numDays; i++)
+		{
+			for (long j = 0; j < numTimeSlotsPerDay; j++)
+			{
+				Date newDate = new Date(startDate.getTime() + (long) i*3600000);
+				Time newTime = new Time(startTime.getTime() + j*longDuration);
+				timeslots.add(new Timeslot(genRandString(10), newDate, newTime, duration));
+			}
+		}
+			
+		
 		// TODO: There must be a better way to check the number of days in between two dates
 		//	The 31 is exclusively because the getMonth assumes 31 days in a month
-		int numDays = 0;
-		if (endDate.getYear() != startDate.getYear())
-		{
-			numDays += 31 * (endDate.getMonth()+1); //Add 1 to account for Jan returning 0 in getMonth
-		}
-		if (endDate.getMonth() != startDate.getMonth())
-		{
-			numDays += endDate.getMonth() + (31 - startDate.getDate());
-		}
-		numDays = endDate.getDate() - startDate.getDate();
 		
-		return null;
+		return timeslots;
+	}
+	
+	private String genRandString(int length)
+	{
+		String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		Random rand = new Random();
+		StringBuilder tempString = new StringBuilder();
+		for (int i = 0; i < length; i++)
+		{
+			tempString.append(characters.charAt(rand.nextInt(characters.length())));
+		}
+		return tempString.toString();
 	}
 	
 	// Getters //
