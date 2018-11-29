@@ -16,7 +16,8 @@ public class ScheduleDAO
 	java.sql.Connection connection;
 
     public ScheduleDAO() {
-    	try  {
+    	try
+    	{
     		connection = DatabaseConnect.connect();
     	} catch (Exception e) {
     		connection = null;
@@ -28,7 +29,7 @@ public class ScheduleDAO
         try
         {
             Schedule schedule = null;
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Schedules WHERE id=?;");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Schedules WHERE scheduleID=?;");
             ps.setString(1,  scheduleID);
             ResultSet resultSet = ps.executeQuery();
             
@@ -52,7 +53,7 @@ public class ScheduleDAO
     public boolean deleteSchedule(String scheduleID) throws Exception
     {
         try {
-            PreparedStatement ps = connection.prepareStatement("DELETE FROM Schedules WHERE id = ?;");
+            PreparedStatement ps = connection.prepareStatement("DELETE FROM Schedules WHERE scheduleID = ?;");
             ps.setString(1, scheduleID);
             // Returns num rows changed (deleted, in this case)
             int numAffected = ps.executeUpdate();
@@ -73,9 +74,9 @@ public class ScheduleDAO
         try
         {
         	// TODO: Make sure this updating of multiple values works properly
-        	String query = "UPDATE Schedules SET name=?, secretCode=?, "
-        					+ "startDate=?, endDate=?, dayStartTime=?, "
-        					+ "dayEndTime=?, timeSlotDuration=? WHERE id=?;";
+        	String query = "UPDATE Schedules SET scheduleName=?, organizerSecretCode=?, "
+        					+ "startDate=?, endDate=?, dailyStartTime=?, "
+        					+ "dailyEndTime=?, timeSlotDuration=? WHERE scheduleID=?;";
         	PreparedStatement ps = connection.prepareStatement(query);
         	ps.setString(1, schedule.getScheduleName());
         	ps.setString(2, schedule.getSecretCode());
@@ -103,7 +104,7 @@ public class ScheduleDAO
     {
         try
         {
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Schedules WHERE id = ?;");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Schedules WHERE scheduleID = ?;");
             ps.setString(1, schedule.getScheduleID());
             ResultSet resultSet = ps.executeQuery();
             
@@ -117,8 +118,8 @@ public class ScheduleDAO
             }
 
             //TODO: cannot yet do the RDS calls, as do not yet have the database up and running
-            ps = connection.prepareStatement("INSERT INTO Schedules (name, id, secretCode, startDate, "
-            									+ "endDate, dayStartTime, dayEndTime, timeSlotDuration)"
+            ps = connection.prepareStatement("INSERT INTO Schedules (scheduleName, scheduleID, organizerSecretCode, startDate, "
+            									+ "endDate, dailyStartTime, dailyEndTime, timeSlotDuration)"
             									+ " values(?,?,?,?,?,?,?,?);");
             ps.setString(1,  schedule.getScheduleName());
             ps.setString(2,  schedule.getScheduleID());
@@ -164,13 +165,13 @@ public class ScheduleDAO
     private Schedule generateSchedule(ResultSet resultSet) throws Exception
     {
     	// TODO: Confirm this is what the Column Label is for each parameter in Schedule(...)
-        String name  = resultSet.getString("name");
-        String ID = resultSet.getString("id");
-        String secretCode = resultSet.getString("secretCode");
+        String name  = resultSet.getString("scheduleName");
+        String ID = resultSet.getString("scheduleID");
+        String secretCode = resultSet.getString("organizerSecretCode");
         Date startDate = resultSet.getDate("startDate");
         Date endDate = resultSet.getDate("endDate");
-        Time startTime = resultSet.getTime("dayStartTime");
-        Time endTime = resultSet.getTime("dayEndTime");
+        Time startTime = resultSet.getTime("dailyStartTime");
+        Time endTime = resultSet.getTime("dailyEndTime");
         int duration = resultSet.getInt("timeSlotDuration");
 
         return new Schedule(name, ID, secretCode, startDate, endDate, startTime, endTime, duration);
