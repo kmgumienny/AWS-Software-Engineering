@@ -16,7 +16,8 @@ public class ScheduleDAO
 	java.sql.Connection connection;
 
     public ScheduleDAO() {
-    	try  {
+    	try
+    	{
     		connection = DatabaseConnect.connect();
     	} catch (Exception e) {
     		connection = null;

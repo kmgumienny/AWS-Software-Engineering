@@ -50,7 +50,7 @@ public class Schedule
 			{
 				Date newDate = new Date(startDate.getTime() + (long) i*3600000);
 				Time newTime = new Time(startTime.getTime() + j*longDuration);
-				timeslots.add(new Timeslot(genRandString(10), newDate, newTime, duration));
+				timeslots.add(new Timeslot(genRandString(10), newDate, newTime));
 			}
 		}
 			
