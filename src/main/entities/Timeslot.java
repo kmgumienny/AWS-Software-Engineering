@@ -7,24 +7,27 @@ import java.time.LocalDateTime;
 public class Timeslot
 {
 	String timeslotID;
+	String scheduleID;
 	LocalDate date;
 	LocalDateTime startTime;
 	int duration;
 	boolean isReserved;
 	boolean isOpen;
 	
-	public Timeslot(String timeslotID, LocalDate date, LocalDateTime startTime, boolean isReserved, boolean isOpen)
+	public Timeslot(String timeslotID, String scheduleID, LocalDate date, LocalDateTime startTime, boolean isReserved, boolean isOpen)
 	{
 		this.timeslotID = timeslotID;
+		this.scheduleID = scheduleID;
 		this.date = date;
 		this.startTime = startTime;
 		this.isReserved = isReserved;
 		this.isOpen = isReserved;
 	}
 	
-	public Timeslot(String timeslotID, LocalDate date, boolean isReserved, boolean isOpen)
+	public Timeslot(String timeslotID, String scheduleID, LocalDate date, boolean isReserved, boolean isOpen)
 	{
 		this.timeslotID = timeslotID;
+		this.scheduleID = scheduleID;
 		this.date = date;
 		this.startTime = LocalDateTime.now();
 		this.isReserved = isReserved;
@@ -35,6 +38,11 @@ public class Timeslot
 	public String getTimeslotID()
 	{
 		return timeslotID;
+	}
+	
+	public String getScheduleID()
+	{
+		return scheduleID;
 	}
 	
 	public LocalDate getDate()
@@ -62,6 +70,11 @@ public class Timeslot
 	public void setTimeslotID(String newID)
 	{
 		timeslotID = newID;
+	}
+	
+	public void setScheduleID(String newID)
+	{
+		scheduleID = newID;
 	}
 	
 	public void setDate(LocalDate newDate)
