@@ -104,18 +104,22 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 			CreateScheduleRequest req = new Gson().fromJson(body, CreateScheduleRequest.class);
 			logger.log(req.toString());
 
-			CreateScheduleResponse resp;
-			try {
-				if (createSchedule(req.name, req.value)) {
-					resp = new CreateScheduleResponse("Successfully defined constant:" + req.name);
-				} else {
-					resp = new CreateScheduleResponse("Unable to create constant: " + req.name, 422);
-				}
-			} catch (Exception e) {
-				resp = new CreateScheduleResponse("Unable to create constant: " + req.name + "(" + e.getMessage() + ")", 403);
-			}
+			/*
+			 * From HTML
+			 * data["scheduleName"] = arg1;
+			 * data["startDate"] = arg2;
+			 * data["endDate"] = arg3;
+			 * data["startTime"] = arg4;
+			 * data["endTime"] = arg5;
+			 * data["increment"] = arg6;
+			 */
+
+			Schedule newSchedule = new Schedule(req.scheduleName, req.startDate, req.endDate, req.startTime, req.endTime, req.increment);
+			String ID = newSchedule.getScheduleID();
+			String key = newSchedule.getSecretCode();
 
 			// compute proper response
+			CreateScheduleResponse resp = new CreateScheduleResponse("OK", ID, key);
 	        responseJson.put("body", new Gson().toJson(resp));  
 		}
 		
