@@ -28,7 +28,7 @@ public class MeetingDAO
         try
         {
             Meeting meeting = null;
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Meetings WHERE id=?;");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Meetings WHERE meetingID=?;");
             ps.setString(1,  meetingID);
             ResultSet resultSet = ps.executeQuery();
             
@@ -52,7 +52,7 @@ public class MeetingDAO
     public boolean deleteMeeting(String meetingID) throws Exception
     {
         try {
-            PreparedStatement ps = connection.prepareStatement("DELETE FROM Meetings WHERE id = ?;");
+            PreparedStatement ps = connection.prepareStatement("DELETE FROM Meetings WHERE meetingID = ?;");
             ps.setString(1, meetingID);
             // Returns num rows changed (deleted, in this case)
             int numAffected = ps.executeUpdate();
@@ -74,7 +74,7 @@ public class MeetingDAO
         {
         	// TODO: Make sure this updating of multiple values works properly
         	String query = "UPDATE Meeting SET name=?, secretCode=?, "
-        					+ " WHERE id=?;";
+        					+ " WHERE meetingID=?;";
         	PreparedStatement ps = connection.prepareStatement(query);
         	ps.setString(1, meeting.getMeetingName());
         	ps.setString(2, meeting.getMeetingID());
@@ -97,7 +97,7 @@ public class MeetingDAO
     {
         try
         {
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Meetings WHERE id = ?;");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Meetings WHERE meetingID = ?;");
             ps.setString(1, meeting.getMeetingID());
             ResultSet resultSet = ps.executeQuery();
             
@@ -111,7 +111,7 @@ public class MeetingDAO
             }
 
             //TODO: cannot yet do the RDS calls, as do not yet have the database up and running
-            ps = connection.prepareStatement("INSERT INTO Meetings (name, id, secretCode) "
+            ps = connection.prepareStatement("INSERT INTO Meetings (name, meetingID, secretCode) "
             									+ " values(?,?,?);");
             ps.setString(1,  meeting.getMeetingName());
             ps.setString(2, meeting.getMeetingID());
@@ -153,10 +153,10 @@ public class MeetingDAO
     {
     	// TODO: Confirm this is what the Column Label is for each parameter in Meeting(...)
         String name  = resultSet.getString("name");
-        String ID = resultSet.getString("id");
+        String meetingID = resultSet.getString("meetingID");
         String secretCode = resultSet.getString("secretCode");
 
-        return new Meeting(name, ID, secretCode);
+        return new Meeting(name, meetingID, secretCode);
     }
 }
 
