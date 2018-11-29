@@ -2,7 +2,6 @@ package main.entities;
 
 import java.sql.Time;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.sql.Date;
 
@@ -17,7 +16,7 @@ public class Schedule
 	Time dayStartTime;
 	Time dayEndTime;
 	int timeSlotDuration; // No. of minutes in a timeslot
-	List<Timeslot> timeslots;
+	ArrayList<Timeslot> timeslots;
 
 	
 	public Schedule(String scheduleName, String scheduleID, String secretCode, Date startDate, Date endDate,
@@ -115,8 +114,13 @@ public class Schedule
 	{
 		return timeSlotDuration;
 	}
-	// end Getters //
 	
+	public ArrayList<Timeslot> getTimeslots()
+	{
+		return timeslots;
+	}
+	// end Getters //
+
 	// Setters
 	public void setScheduleName(String newName)
 	{
@@ -156,6 +160,11 @@ public class Schedule
 	public void setTimeSlotDuration(int newDuration)
 	{
 		timeSlotDuration = newDuration;
+	}
+	
+	public void setTimeslots(ArrayList<Timeslot> newList)
+	{
+		timeslots = newList;
 	}
 	// end Setters
 }
