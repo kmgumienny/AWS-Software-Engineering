@@ -109,12 +109,15 @@ public class ScheduleDAO
             ps.setString(1, schedule.getScheduleID());
             ResultSet resultSet = ps.executeQuery();
             
+            PreparedStatement ps2 = connection.prepareStatement("SELECT * FROM Relationships WHERE scheduleID = ?;");
+            ps2.setString(1,  schedule.getScheduleID());
+            ResultSet resultSet2 = ps2.executeQuery();
+            
             // Schedule already present?
-            while (resultSet.next())
+            while (resultSet.next() || resultSet2.next())
             {
-                @SuppressWarnings("unused")
-				Schedule c = generateSchedule(resultSet);
                 resultSet.close();
+                resultSet2.close();
                 return false;
             }
 
@@ -131,6 +134,10 @@ public class ScheduleDAO
             ps.setInt(7, schedule.getDayEndTime());
             ps.setInt(8, schedule.getTimeSlotDuration());
             ps.execute();
+            
+            ps2 = connection.prepareStatement("INSERT INTO Relationships (scheduleID) values(?))");
+            ps2.setString(1, schedule.getScheduleID());
+            ps2.execute();
             return true;
 
         } catch (Exception e)
