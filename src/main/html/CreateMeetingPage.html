@@ -7,44 +7,70 @@
 <body>
 <h1 style="text-align: center">Welcome to Scheduler</h1>
 <div style="text-align: center; margin-top: 5%;">
-    <form>
+    <form name="scheduleForm">
         <label style="margin-bottom: 15px; display: block;">
             Schedule Name:
-            <input type="text" required>
+            <input id="scheduleName" type="text" required>
 
         </label>
 
         <br>
         <label style="margin-bottom: 15px; display: block;">
         Start Date:
-        <input type="date" required>
+        <input id="startDate" type="date" required>
         </label>
 
         <br>
         <label style="margin-bottom: 15px; display: block;">
         End Date:
-        <input type="date" required>
+        <input id="endDate" type="date" required>
         </label>
 
         <br>
         <label style="margin-bottom: 15px; display: block;">
         Start Time:
-        <input type="time" id="start"
-               min="9:00" max="18:00" required>
+            <select id="startTime" name="startTime">
+                <option value="9">9 AM</option>
+                <option value="10">10 AM</option>
+                <option value="11">11 AM</option>
+                <option value="12">12 PM</option>
+                <option value="13">1 PM</option>
+                <option value="14">2 PM</option>
+                <option value="15">3 PM</option>
+                <option value="16">4 PM</option>
+                <option value="17">5 PM</option>
+                <option value="18">6 PM</option>
+                <option value="19">7 PM</option>
+                <option value="20">8 PM</option>
+                <option value="21">9 PM</option>
+            </select>
         </label>
 
         <label style="margin-bottom: 15px; display: block;">
         <br>
         End Time:
-        <input type="time" id="end"
-               min="9:00" max="18:00" required>
+            <select id="endTime" name="endTime">
+                <option value="9">9 AM</option>
+                <option value="10">10 AM</option>
+                <option value="11">11 AM</option>
+                <option value="12">12 PM</option>
+                <option value="13">1 PM</option>
+                <option value="14">2 PM</option>
+                <option value="15">3 PM</option>
+                <option value="16">4 PM</option>
+                <option value="17">5 PM</option>
+                <option value="18">6 PM</option>
+                <option value="19">7 PM</option>
+                <option value="20">8 PM</option>
+                <option value="21">9 PM</option>
+            </select>
         <br>
         </label>
 
         <label style="margin-bottom: 15px; display: block;">
             <br>
             Time Increments (in Minutes):
-            <select name="cars">
+            <select id="increment" name="increment">
                 <option value="5">5</option>
                 <option value="10">10</option>
                 <option value="15">15</option>
@@ -55,16 +81,66 @@
         </label>
 
         <label style="margin-bottom: 15px; display: block;">
-        <input type="submit">
-        <br>
+            <input type="button" value="Submit"  onClick="JavaScript:handleCreateClick(this)">
+            <br>
         </label>
-
     </form>
 </div>
 
 <div style="position: fixed; left: 0; bottom: 15px; width: 100%; color: white; text-align: center;">
     <a href="#">Enter the Admin Panel by clicking here!</a>
 </div>
+
+<script>
+    function handleCreateClick(e) {
+        var arg1 = document.getElementById('scheduleName').value;
+        var arg2 = document.getElementById('startDate').value;
+        var arg3 = document.getElementById('endDate').value;
+        var arg4 = document.getElementById('startTime').value;
+        var arg5 = document.getElementById('endTime').value;
+        var arg6 = document.getElementById('increment').value;
+
+        if (arg3 < arg2){
+            alert ("Error! Please modify the start and end dates to continue");
+        }
+
+        else if (arg4 >= arg5){
+            alert("Error! Please modify the start and end times to continue");
+        }
+
+        else{
+            alert(arg1 + " " + arg2 + " " + arg3 + " " + arg4 + " " + arg5 + " " + arg6);
+        }
+
+
+
+        // var data = {};
+        // data["name"] = arg1;
+        // data["value"] = parseFloat(arg2);
+        //
+        // var js = JSON.stringify(data);
+        // console.log("JS:" + js);
+        // var xhr = new XMLHttpRequest();
+        // xhr.open("POST", create_url, true);
+        //
+        // // send the collected data as JSON
+        // xhr.send(js);
+        //
+        // // This will process results and update HTML as appropriate.
+        // xhr.onloadend = function () {
+        //     console.log(xhr);
+        //     console.log(xhr.request);
+        //     if (xhr.readyState == XMLHttpRequest.DONE) {
+        //         console.log ("XHR:" + xhr.responseText);
+        //         processCreateResponse(arg1, arg2, xhr.responseText);
+        //     } else {
+        //         processCreateResponse(arg1, arg2, "N/A");
+        //     }
+        // };
+    }
+
+
+</script>
 
 </body>
 </html>
