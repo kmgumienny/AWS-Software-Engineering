@@ -2,26 +2,26 @@ package main.entities;
 
 public class Meeting
 {
-	String ID;
-	String name;
+	String meetingID;
+	String meetingName;
 	String secretCode;
 	
-	public Meeting(String ID, String name, String secretCode)
+	public Meeting(String meetingID, String meetingName, String secretCode)
 	{
-		this.ID = ID;
-		this.name = name;
+		this.meetingID = meetingID;
+		this.meetingName = meetingName;
 		this.secretCode = secretCode;
 	}
 	
 	// Getters
-	public String getID()
+	public String getMeetingID()
 	{
-		return ID;
+		return meetingID;
 	}
 	
-	public String getName()
+	public String getMeetingName()
 	{
-		return name;
+		return meetingName;
 	}
 	
 	public String getSecretCode()
@@ -31,14 +31,14 @@ public class Meeting
 	// end getters
 	
 	// Setters
-	public void setID(String newID)
+	public void setMeetingID(String newID)
 	{
-		ID = newID;
+		meetingID = newID;
 	}
 	
 	public void setName(String newName)
 	{
-		name = newName;
+		meetingName = newName;
 	}
 	
 	public void setSecretCode(String newCode)
