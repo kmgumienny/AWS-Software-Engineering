@@ -12,13 +12,13 @@ public class Timeslot
 	boolean isReserved;
 	boolean isOpen;
 	
-	public Timeslot(String timeslotID, Date date, Time startTime)
+	public Timeslot(String timeslotID, Date date, Time startTime, boolean isReserved, boolean isOpen)
 	{
 		this.timeslotID = timeslotID;
 		this.date = date;
 		this.startTime = startTime;
-		isReserved = false;
-		isOpen = true;
+		this.isReserved = isReserved;
+		this.isOpen = isReserved;
 	}
 	
 	// Getters
@@ -36,6 +36,16 @@ public class Timeslot
 	{
 		return startTime;
 	}
+	
+	public boolean getIsReserved()
+	{
+		return isReserved;
+	}
+	
+	public boolean getIsOpen()
+	{
+		return isOpen;
+	}
 	// end Getters
 	
 	// Setters
@@ -52,6 +62,16 @@ public class Timeslot
 	public void setStartTime(Time newTime)
 	{
 		startTime = newTime;
+	}
+	
+	public void setIsReserved(boolean newBool)
+	{
+		isReserved = newBool;
+	}
+	
+	public void setIsOpen(boolean newBool)
+	{
+		isOpen = newBool;
 	}
 	// end Setters
 }
