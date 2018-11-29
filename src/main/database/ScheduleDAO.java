@@ -4,7 +4,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,10 +81,10 @@ public class ScheduleDAO
         	PreparedStatement ps = connection.prepareStatement(query);
         	ps.setString(1, schedule.getScheduleName());
         	ps.setString(2, schedule.getSecretCode());
-        	ps.setDate(3, schedule.getStartDate());
-        	ps.setDate(4, schedule.getEndDate());
-        	ps.setTime(5, schedule.getDayStartTime());
-        	ps.setTime(6, schedule.getDayEndTime());
+        	ps.setDate(3, Date.valueOf(schedule.getStartDate()));
+        	ps.setDate(4, Date.valueOf(schedule.getEndDate()));
+        	ps.setInt(5, schedule.getDayStartTime());
+        	ps.setInt(6, schedule.getDayEndTime());
         	ps.setInt(7, schedule.getTimeSlotDuration());
         	ps.setString(8, schedule.getScheduleID());
         	
@@ -124,10 +125,10 @@ public class ScheduleDAO
             ps.setString(1,  schedule.getScheduleName());
             ps.setString(2,  schedule.getScheduleID());
             ps.setString(3, schedule.getSecretCode());
-            ps.setDate(4, schedule.getStartDate());
-            ps.setDate(5, schedule.getEndDate());
-            ps.setTime(6, schedule.getDayStartTime());
-            ps.setTime(7, schedule.getDayEndTime());
+            ps.setDate(4, Date.valueOf(schedule.getStartDate()));
+            ps.setDate(5, Date.valueOf(schedule.getEndDate()));
+            ps.setInt(6, schedule.getDayStartTime());
+            ps.setInt(7, schedule.getDayEndTime());
             ps.setInt(8, schedule.getTimeSlotDuration());
             ps.execute();
             return true;
@@ -168,10 +169,10 @@ public class ScheduleDAO
         String name  = resultSet.getString("scheduleName");
         String ID = resultSet.getString("scheduleID");
         String secretCode = resultSet.getString("organizerSecretCode");
-        Date startDate = resultSet.getDate("startDate");
-        Date endDate = resultSet.getDate("endDate");
-        Time startTime = resultSet.getTime("dailyStartTime");
-        Time endTime = resultSet.getTime("dailyEndTime");
+        LocalDate startDate = resultSet.getDate("startDate").toLocalDate();
+        LocalDate endDate = resultSet.getDate("endDate").toLocalDate();
+        int startTime = resultSet.getInt("dailyStartTime");
+        int endTime = resultSet.getInt("dailyEndTime");
         int duration = resultSet.getInt("timeSlotDuration");
 
         return new Schedule(name, ID, secretCode, startDate, endDate, startTime, endTime, duration);

@@ -1,9 +1,19 @@
 package main.entities;
 
-import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Random;
-import java.sql.Date;
+import java.time.temporal.ChronoUnit;
+
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
+import java.util.GregorianCalendar;
+import java.util.Calendar;
 
 public class Schedule
 {
@@ -11,17 +21,16 @@ public class Schedule
 	String scheduleID;
 	String secretCode; // Code used by Organizer to allow for edits to be made, not inputted, 
 					   //	created during instantiation
-	Date startDate;
-	Date endDate;
-	Time dayStartTime;
-	Time dayEndTime;
+	LocalDate startDate;
+	LocalDate endDate;
+	int dayStartTime;
+	int dayEndTime;
 	int timeSlotDuration; // No. of minutes in a timeslot
 	ArrayList<Timeslot> timeslots;
 
 	
-	public Schedule(String scheduleName, String scheduleID, String secretCode, Date startDate, Date endDate,
-						Time dayStartTime, Time dayEndTime, int timeSlotDuration)
-	{
+	public Schedule(String scheduleName, String scheduleID, String secretCode, LocalDate startDate, LocalDate endDate,
+						int dayStartTime, int dayEndTime, int timeSlotDuration){
 		this.scheduleName = scheduleName;
 		this.scheduleID = scheduleID;
 		this.secretCode = secretCode;
@@ -32,25 +41,49 @@ public class Schedule
 		this.timeSlotDuration = timeSlotDuration;
 	}
 	
-	ArrayList<Timeslot> createTimeslots(Date startDate, Date endDate, Time startTime, Time endTime,
+	public Schedule(String scheduleName, String startDate, String endDate, int dayStartTime, int dayEndTime, int timeSlotDuration){
+		this.scheduleName = scheduleName;
+		//TODO Below
+		//this.scheduleID = makeScheduleID();
+		//TODO Below
+		//this.secretCode = makeSecretCode();
+		this.startDate = parseDate(startDate);
+		this.endDate = parseDate(endDate);
+		this.dayStartTime = dayStartTime;
+		this.dayEndTime = dayEndTime;
+		this.timeSlotDuration = timeSlotDuration;
+	}
+	
+	
+	LocalDate parseDate(String date) {
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(date, dtf);
+	  }
+	
+	ArrayList<Timeslot> createTimeslots(LocalDate startDate, LocalDate endDate, int startTime, int endTime,
 									int duration)
 	{
 		ArrayList<Timeslot> timeslots = new ArrayList<Timeslot>();
 		
-		long dailyTime = endTime.getTime() - startTime.getTime();
-		long longDuration = (long) duration;
-		long numTimeSlotsPerDay = dailyTime/longDuration;
+		long dailyTime = (endTime - startTime)*60;
+		long numTimeSlotsPerDay = dailyTime/duration;
 		
 		
-		long numDays = (endDate.getTime() - startDate.getTime())/3600000;
+		long numDays= ChronoUnit.DAYS.between(startDate, endDate);
+
 		
-		for (int i = 0; i < numDays; i++)
+		for (int i = 0; i < (int) numDays; i++)
 		{
 			for (long j = 0; j < numTimeSlotsPerDay; j++)
 			{
-				Date newDate = new Date(startDate.getTime() + (long) i*3600000);
-				Time newTime = new Time(startTime.getTime() + j*longDuration);
-				timeslots.add(new Timeslot(genRandString(10), newDate, newTime, false, true));
+				//LocalDate thisDay = parseDate(startDate.toString());
+				//thisDay.plusDays(i);
+				//public static LocalDateTime of(int year, Month month, int dayOfMonth, int hour, int minute)
+				LocalDateTime meetingTime = LocalDateTime.of(startDate.getYear(), startDate.getMonthValue(), startDate.getDayOfMonth(), 0, 0);
+				meetingTime.plusHours(Long.valueOf(startTime));
+				meetingTime.plusMinutes(Long.valueOf(j*duration));
+				//	public Timeslot(String timeslotID, Date date, boolean isReserved, boolean isOpen)
+				timeslots.add(new Timeslot(genRandString(10), meetingTime.toLocalDate(), meetingTime, false, true));
 			}
 		}
 			
@@ -90,22 +123,22 @@ public class Schedule
 		return secretCode;
 	}
 	
-	public Date getStartDate()
+	public LocalDate getStartDate()
 	{
 		return startDate;
 	}
 	
-	public Date getEndDate()
+	public LocalDate getEndDate()
 	{
 		return endDate;
 	}
 	
-	public Time getDayStartTime()
+	public int getDayStartTime()
 	{
 		return dayStartTime;
 	}
 	
-	public Time getDayEndTime()
+	public int getDayEndTime()
 	{
 		return dayEndTime;
 	}
@@ -137,22 +170,22 @@ public class Schedule
 		secretCode = newCode;
 	}
 	
-	public void setStartDate(Date newDate)
+	public void setStartDate(LocalDate newDate)
 	{
 		startDate = newDate;
 	}
 	
-	public void setEndDate(Date newDate)
+	public void setEndDate(LocalDate newDate)
 	{
 		endDate = newDate;
 	}
 	
-	public void setDayStartTime(Time newTime)
+	public void setDayStartTime(int newTime)
 	{
 		dayStartTime = newTime;
 	}
 	
-	public void setDayEndTime(Time newTime)
+	public void setDayEndTime(int newTime)
 	{
 		dayEndTime = newTime;
 	}

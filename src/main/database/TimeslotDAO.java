@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,6 +73,7 @@ public class TimeslotDAO
 
     // Updates a timeslot with a timeslotID equivalent to the inputed timeslot's to be
     //	equivalent to the inputed timeslot
+    //TODO Never inputs a timeslotID here boys
     public boolean updateTimeslot(Timeslot timeslot) throws Exception
     {
         try
@@ -78,8 +82,8 @@ public class TimeslotDAO
         	String query = "UPDATE Timeslots SET date=?, startTime=?, isReserved=?, isOpen=? "
         					+ "WHERE timeslotID=?;";
         	PreparedStatement ps = connection.prepareStatement(query);
-        	ps.setDate(1, timeslot.getDate());
-        	ps.setTime(2, timeslot.getStartTime());
+        	ps.setDate(1, Date.valueOf(timeslot.getDate()));
+        	ps.setTimestamp(2, Timestamp.valueOf(timeslot.getStartTime()));
         	ps.setBoolean(3, timeslot.getIsReserved());
         	ps.setBoolean(4, timeslot.getIsOpen());
         	
@@ -117,8 +121,10 @@ public class TimeslotDAO
             ps = connection.prepareStatement("INSERT INTO Timeslots (timeslotID, date, startTime, isReserved, isOpen) "
             									+ " values(?,?,?,?,?);");
             ps.setString(1,  timeslot.getTimeslotID());
-            ps.setDate(2,  timeslot.getDate());
-            ps.setTime(3, timeslot.getStartTime());
+            //https://stackoverflow.com/questions/29168494/how-to-convert-localdate-to-sql-date-java
+            ps.setDate(2,  Date.valueOf(timeslot.getDate()));
+            //Use this instead of sql.time
+            ps.setTimestamp(3, Timestamp.valueOf(timeslot.getStartTime()));
             ps.setBoolean(4, timeslot.getIsReserved());
             ps.setBoolean(5, timeslot.getIsOpen());
             ps.execute();
@@ -158,8 +164,8 @@ public class TimeslotDAO
     {
     	// TODO: Confirm this is what the Column Label is for each parameter in Timeslot(...)
         String ID = resultSet.getString("timeslotID");
-        Date date = resultSet.getDate("date");
-        Time startTime = resultSet.getTime("startTime");
+        LocalDate date = resultSet.getDate("date").toLocalDate();
+        LocalDateTime startTime = resultSet.getTimestamp("startTime").toLocalDateTime();
         boolean isReserved = resultSet.getBoolean("isReserved");
         boolean isOpen = resultSet.getBoolean("isOpen");
 

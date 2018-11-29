@@ -1,22 +1,32 @@
 package main.entities;
 
 import java.sql.Date;
-import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Timeslot
 {
 	String timeslotID;
-	Date date;
-	Time startTime;
+	LocalDate date;
+	LocalDateTime startTime;
 	int duration;
 	boolean isReserved;
 	boolean isOpen;
 	
-	public Timeslot(String timeslotID, Date date, Time startTime, boolean isReserved, boolean isOpen)
+	public Timeslot(String timeslotID, LocalDate date, LocalDateTime startTime, boolean isReserved, boolean isOpen)
 	{
 		this.timeslotID = timeslotID;
 		this.date = date;
 		this.startTime = startTime;
+		this.isReserved = isReserved;
+		this.isOpen = isReserved;
+	}
+	
+	public Timeslot(String timeslotID, LocalDate date, boolean isReserved, boolean isOpen)
+	{
+		this.timeslotID = timeslotID;
+		this.date = date;
+		this.startTime = LocalDateTime.now();
 		this.isReserved = isReserved;
 		this.isOpen = isReserved;
 	}
@@ -27,12 +37,12 @@ public class Timeslot
 		return timeslotID;
 	}
 	
-	public Date getDate()
+	public LocalDate getDate()
 	{
 		return date;
 	}
 	
-	public Time getStartTime()
+	public LocalDateTime getStartTime()
 	{
 		return startTime;
 	}
@@ -54,12 +64,12 @@ public class Timeslot
 		timeslotID = newID;
 	}
 	
-	public void setDate(Date newDate)
+	public void setDate(LocalDate newDate)
 	{
 		date = newDate;
 	}
 	
-	public void setStartTime(Time newTime)
+	public void setStartTime(LocalDateTime newTime)
 	{
 		startTime = newTime;
 	}

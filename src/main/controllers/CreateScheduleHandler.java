@@ -40,15 +40,17 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 	 */
 	
 	
-	boolean createSchedule(String scheduleName, String scheduleID, String secretCode, Date startDate, Date endDate,
-			Time dayStartTime, Time dayEndTime, int timeSlotDuration) throws Exception {
+	boolean createSchedule(String scheduleName, String startDate, String endDate, int dayStartTime, int dayEndTime, int timeSlotDuration) throws Exception {
 		if (logger != null) { logger.log("in createConstant"); }
 		ScheduleDAO dao = new ScheduleDAO();
 		
 		// check if present
 		//ScheduleDAO exist = dao.getConstant(name);
-		Schedule schedule = new Schedule(scheduleName, scheduleID, secretCode, startDate, endDate,
-				dayStartTime, dayEndTime, timeSlotDuration);
+		
+		
+		
+		//	public Schedule(String scheduleName, String startDate, String endDate, int dayStartTime, int dayEndTime, int timeSlotDuration)
+		Schedule schedule = new Schedule(scheduleName, startDate, endDate, dayStartTime, dayEndTime, timeSlotDuration);
 		return dao.addSchedule(schedule);
 		
 	}
