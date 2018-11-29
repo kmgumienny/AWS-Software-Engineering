@@ -29,7 +29,7 @@ public class TimeslotDAO
         try
         {
             Timeslot timeslot = null;
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Timeslots WHERE id=?;");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Timeslots WHERE timeslotID=?;");
             ps.setString(1,  timeslotID);
             ResultSet resultSet = ps.executeQuery();
             
@@ -53,7 +53,7 @@ public class TimeslotDAO
     public boolean deleteTimeslot(String timeslotID) throws Exception
     {
         try {
-            PreparedStatement ps = connection.prepareStatement("DELETE FROM Timeslots WHERE id = ?;");
+            PreparedStatement ps = connection.prepareStatement("DELETE FROM Timeslots WHERE timeslotID = ?;");
             ps.setString(1, timeslotID);
             // Returns num rows changed (deleted, in this case)
             int numAffected = ps.executeUpdate();
@@ -76,7 +76,7 @@ public class TimeslotDAO
         {
         	// TODO: Make sure this updating of multiple values works properly
         	String query = "UPDATE Timeslots SET date=?, startTime=?, isReserved=?, isOpen=? "
-        					+ "WHERE id=?;";
+        					+ "WHERE timeslotID=?;";
         	PreparedStatement ps = connection.prepareStatement(query);
         	ps.setDate(1, timeslot.getDate());
         	ps.setTime(2, timeslot.getStartTime());
@@ -100,7 +100,7 @@ public class TimeslotDAO
     {
         try
         {
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Timeslots WHERE id = ?;");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Timeslots WHERE timeslotID = ?;");
             ps.setString(1, timeslot.getTimeslotID());
             ResultSet resultSet = ps.executeQuery();
             
@@ -114,7 +114,7 @@ public class TimeslotDAO
             }
 
             //TODO: cannot yet do the RDS calls, as do not yet have the database up and running
-            ps = connection.prepareStatement("INSERT INTO Timeslots (id, date, startTime, isReserved, isOpen) "
+            ps = connection.prepareStatement("INSERT INTO Timeslots (timeslotID, date, startTime, isReserved, isOpen) "
             									+ " values(?,?,?,?,?);");
             ps.setString(1,  timeslot.getTimeslotID());
             ps.setDate(2,  timeslot.getDate());
@@ -157,7 +157,7 @@ public class TimeslotDAO
     private Timeslot generateTimeslot(ResultSet resultSet) throws Exception
     {
     	// TODO: Confirm this is what the Column Label is for each parameter in Timeslot(...)
-        String ID = resultSet.getString("id");
+        String ID = resultSet.getString("timeslotID");
         Date date = resultSet.getDate("date");
         Time startTime = resultSet.getTime("startTime");
         boolean isReserved = resultSet.getBoolean("isReserved");
