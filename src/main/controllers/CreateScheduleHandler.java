@@ -6,8 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.sql.Date;
-import java.sql.Time;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -40,19 +38,10 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 	 */
 	
 	
-	boolean createSchedule(String scheduleName, String startDate, String endDate, int dayStartTime, int dayEndTime, int timeSlotDuration) throws Exception {
+	boolean storeSchedule(Schedule schedule) throws Exception{
 		if (logger != null) { logger.log("in createConstant"); }
 		ScheduleDAO dao = new ScheduleDAO();
-		
-		// check if present
-		//ScheduleDAO exist = dao.getConstant(name);
-		
-		
-		
-		//	public Schedule(String scheduleName, String startDate, String endDate, int dayStartTime, int dayEndTime, int timeSlotDuration)
-		Schedule schedule = new Schedule(scheduleName, startDate, endDate, dayStartTime, dayEndTime, timeSlotDuration);
 		return dao.addSchedule(schedule);
-		
 	}
 	
 	@Override
@@ -117,6 +106,7 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 			Schedule newSchedule = new Schedule(req.scheduleName, req.startDate, req.endDate, req.startTime, req.endTime, req.increment);
 			String ID = newSchedule.getScheduleID();
 			String key = newSchedule.getSecretCode();
+			//boolean stored = storeSchedule(newSchedule);
 
 			// compute proper response
 			CreateScheduleResponse resp = new CreateScheduleResponse("OK", ID, key);

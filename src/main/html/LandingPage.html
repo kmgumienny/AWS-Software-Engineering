@@ -9,10 +9,26 @@
 <div style="text-align: center">
     <button onclick="window.location.href = './CreateMeetingPage.html'" />>Create Schedule</button>
 
+    <div style="text-align: center; margin-top: 5%;">
+        <form id="scheduleForm" name="scheduleForm">
+            <label style="margin-bottom: 15px; display: block;">
+                If you are a participant, enter ScheduleID you wish to access:
+                <input id="scheduleName" type="password" required>
+                <br>
+            </label>
+
+
+            <label style="margin-bottom: 15px; display: block;">
+                <input id="createButton" type="button" value="Submit"  onClick="JavaScript:handleAdminClick()">
+                <br>
+            </label>
+
+        </form>
+    </div>
 </div>
 
 <div style="position: fixed; left: 0; bottom: 15px; width: 100%; color: white; text-align: center;">
-    <a href="#">Enter the Admin Panel by clicking here!</a>
+    <a href="./AdminPanel.html">Enter the Admin Panel by clicking here!</a>
 </div>
 </body>
 </html>

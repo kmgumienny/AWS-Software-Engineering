@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Access Panel</title>
+</head>
+<body>
+<h1 style="text-align: center" id="title">Admin Login</h1>
+<div style="text-align: center; margin-top: 5%;">
+    <form id="scheduleForm" name="scheduleForm">
+        <label style="margin-bottom: 15px; display: block;">
+            Enter Admin Key to access control panel:
+            <input id="adminLogin" type="password" required>
+
+        </label>
+
+        <br>
+
+        <label style="margin-bottom: 15px; display: block;">
+            <input id="adminLoginBtn" type="button" value="Submit"  onClick="JavaScript:handleAdminClick()">
+            <br>
+        </label>
+
+    </form>
+</div>
+
+<div id="calendarDiv" style="text-align: center; margin-top: 5%;">
+
+</div>
+
+<div style="position: fixed; left: 0; bottom: 15px; width: 100%; color: white; text-align: center;">
+    <a href="#">Enter the Admin Panel by clicking here!</a>
+</div>
+
+<script>
+
+    function handleAdminClick() {
+        alert("No Admin keys were given out. Access Denied");
+    }
+
+</script>
+
+</body>
+</html>

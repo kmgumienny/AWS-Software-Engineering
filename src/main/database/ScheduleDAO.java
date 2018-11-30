@@ -140,9 +140,8 @@ public class ScheduleDAO
             ps2.execute();
             return true;
 
-        } catch (Exception e)
-        {
-            throw new Exception("Failed to insert schedule: " + e.getMessage());
+        } catch (Exception e){
+            throw new Exception("Failedto insert schedule: " + e.getMessage());
         }
     }
 
