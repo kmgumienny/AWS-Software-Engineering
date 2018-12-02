@@ -1,0 +1,1 @@
+{"lastDeploymentHandler":"main.controllers.CreateScheduleHandler","lastInvokeHandler":null,"handlerMetadata":{"main.controllers.CreateScheduleHandler":{"deployment":{"regionId":"us-east-2","awsLambdaFunctionName":"MyFunction","awsIamRoleName":"owner","awsS3BucketName":"cs3733-kam","memory":0,"timeout":0},"invoke":null}},"lastInvokedHandlerDeployed":false}

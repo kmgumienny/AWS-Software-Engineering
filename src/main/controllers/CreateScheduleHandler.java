@@ -93,16 +93,6 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 			CreateScheduleRequest req = new Gson().fromJson(body, CreateScheduleRequest.class);
 			logger.log(req.toString());
 
-			/*
-			 * From HTML
-			 * data["scheduleName"] = arg1;
-			 * data["startDate"] = arg2;
-			 * data["endDate"] = arg3;
-			 * data["startTime"] = arg4;
-			 * data["endTime"] = arg5;
-			 * data["increment"] = arg6;
-			 */
-
 			Schedule newSchedule = new Schedule(req.scheduleName, req.startDate, req.endDate, req.startTime, req.endTime, req.increment);
 			String ID = newSchedule.getScheduleID();
 			String key = newSchedule.getSecretCode();
