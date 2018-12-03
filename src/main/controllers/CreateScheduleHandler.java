@@ -8,6 +8,10 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -19,6 +23,7 @@ import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 
 import main.database.ScheduleDAO;
+import main.database.TimeslotDAO;
 import main.entities.*;
 
 /**
@@ -39,21 +44,7 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 	{
 	 */
 	
-	
-	boolean createSchedule(String scheduleName, String startDate, String endDate, int dayStartTime, int dayEndTime, int timeSlotDuration) throws Exception {
-		if (logger != null) { logger.log("in createConstant"); }
-		ScheduleDAO dao = new ScheduleDAO();
-		
-		// check if present
-		//ScheduleDAO exist = dao.getConstant(name);
-		
-		
-		
-		//	public Schedule(String scheduleName, String startDate, String endDate, int dayStartTime, int dayEndTime, int timeSlotDuration)
-		Schedule schedule = new Schedule(scheduleName, startDate, endDate, dayStartTime, dayEndTime, timeSlotDuration);
-		return dao.addSchedule(schedule);
-		
-	}
+
 	
 	@Override
 	public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
@@ -129,4 +120,63 @@ public class CreateScheduleHandler implements RequestStreamHandler {
         writer.write(responseJson.toJSONString());  
         writer.close();
 	}
+	
+	
+///////////////////////////////// Milap Code edition Working 
+	
+	boolean createSchedule(String scheduleName, String startDate, String endDate, int dayStartTime, int dayEndTime, int timeSlotDuration) throws Exception {
+		if (logger != null) { logger.log("in createConstant"); }
+		ScheduleDAO dao = new ScheduleDAO();
+		
+		// check if present
+		//ScheduleDAO exist = dao.getConstant(name);
+		
+		
+		
+		//	public Schedule(String scheduleName, String startDate, String endDate, int dayStartTime, int dayEndTime, int timeSlotDuration)
+		Schedule schedule = new Schedule(scheduleName, startDate, endDate, dayStartTime, dayEndTime, timeSlotDuration);
+		boolean ans = dao.addSchedule(schedule);
+		//createTimeslots(schedule.getScheduleID(),  schedule.getStartDate(), schedule.getEndDate(), schedule.getDayStartTime(), schedule.getDayEndTime(), schedule.getTimeSlotDuration());
+		
+		return ans;
+	}
+	
+	
+	
+	void createTimeslots(String scheduleID, LocalDate startDate, LocalDate endDate, int startTime, int endTime, int duration) {
+		TimeslotDAO tdao = new TimeslotDAO(); 
+		
+		long dailyTime = (endTime - startTime)*60;
+		long numTimeslotsPerDay = dailyTime/duration;
+		long numDays= ChronoUnit.DAYS.between(startDate, endDate);
+		
+		LocalDate itterationDate = startDate;
+		LocalTime sTime = LocalTime.of(startTime, 0);
+		
+		for (int i = 0; i < (int) numDays; i++)
+		{
+			if (itterationDate.getDayOfWeek().name() == "SATURDAY" || itterationDate.getDayOfWeek().name() == "SUNDAY")
+				itterationDate = itterationDate.plusDays(1);
+			
+			else {
+				for (long j = 0; j < numTimeslotsPerDay; j++)
+				{
+					Timeslot ts = new Timeslot(scheduleID, itterationDate, LocalDateTime.of(itterationDate, sTime), false, true);
+					try {
+						System.out.println("datetime: " + LocalDateTime.of(itterationDate, sTime));
+						boolean ans = tdao.addTimeslot(ts);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					sTime = sTime.plusMinutes(duration);
+				}	
+				itterationDate = itterationDate.plusDays(1);
+			}
+		}
+		
+	}
+	
+
+	
 }
