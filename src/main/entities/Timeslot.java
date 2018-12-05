@@ -11,28 +11,31 @@ public class Timeslot
 	String timeslotID;
 	String scheduleID;
 	int week;
-	LocalDate date;
+	int dayInWeek;                   // 1 (Monday) to 7 (Sunday)
+	int slotNumInDay;
 	LocalDateTime startTime;
 	boolean isReserved;
 	boolean isOpen;
 	
-	public Timeslot(String timeslotID, String scheduleID, int week, LocalDate date, LocalDateTime startTime, boolean isReserved, boolean isOpen)
+	public Timeslot(String timeslotID, String scheduleID, int week, int dayInWeek, int slotNumInDay, LocalDateTime startTime, boolean isReserved, boolean isOpen)
 	{
 		this.timeslotID = timeslotID;
 		this.scheduleID = scheduleID;
 		this.week = week;
-		this.date = date;
+		this.dayInWeek = dayInWeek;
+		this.slotNumInDay = slotNumInDay;
 		this.startTime = startTime;
 		this.isReserved = isReserved;
 		this.isOpen = isOpen;
 	}
 	
-	public Timeslot(String scheduleID, int week, LocalDate date, LocalDateTime startTime, boolean isReserved, boolean isOpen)
+	public Timeslot(String scheduleID, int week, int dayInWeek, int slotNumInDay, LocalDateTime startTime, boolean isReserved, boolean isOpen)
 	{
 		this.timeslotID = genRandString(10);
 		this.scheduleID = scheduleID;
 		this.week = week;
-		this.date = date;
+		this.dayInWeek = dayInWeek;
+		this.slotNumInDay = slotNumInDay;
 		this.startTime = startTime;
 		this.isReserved = isReserved;
 		this.isOpen = isOpen;
@@ -65,14 +68,19 @@ public class Timeslot
 		return scheduleID;
 	}
 	
+	public int getDayInWeek()
+	{
+		return dayInWeek;
+	}
+	
+	public int getSlotNumInDay()
+	{
+		return slotNumInDay;
+	}
+	
 	public int getWeek()
 	{
 		return week;
-	}
-	
-	public LocalDate getDate()
-	{
-		return date;
 	}
 	
 	public LocalDateTime getStartTime()
@@ -109,9 +117,14 @@ public class Timeslot
 		week = newWeek;
 	}
 	
-	public void setDate(LocalDate newDate)
+	public void setDayInWeek(int newDayInWeek)
 	{
-		date = newDate;
+		dayInWeek = newDayInWeek;
+	}
+	
+	public void setSlotNumInDay(int newSlotNumInDay)
+	{
+		slotNumInDay = newSlotNumInDay;
 	}
 	
 	public void setStartTime(LocalDateTime newTime)

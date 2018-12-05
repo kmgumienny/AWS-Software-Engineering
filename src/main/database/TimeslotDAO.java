@@ -132,16 +132,17 @@ public class TimeslotDAO
         try
         {
         	// TODO: Make sure this updating of multiple values works properly
-        	String query = "UPDATE Timeslots SET scheduleID=?, week=?, date=?, startTime=?, isReserved=?, isOpen=? "
+        	String query = "UPDATE Timeslots SET scheduleID=?, week=?, dayInWeek=?, slotNumInDay=?, startTime=?, isReserved=?, isOpen=? "
         					+ "WHERE timeslotID=?;";
         	PreparedStatement ps = connection.prepareStatement(query);
         	ps.setString(1, timeslot.getScheduleID());
-        	ps.setDate(2, Date.valueOf(timeslot.getDate()));
-        	ps.setInt(3, timeslot.getWeek());
-        	ps.setTimestamp(4, Timestamp.valueOf(timeslot.getStartTime()));
-        	ps.setBoolean(5, timeslot.getIsReserved());
-        	ps.setBoolean(6, timeslot.getIsOpen());
-        	ps.setString(7, timeslot.getTimeslotID());
+        	ps.setInt(2, timeslot.getWeek());
+        	ps.setInt(3, timeslot.getDayInWeek());
+        	ps.setInt(4, timeslot.getSlotNumInDay());
+        	ps.setTimestamp(5, Timestamp.valueOf(timeslot.getStartTime()));
+        	ps.setBoolean(6, timeslot.getIsReserved());
+        	ps.setBoolean(7, timeslot.getIsOpen());
+        	ps.setString(8, timeslot.getTimeslotID());
         	
         	// Returns num rows changed
             int numAffected = ps.executeUpdate();
@@ -174,15 +175,16 @@ public class TimeslotDAO
 //            }
 
             //TODO: cannot yet do the RDS calls, as do not yet have the database up and running
-            ps = connection.prepareStatement("INSERT INTO Timeslots (timeslotID, scheduleID, week, date, startTime, isReserved, isOpen) "
-            									+ " values(?,?,?,?,?,?,?);");
+            ps = connection.prepareStatement("INSERT INTO Timeslots (timeslotID, scheduleID, week, dayInWeek, slotNumInDay, startTime, isReserved, isOpen) "
+            									+ " values(?,?,?,?,?,?,?,?);");
             ps.setString(1,  timeslot.getTimeslotID());
             ps.setString(2,  timeslot.getScheduleID());
             ps.setInt(3, timeslot.getWeek());
-            ps.setDate(4,  Date.valueOf(timeslot.getDate()));
-            ps.setTimestamp(5, Timestamp.valueOf(timeslot.getStartTime()));
-            ps.setBoolean(6, timeslot.getIsReserved());
-            ps.setBoolean(7, timeslot.getIsOpen());
+            ps.setInt(4, timeslot.getDayInWeek());
+            ps.setInt(5, timeslot.getSlotNumInDay());
+            ps.setTimestamp(6, Timestamp.valueOf(timeslot.getStartTime()));
+            ps.setBoolean(7, timeslot.getIsReserved());
+            ps.setBoolean(8, timeslot.getIsOpen());
             ps.execute();
             return true;
 
@@ -222,12 +224,13 @@ public class TimeslotDAO
         String timeslotID = resultSet.getString("timeslotID");
         String scheduleID = resultSet.getString("scheduleID");
         int week = resultSet.getInt("week");
-        LocalDate date = resultSet.getDate("date").toLocalDate();
+        int dayInWeek = resultSet.getInt("dayInWeek");
+        int slotNumInDay = resultSet.getInt("slotNumInDay");
         LocalDateTime startTime = resultSet.getTimestamp("startTime").toLocalDateTime();
         boolean isReserved = resultSet.getBoolean("isReserved");
         boolean isOpen = resultSet.getBoolean("isOpen");
 
-        return new Timeslot(timeslotID, scheduleID, week, date, startTime, isReserved, isOpen);
+        return new Timeslot(timeslotID, scheduleID, week, dayInWeek, slotNumInDay, startTime, isReserved, isOpen);
     }
 
 }

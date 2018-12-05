@@ -162,7 +162,9 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 		}
 		
 		LocalDate itterationDate = startDate;
-		LocalTime sTime = LocalTime.of(startTime, 0); 
+		LocalTime sTime = LocalTime.of(startTime, 0);
+		int currentSlotNum;
+		int currentDayOfWeek;
 		
 		for (int i = 0; i < (int) numDays; i++)
 		{
@@ -174,9 +176,11 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 				itterationDate = itterationDate.plusDays(1);
 			
 			else {
+				currentSlotNum = 1;
 				for (long j = 0; j < numTimeslotsPerDay; j++)
 				{
-					Timeslot ts = new Timeslot(scheduleID, currentWeek, itterationDate, LocalDateTime.of(itterationDate, sTime), false, true);
+					currentDayOfWeek = itterationDate.getDayOfWeek().getValue();
+					Timeslot ts = new Timeslot(scheduleID, currentWeek, currentDayOfWeek, currentSlotNum, LocalDateTime.of(itterationDate, sTime), false, true);
 					try {
 						boolean ans = tdao.addTimeslot(ts);
 					} catch (Exception e) {
@@ -184,6 +188,7 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 						e.printStackTrace();
 					}
 					sTime = sTime.plusMinutes(duration);
+					currentSlotNum = currentSlotNum + 1;
 				}
 				
 				itterationDate = itterationDate.plusDays(1);
