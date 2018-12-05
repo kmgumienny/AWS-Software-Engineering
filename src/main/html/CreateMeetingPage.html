@@ -114,7 +114,7 @@
 
 <script>
 
-    var createURL = "https://xu9qdlrt29.execute-api.us-east-2.amazonaws.com/Alpha/createschedule";
+    var createURL = "https://megq95j44i.execute-api.us-east-2.amazonaws.com/alpha/createschedulefunction";
     var data = {};
 
     function handleCreateSchedule(){
@@ -231,9 +231,9 @@
             data["scheduleName"] = arg1;
             data["startDate"] = arg2;
             data["endDate"] = arg3;
-            data["startTime"] = arg4;
-            data["endTime"] = arg5;
-            data["increment"] = arg6;
+            data["dailyStartTime"] = arg4;
+            data["dailyEndTime"] = arg5;
+            data["timeSlotDuration"] = arg6;
 
             document.getElementById("createButton").disabled = true;
             document.getElementById("keyField").value= "abc123";
@@ -254,6 +254,7 @@
 
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     console.log ("XHR:" + xhr.responseText);
+                    alert(xhr.responseText)
                     //alert("Success!");
 
 
