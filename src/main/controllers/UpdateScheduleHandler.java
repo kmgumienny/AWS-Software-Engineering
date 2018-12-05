@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.time.LocalDate;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -16,6 +17,7 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 
+import main.database.ScheduleDAO;
 import main.entities.Schedule;
 
 public class UpdateScheduleHandler implements RequestStreamHandler
@@ -69,23 +71,22 @@ public class UpdateScheduleHandler implements RequestStreamHandler
 		}
 
 		if (!processed) {
-			CreateScheduleRequest req = new Gson().fromJson(body, CreateScheduleRequest.class);
+			UpdateScheduleRequest req = new Gson().fromJson(body, UpdateScheduleRequest.class);
 			logger.log(req.toString());
+			
+			ScheduleDAO dao = new ScheduleDAO();
+			Schedule newSchedule = new Schedule(req.scheduleName, req.scheduleID, req.secretCode, req.startDate, req.endDate,
+					req.startTime, req.endTime, req.increment);
 
-			/*
-			 * From HTML
-			 * data["scheduleName"] = arg1;
-			 * data["startDate"] = arg2;
-			 * data["endDate"] = arg3;
-			 * data["startTime"] = arg4;
-			 * data["endTime"] = arg5;
-			 * data["increment"] = arg6;
-			 */
-
-			Schedule newSchedule = new Schedule(req.scheduleName, req.startDate, req.endDate, req.startTime, req.endTime, req.increment);
-			String ID = newSchedule.getScheduleID();
-			String key = newSchedule.getSecretCode();
-
+			try
+			{
+				dao.updateSchedule(newSchedule);
+				
+			} catch (Exception e)
+			{
+				response = new UpdateScheduleResponse("Schedule Not Found" + e.getMessage(), 404);
+			}
+			
 			// compute proper response
 			UpdateScheduleResponse resp = new UpdateScheduleResponse();
 	        responseJson.put("body", new Gson().toJson(resp));  
@@ -97,5 +98,4 @@ public class UpdateScheduleHandler implements RequestStreamHandler
         writer.write(responseJson.toJSONString());  
         writer.close();
 	}
-	
 }

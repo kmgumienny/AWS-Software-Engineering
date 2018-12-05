@@ -6,6 +6,7 @@ public class UpdateScheduleResponse
 	String message;
 	int httpCode;
 	
+	// NOTE: No Data gets sent to Frontend upon Update Schedule
 	public UpdateScheduleResponse()
 	{
 		message = "Schedule Successfully Updated";
@@ -14,8 +15,8 @@ public class UpdateScheduleResponse
 	
 	public UpdateScheduleResponse(String message, int code)
 	{
-			this.message = message;
-			this.httpCode = code;
+		this.message = message;
+		this.httpCode = code;
 	}
 	
 	public String toString()

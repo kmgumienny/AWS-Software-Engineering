@@ -49,6 +49,17 @@ public class Schedule
 		this.timeSlotDuration = timeSlotDuration;
 	}
 	
+	public Schedule(String scheduleName, String scheduleID, String secretCode, String startDate, String endDate, int dayStartTime, int dayEndTime, int timeSlotDuration){
+		this.scheduleName = scheduleName;
+		this.scheduleID = scheduleID;
+		this.secretCode = secretCode;
+		this.startDate = parseDate(startDate);
+		this.endDate = parseDate(endDate);
+		this.dayStartTime = dayStartTime;
+		this.dayEndTime = dayEndTime;
+		this.timeSlotDuration = timeSlotDuration;
+	}
+	
 	LocalDate parseDate(String date) {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return LocalDate.parse(date, dtf);
