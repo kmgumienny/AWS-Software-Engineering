@@ -3,36 +3,56 @@ package main.entities;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Random;
 
 public class Timeslot
 {
 	String timeslotID;
 	String scheduleID;
+	int week;
 	LocalDate date;
 	LocalDateTime startTime;
-	int duration;
 	boolean isReserved;
 	boolean isOpen;
 	
-	public Timeslot(String timeslotID, String scheduleID, LocalDate date, LocalDateTime startTime, boolean isReserved, boolean isOpen)
+	public Timeslot(String timeslotID, String scheduleID, int week, LocalDate date, LocalDateTime startTime, boolean isReserved, boolean isOpen)
 	{
 		this.timeslotID = timeslotID;
 		this.scheduleID = scheduleID;
+		this.week = week;
 		this.date = date;
 		this.startTime = startTime;
 		this.isReserved = isReserved;
-		this.isOpen = isReserved;
+		this.isOpen = isOpen;
 	}
 	
-	public Timeslot(String timeslotID, String scheduleID, LocalDate date, boolean isReserved, boolean isOpen)
+	public Timeslot(String scheduleID, int week, LocalDate date, LocalDateTime startTime, boolean isReserved, boolean isOpen)
 	{
-		this.timeslotID = timeslotID;
+		this.timeslotID = genRandString(10);
 		this.scheduleID = scheduleID;
+		this.week = week;
 		this.date = date;
-		this.startTime = LocalDateTime.now();
+		this.startTime = startTime;
 		this.isReserved = isReserved;
-		this.isOpen = isReserved;
+		this.isOpen = isOpen;
 	}
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private String genRandString(int length)
+	{
+		String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		Random rand = new Random();
+		StringBuilder tempString = new StringBuilder();
+		for (int i = 0; i < length; i++)
+		{
+			tempString.append(characters.charAt(rand.nextInt(characters.length())));
+		}
+		return tempString.toString();
+	}
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	// Getters
 	public String getTimeslotID()
@@ -43,6 +63,11 @@ public class Timeslot
 	public String getScheduleID()
 	{
 		return scheduleID;
+	}
+	
+	public int getWeek()
+	{
+		return week;
 	}
 	
 	public LocalDate getDate()
@@ -66,6 +91,8 @@ public class Timeslot
 	}
 	// end Getters
 	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	// Setters
 	public void setTimeslotID(String newID)
 	{
@@ -75,6 +102,11 @@ public class Timeslot
 	public void setScheduleID(String newID)
 	{
 		scheduleID = newID;
+	}
+	
+	public void setWeek(int newWeek)
+	{
+		week = newWeek;
 	}
 	
 	public void setDate(LocalDate newDate)
