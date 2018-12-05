@@ -84,7 +84,7 @@ public class GetScheduleHandler implements RequestStreamHandler
 			 * data["increment"] = arg6;
 			 */
 
-			Schedule newSchedule = new Schedule(req.scheduleName, req.startDate, req.endDate, req.startTime, req.endTime, req.increment);
+			Schedule newSchedule = new Schedule(req.scheduleName, req.startDate, req.endDate, req.dailyStartTime, req.dailyEndTime, req.timeSlotDuration);
 
 			// compute proper response
 			GetScheduleResponse resp = new GetScheduleResponse(newSchedule);
