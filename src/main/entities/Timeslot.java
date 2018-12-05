@@ -3,6 +3,8 @@ package main.entities;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Random;
 
 public class Timeslot
 {
@@ -21,18 +23,34 @@ public class Timeslot
 		this.date = date;
 		this.startTime = startTime;
 		this.isReserved = isReserved;
-		this.isOpen = isReserved;
+		this.isOpen = isOpen;
 	}
 	
-	public Timeslot(String timeslotID, String scheduleID, LocalDate date, boolean isReserved, boolean isOpen)
+	public Timeslot(String scheduleID, LocalDate date, LocalDateTime startTime, boolean isReserved, boolean isOpen)
 	{
-		this.timeslotID = timeslotID;
+		this.timeslotID = genRandString(10);
 		this.scheduleID = scheduleID;
 		this.date = date;
-		this.startTime = LocalDateTime.now();
+		this.startTime = startTime;
 		this.isReserved = isReserved;
-		this.isOpen = isReserved;
+		this.isOpen = isOpen;
 	}
+	
+	
+	
+	private String genRandString(int length)
+	{
+		String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		Random rand = new Random();
+		StringBuilder tempString = new StringBuilder();
+		for (int i = 0; i < length; i++)
+		{
+			tempString.append(characters.charAt(rand.nextInt(characters.length())));
+		}
+		return tempString.toString();
+	}
+	
+	
 	
 	// Getters
 	public String getTimeslotID()
