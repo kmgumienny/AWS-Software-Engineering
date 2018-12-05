@@ -20,7 +20,7 @@ public class TestGetSchedule
 	static final int DURATION = 10;
 	
 	@Test
-	public void testGetSchedule()
+	public void testDAOGetSchedule()
 	{
 		ScheduleDAO dao = new ScheduleDAO();
 		Schedule schedule = null;
@@ -41,6 +41,11 @@ public class TestGetSchedule
 	    assertEquals(schedule.getTimeSlotDuration(), DURATION);
 	}
 	
+	@Test
+	public void testLambdaGetSchedule()
+	{
+		
+	}
 	public void createSchedule()
 	{
 		ScheduleDAO dao = new ScheduleDAO();
