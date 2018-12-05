@@ -16,20 +16,20 @@ public class CreateScheduleRequest {
 	String scheduleName;
 	String startDate;
 	String endDate;
-	int startTime;
-	int endTime;
-	int increment;
+	int dailyStartTime;
+	int dailyEndTime;
+	int timeSlotDuration;
 	
-	public CreateScheduleRequest (String scheduleName, String startDate, String endDate, int startTime, int endTime, int increment) {
+	public CreateScheduleRequest (String scheduleName, String startDate, String endDate, int dailyStartTime, int dailyEndTime, int timeSlotDuration) {
 		this.scheduleName = scheduleName;
 		this.startDate = startDate;
 		this.endDate = endDate;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.increment = increment;
+		this.dailyStartTime = dailyStartTime;
+		this.dailyEndTime = dailyEndTime;
+		this.timeSlotDuration = timeSlotDuration;
 	}
 	
 	public String toString() {
-		return "Create(" + scheduleName + " from " + startDate + " to " + endDate + " starting at " + startTime + " till " + endTime + " in increments of " + increment + " minutes)";
+		return "Create(" + scheduleName + " from " + startDate + " to " + endDate + " starting at " + dailyStartTime + " till " + dailyEndTime + " in increments of " + timeSlotDuration + " minutes)";
 	}
 }

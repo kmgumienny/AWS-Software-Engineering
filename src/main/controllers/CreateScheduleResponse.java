@@ -17,7 +17,7 @@ public class CreateScheduleResponse {
 	public CreateScheduleResponse (String message, String id, String key) {
 		this.message = message;
 		this.ID = id;
-		this.secret = secret;
+		this.secret = key;
 		this.httpCode = 200;
 	}
 	

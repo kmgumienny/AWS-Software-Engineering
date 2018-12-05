@@ -10,33 +10,35 @@ public class Timeslot
 {
 	String timeslotID;
 	String scheduleID;
+	int week;
 	LocalDate date;
 	LocalDateTime startTime;
-	int duration;
 	boolean isReserved;
 	boolean isOpen;
 	
-	public Timeslot(String timeslotID, String scheduleID, LocalDate date, LocalDateTime startTime, boolean isReserved, boolean isOpen)
+	public Timeslot(String timeslotID, String scheduleID, int week, LocalDate date, LocalDateTime startTime, boolean isReserved, boolean isOpen)
 	{
 		this.timeslotID = timeslotID;
 		this.scheduleID = scheduleID;
+		this.week = week;
 		this.date = date;
 		this.startTime = startTime;
 		this.isReserved = isReserved;
 		this.isOpen = isOpen;
 	}
 	
-	public Timeslot(String scheduleID, LocalDate date, LocalDateTime startTime, boolean isReserved, boolean isOpen)
+	public Timeslot(String scheduleID, int week, LocalDate date, LocalDateTime startTime, boolean isReserved, boolean isOpen)
 	{
 		this.timeslotID = genRandString(10);
 		this.scheduleID = scheduleID;
+		this.week = week;
 		this.date = date;
 		this.startTime = startTime;
 		this.isReserved = isReserved;
 		this.isOpen = isOpen;
 	}
 	
-	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	private String genRandString(int length)
 	{
@@ -50,7 +52,7 @@ public class Timeslot
 		return tempString.toString();
 	}
 	
-	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	// Getters
 	public String getTimeslotID()
@@ -61,6 +63,11 @@ public class Timeslot
 	public String getScheduleID()
 	{
 		return scheduleID;
+	}
+	
+	public int getWeek()
+	{
+		return week;
 	}
 	
 	public LocalDate getDate()
@@ -84,6 +91,8 @@ public class Timeslot
 	}
 	// end Getters
 	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	// Setters
 	public void setTimeslotID(String newID)
 	{
@@ -93,6 +102,11 @@ public class Timeslot
 	public void setScheduleID(String newID)
 	{
 		scheduleID = newID;
+	}
+	
+	public void setWeek(int newWeek)
+	{
+		week = newWeek;
 	}
 	
 	public void setDate(LocalDate newDate)

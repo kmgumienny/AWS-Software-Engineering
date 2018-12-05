@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -23,7 +22,8 @@ import com.google.gson.Gson;
 
 import main.database.ScheduleDAO;
 import main.database.TimeslotDAO;
-import main.entities.*;
+import main.entities.Schedule;
+import main.entities.Timeslot;
 
 /**
  * Found gson JAR file from
@@ -43,18 +43,12 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 	{
 	 */
 	
-	
-//	boolean storeSchedule(Schedule schedule) throws Exception{
-//		if (logger != null) { logger.log("in createConstant"); }
-//		ScheduleDAO dao = new ScheduleDAO();
-//		return dao.addSchedule(schedule);
-//	}
 
 	
 	@Override
 	public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
 		logger = context.getLogger();
-		logger.log("Loading Java Lambda handler to create constant");
+		logger.log("Loading Java Lambda handler to create new schedule");
 
 		JSONObject headerJson = new JSONObject();
 		headerJson.put("Content-Type",  "application/json");  // not sure if needed anymore?
@@ -100,11 +94,21 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 			CreateScheduleRequest req = new Gson().fromJson(body, CreateScheduleRequest.class);
 			logger.log(req.toString());
 
-			Schedule newSchedule = new Schedule(req.scheduleName, req.startDate, req.endDate, req.startTime, req.endTime, req.increment);
-			
+			/*
+			 * From HTML
+			 * data["scheduleName"] = arg1;
+			 * data["startDate"] = arg2;
+			 * data["endDate"] = arg3;
+			 * data["startTime"] = arg4;
+			 * data["endTime"] = arg5;
+			 * data["increment"] = arg6;
+			 */
+
+			//Schedule newSchedule = new Schedule(req.scheduleName, req.startDate, req.endDate, req.startTime, req.endTime, req.increment);
+			//Need a call function
+			Schedule newSchedule = createSchedule(req.scheduleName, req.startDate, req.endDate, req.dailyStartTime, req.dailyEndTime, req.timeSlotDuration);
 			String ID = newSchedule.getScheduleID();
 			String key = newSchedule.getSecretCode();
-			//boolean stored = storeSchedule(newSchedule);
 
 			// compute proper response
 			CreateScheduleResponse resp = new CreateScheduleResponse("OK", ID, key);
@@ -121,8 +125,8 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 	
 ///////////////////////////////// Milap Code edition Working 
 	
-	boolean createSchedule(String scheduleName, String startDate, String endDate, int dayStartTime, int dayEndTime, int timeSlotDuration) throws Exception {
-		if (logger != null) { logger.log("in createConstant"); }
+	Schedule createSchedule(String scheduleName, String startDate, String endDate, int dayStartTime, int dayEndTime, int timeSlotDuration) {
+		if (logger != null) { logger.log("in createSchedule"); }
 		ScheduleDAO dao = new ScheduleDAO();
 		
 		// check if present
@@ -132,10 +136,15 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 		
 		//	public Schedule(String scheduleName, String startDate, String endDate, int dayStartTime, int dayEndTime, int timeSlotDuration)
 		Schedule schedule = new Schedule(scheduleName, startDate, endDate, dayStartTime, dayEndTime, timeSlotDuration);
-		boolean ans = dao.addSchedule(schedule);
-		//createTimeslots(schedule.getScheduleID(),  schedule.getStartDate(), schedule.getEndDate(), schedule.getDayStartTime(), schedule.getDayEndTime(), schedule.getTimeSlotDuration());
+		try {
+			boolean ans = dao.addSchedule(schedule);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		createTimeslots(schedule.getScheduleID(),  schedule.getStartDate(), schedule.getEndDate(), schedule.getDayStartTime(), schedule.getDayEndTime(), schedule.getTimeSlotDuration());
 		
-		return ans;
+		return schedule;
 	}
 	
 	
@@ -147,33 +156,42 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 		long numTimeslotsPerDay = dailyTime/duration;
 		long numDays= ChronoUnit.DAYS.between(startDate, endDate);
 		
+		int currentWeek = 1;
+		if(startDate.getDayOfWeek().name() == "MONDAY" || startDate.getDayOfWeek().name() == "SATURDAY" || startDate.getDayOfWeek().name() == "SUNDAY") {
+			currentWeek = 0;
+		}
+		
 		LocalDate itterationDate = startDate;
-		LocalTime sTime = LocalTime.of(startTime, 0);
+		LocalTime sTime = LocalTime.of(startTime, 0); 
 		
 		for (int i = 0; i < (int) numDays; i++)
 		{
+			if(itterationDate.getDayOfWeek().name() == "MONDAY") {
+				currentWeek = currentWeek + 1;
+			}
+			
 			if (itterationDate.getDayOfWeek().name() == "SATURDAY" || itterationDate.getDayOfWeek().name() == "SUNDAY")
 				itterationDate = itterationDate.plusDays(1);
 			
 			else {
 				for (long j = 0; j < numTimeslotsPerDay; j++)
 				{
-					Timeslot ts = new Timeslot(scheduleID, itterationDate, LocalDateTime.of(itterationDate, sTime), false, true);
+					Timeslot ts = new Timeslot(scheduleID, currentWeek, itterationDate, LocalDateTime.of(itterationDate, sTime), false, true);
 					try {
-						System.out.println("datetime: " + LocalDateTime.of(itterationDate, sTime));
 						boolean ans = tdao.addTimeslot(ts);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					sTime = sTime.plusMinutes(duration);
-				}	
+				}
+				
 				itterationDate = itterationDate.plusDays(1);
+				sTime = LocalTime.of(startTime, 0); 
 			}
 		}
 		
 	}
 	
 
-	
 }

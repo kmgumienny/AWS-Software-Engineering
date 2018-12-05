@@ -132,13 +132,16 @@ public class TimeslotDAO
         try
         {
         	// TODO: Make sure this updating of multiple values works properly
-        	String query = "UPDATE Timeslots SET date=?, startTime=?, isReserved=?, isOpen=? "
+        	String query = "UPDATE Timeslots SET scheduleID=?, week=?, date=?, startTime=?, isReserved=?, isOpen=? "
         					+ "WHERE timeslotID=?;";
         	PreparedStatement ps = connection.prepareStatement(query);
-        	ps.setDate(1, Date.valueOf(timeslot.getDate()));
-        	ps.setTimestamp(2, Timestamp.valueOf(timeslot.getStartTime()));
-        	ps.setBoolean(3, timeslot.getIsReserved());
-        	ps.setBoolean(4, timeslot.getIsOpen());
+        	ps.setString(1, timeslot.getScheduleID());
+        	ps.setDate(2, Date.valueOf(timeslot.getDate()));
+        	ps.setInt(3, timeslot.getWeek());
+        	ps.setTimestamp(4, Timestamp.valueOf(timeslot.getStartTime()));
+        	ps.setBoolean(5, timeslot.getIsReserved());
+        	ps.setBoolean(6, timeslot.getIsOpen());
+        	ps.setString(7, timeslot.getTimeslotID());
         	
         	// Returns num rows changed
             int numAffected = ps.executeUpdate();
@@ -171,16 +174,15 @@ public class TimeslotDAO
 //            }
 
             //TODO: cannot yet do the RDS calls, as do not yet have the database up and running
-            ps = connection.prepareStatement("INSERT INTO Timeslots (timeslotID, scheduleID, date, startTime, isReserved, isOpen) "
-            									+ " values(?,?,?,?,?,?);");
+            ps = connection.prepareStatement("INSERT INTO Timeslots (timeslotID, scheduleID, week, date, startTime, isReserved, isOpen) "
+            									+ " values(?,?,?,?,?,?,?);");
             ps.setString(1,  timeslot.getTimeslotID());
             ps.setString(2,  timeslot.getScheduleID());
-            //https://stackoverflow.com/questions/29168494/how-to-convert-localdate-to-sql-date-java
-            ps.setDate(3,  Date.valueOf(timeslot.getDate()));
-            //Use this instead of sql.time
-            ps.setTimestamp(4, Timestamp.valueOf(timeslot.getStartTime()));
-            ps.setBoolean(5, timeslot.getIsReserved());
-            ps.setBoolean(6, timeslot.getIsOpen());
+            ps.setInt(3, timeslot.getWeek());
+            ps.setDate(4,  Date.valueOf(timeslot.getDate()));
+            ps.setTimestamp(5, Timestamp.valueOf(timeslot.getStartTime()));
+            ps.setBoolean(6, timeslot.getIsReserved());
+            ps.setBoolean(7, timeslot.getIsOpen());
             ps.execute();
             return true;
 
@@ -219,11 +221,13 @@ public class TimeslotDAO
     	// TODO: Confirm this is what the Column Label is for each parameter in Timeslot(...)
         String timeslotID = resultSet.getString("timeslotID");
         String scheduleID = resultSet.getString("scheduleID");
+        int week = resultSet.getInt("week");
         LocalDate date = resultSet.getDate("date").toLocalDate();
         LocalDateTime startTime = resultSet.getTimestamp("startTime").toLocalDateTime();
         boolean isReserved = resultSet.getBoolean("isReserved");
         boolean isOpen = resultSet.getBoolean("isOpen");
 
-        return new Timeslot(timeslotID, scheduleID, date, startTime, isReserved, isOpen);
+        return new Timeslot(timeslotID, scheduleID, week, date, startTime, isReserved, isOpen);
     }
+
 }

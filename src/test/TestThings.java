@@ -1,7 +1,14 @@
 package test;
 
-import static org.junit.Assert.*;
+import org.junit.Assert.*;
 
+import static org.junit.Assert.fail;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -11,7 +18,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import org.junit.Test;
+import org.junit.Assert;
 
+import com.amazonaws.services.lambda.runtime.Context;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+
+import main.controllers.CreateScheduleHandler;
 import main.database.MeetingDAO;
 import main.database.ScheduleDAO;
 import main.database.TimeslotDAO;
@@ -19,15 +33,45 @@ import main.entities.Meeting;
 import main.entities.Schedule;
 import main.entities.Timeslot;
 
+//CTRl + Shift + "O"
+// CLT + "I" for auto indent
+
 public class TestThings {
 
+
 //	@Test
-//	public void testFind() {
-//	    ConstantsDAO cd = new ConstantsDAO();
+//	public void deleteScheduleAndTimeslotsAndMeetings() {
+//		
+//		String scheduleID = "WoA1Y0T1Mv";
+//	
+//		MeetingDAO cd0 = new MeetingDAO();
+//		try {
+//			boolean worked = cd0.deleteMeetingWithScheduleID(scheduleID);
+//			System.out.println("Meeting was deleted: " + worked);
+//		} catch (Exception e) {
+//			System.out.println("Couldn't delete meeting with ID: " + scheduleID);
+//			fail ("didn't work:" + e.getMessage());
+//		}
+//		
+//	
+//		TimeslotDAO cd = new TimeslotDAO();
+//    
+//		try {
+//			boolean worked = cd.deleteTimeslotWithScheduleID(scheduleID);
+//			System.out.println("Timeslot was deleted: " + worked);
+//		} catch (Exception e) {
+//			System.out.println("Couldn't delete timeslot with ID: " + scheduleID);
+//			fail ("didn't work:" + e.getMessage());
+//		}
+//		
+//		
+//		ScheduleDAO cd2 = new ScheduleDAO();
+//		
 //	    try {
-//	    	Constant c = cd.getConstant("e");
-//	    	System.out.println("constant " + c.name + " = " + c.value);
+//	    	boolean worked = cd2.deleteSchedule(scheduleID);
+//	    	System.out.println("Schedule with ID was deleted: " + worked);
 //	    } catch (Exception e) {
+//	    	System.out.println("Couldn't delete the schedule with ID: " + scheduleID);
 //	    	fail ("didn't work:" + e.getMessage());
 //	    }
 //	}
@@ -137,7 +181,7 @@ public class TestThings {
 //				{
 //					Timeslot ts = new Timeslot(scheduleID, itterationDate, LocalDateTime.of(itterationDate, sTime), false, true);
 //					try {
-//						System.out.println("datetime: " + LocalDateTime.of(itterationDate, sTime));
+//						//System.out.println("datetime: " + LocalDateTime.of(itterationDate, sTime));
 //						boolean ans = tdao.addTimeslot(ts);
 //					} catch (Exception e) {
 //						// TODO Auto-generated catch block
@@ -252,7 +296,7 @@ public class TestThings {
 //	@Test
 //	public void deleteScheduleAndTimeslots() {
 //	TimeslotDAO cd = new TimeslotDAO();
-//	String scheduleID = "b4ok55kEYZ";
+//	String scheduleID = "w4vc5IoB9k";
 //    
 //		try {
 //			boolean worked = cd.deleteTimeslotWithScheduleID(scheduleID);
@@ -274,5 +318,96 @@ public class TestThings {
 //	    }
 //	}
 	
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+//	@Test
+//	public void bookMeetingWithOpenTimeslot() {
+//		
+//		LocalDateTime localDateTime = LocalDateTime.of(2017, Month.AUGUST, 3, 12, 30);
+//		
+//		TimeslotDAO timeslotDAO = new TimeslotDAO();
+//		Timeslot timeslot = null;
+//	    try {
+//	    	timeslot = new Timeslot("jumbo", localDateTime.toLocalDate(), localDateTime, false, true);
+//	    	boolean b = timeslotDAO.addTimeslot(timeslot);
+//	    	
+//	    } catch (Exception e) {
+//	    	fail ("didn't work:" + e.getMessage());
+//	    }
+//		
+//	    String meetingName = "Epic";
+//	    String timeslotID = timeslot.getTimeslotID();
+//	 
+//		MeetingDAO meetingDAO = new MeetingDAO();
+//		
+//		Timeslot ts = null;
+//		try {
+//			ts = timeslotDAO.getTimeslot(timeslotID);
+//		} catch (Exception e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		
+//		Meeting meeting = null;
+//		if(ts != null) {
+//			if(ts.getIsReserved() == false) {
+//				meeting = new Meeting(ts.getScheduleID(), ts.getTimeslotID(), meetingName);
+//				ts.setIsReserved(true);
+//				try {
+//					boolean worked = timeslotDAO.updateTimeslot(ts);
+//				} catch (Exception e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+//				try {
+//					boolean ans = meetingDAO.addMeeting(meeting);
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//	}
+	
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+//	Context createContext(String apiCall) {
+//        TestContext ctx = new TestContext();
+//        ctx.setFunctionName(apiCall);
+//        return ctx;
+//    }
+//	
+//	@Test
+//	public void testCreateScheduleHeandler() throws IOException {
+//		
+//		
+//		CreateScheduleHandler handler = new CreateScheduleHandler();
+//		
+//		JsonObject input = new JsonObject();
+//		input.addProperty("scheduleName", "test1");
+//		input.addProperty("startDate", "2018-12-09");
+//		input.addProperty("endDate", "2018-12-24");
+//		input.addProperty("dailyStartTime", 6);
+//		input.addProperty("dailyEndTime", 6);
+//		input.addProperty("timeSlotDuration", 60);
+//		
+//		JsonObject body = new JsonObject();
+//		body.addProperty("body", input.toString());
+//		
+//		String jsonRequest = body.toString();
+//		
+//		InputStream inputVal = new ByteArrayInputStream(jsonRequest.getBytes());
+//		OutputStream output = new ByteArrayOutputStream();
+//		
+//		
+//		handler.handleRequest(inputVal, output, createContext("a")); 
+//		
+//		String status = new JsonParser().parse(output.toString()).getAsJsonObject().get("httpCode").getAsString();
+//		
+//		Assert.assertEquals("200", status);
+//		
+//		
+//		
+//	}
 	
 }
