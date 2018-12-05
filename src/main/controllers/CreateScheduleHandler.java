@@ -101,6 +101,7 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 			logger.log(req.toString());
 
 			Schedule newSchedule = new Schedule(req.scheduleName, req.startDate, req.endDate, req.startTime, req.endTime, req.increment);
+			
 			String ID = newSchedule.getScheduleID();
 			String key = newSchedule.getSecretCode();
 			//boolean stored = storeSchedule(newSchedule);
