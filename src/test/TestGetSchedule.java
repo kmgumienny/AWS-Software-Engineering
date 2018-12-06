@@ -61,6 +61,7 @@ public class TestGetSchedule
 	public void testGetScheduleHandler() throws IOException
 	{
 		GetScheduleHandler handler = new GetScheduleHandler();
+		JsonParser parser = new JsonParser();
 		
 		//create sample Json
 		JsonObject input = new JsonObject();
@@ -70,7 +71,6 @@ public class TestGetSchedule
 		input.addProperty("dailyStartTime", DAY_START_TIME);
 		input.addProperty("dailyEndTime", DAY_END_TIME);
 		input.addProperty("timeSlotDuration", TIME_SLOT_DURATION);
-		System.out.println("input: " + input);
 		
 		// set the sample json as a ByteArrayInputStream, to be sent into handler.handleRequest(...);
 		InputStream inputVal = new ByteArrayInputStream(input.toString().getBytes());
@@ -80,62 +80,23 @@ public class TestGetSchedule
 		// request is handled
 		handler.handleRequest(inputVal, output, context);
 		
-		System.out.println("1: " + output);
-		
-		
-		// take the output ByteArrayOutputStream, convert it into a string, so it can then be turned into a Json
-		String stringOutput = output.toString();
-		
-	
-		// parse the stringOutput (converted from the output as type ByteArrayOutputStream), and make it a JsonObject
-		JsonParser parserOutput = new JsonParser();
-		JsonElement element = parserOutput.parse(stringOutput);
-
-		JsonObject object = element.getAsJsonObject();
 		// convert output from type ByteArrayInputStream to String, and then parse it into a Json
+		JsonObject object = parser.parse(output.toString()).getAsJsonObject();
 		
-		System.out.println("getAsJsonObject: " + object.getClass() + object);
+		// get "body" String from the output Json (because that is how we have it set up, apparently)
+		//	as type JsonPrimitive, and then convert it to type String in order to convert it again to type JsonObject
+		JsonObject bodyJson = parser.parse(object.getAsJsonPrimitive("body").getAsString()).getAsJsonObject();
+
+		// extract the httpCode int from the previously parsed bodyJson
+		int intCode = bodyJson.getAsJsonPrimitive("httpCode").getAsInt();
+		//System.out.println("intCode: " + intCode);
 		
-		// from here, I tried the following line of code, but it made no difference in the error thrown, and it is not
-		//	allowing me to get the data under "body" in the output json
-		//object = object.getAsJsonObject();
-		JsonPrimitive array = new JsonPrimitive(stringOutput);
-		System.out.println(array.getClass());
-		//System.out.println(object.getAsJsonArray("body").getClass());
-		array = object.getAsJsonPrimitive("body");
-		String stringArray = array.getAsString();
-		JsonElement element2 = parserOutput.parse(stringArray);
-		System.out.println("Element2: " + element2);
-		JsonObject obj2 = element2.getAsJsonObject();
-		JsonPrimitive code = obj2.getAsJsonPrimitive("httpCode");
-		int intCode = code.getAsInt();
-		System.out.println("intCode: " + intCode);
-		//JsonElement code = object.get("httpCode");
-		//JsonArray array = object.getAsJsonArray("body");
-		
-		
-//		System.out.println("2: " + stringOutput);
-//		System.out.println("3; " + parserOutput);
-//		System.out.println("4: " + element);
-//		System.out.println("5: " + object);
-//		System.out.println("6: " + array);
-		
-		
-		//System.out.println("6: " + element2);
-		//System.out.print("7: " + status);
-		//String status = new JsonParser().parse(output.toString()).getAsJsonObject().get("httpCode").getAsString();
-		
+		// test case
 		assertEquals(200, intCode);
 		
 		
 		
 	}
-	
-//	Context createContext(String apiCall) {
-//      TestContext ctx = new TestContext();
-//      ctx.setFunctionName(apiCall);
-//      return ctx;
-//  }
 	
 	public void createSchedule()
 	{
