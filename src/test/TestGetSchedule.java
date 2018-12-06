@@ -12,6 +12,9 @@ import java.io.OutputStream;
 import org.junit.Test;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -56,10 +59,9 @@ public class TestGetSchedule
 	@Test
 	public void testGetScheduleHandler() throws IOException
 	{
-		
-		
 		GetScheduleHandler handler = new GetScheduleHandler();
 		
+		//create sample Json
 		JsonObject input = new JsonObject();
 		input.addProperty("scheduleName", OTHER_SCHEDULE_NAME);
 		input.addProperty("startDate", START_DATE);
@@ -67,31 +69,60 @@ public class TestGetSchedule
 		input.addProperty("dailyStartTime", DAY_START_TIME);
 		input.addProperty("dailyEndTime", DAY_END_TIME);
 		input.addProperty("timeSlotDuration", TIME_SLOT_DURATION);
+		System.out.println("input: " + input);
 		
-		JsonObject body = new JsonObject();
-		body.addProperty("body", input.toString());
-		
-		String jsonRequest = body.toString();
-		
-		InputStream inputVal = new ByteArrayInputStream(jsonRequest.getBytes());
+		// set the sample json as a ByteArrayInputStream, to be sent into handler.handleRequest(...);
+		InputStream inputVal = new ByteArrayInputStream(input.toString().getBytes());
 		OutputStream output = new ByteArrayOutputStream();
+		Context context = new TestContext();
+		
+		// request is handled
+		handler.handleRequest(inputVal, output, context);
+		
+		System.out.println("1: " + output);
 		
 		
-		handler.handleRequest(inputVal, output, createContext("a")); 
+		// take the output ByteArrayOutputStream, convert it into a string, so it can then be turned into a Json
+		String stringOutput = output.toString();
 		
-		String status = new JsonParser().parse(output.toString()).getAsJsonObject().get("httpCode").getAsString();
+	
+		// parse the stringOutput (converted from the output as type ByteArrayOutputStream), and make it a JsonObject
+		JsonParser parserOutput = new JsonParser();
+		JsonElement element = parserOutput.parse(stringOutput);
+		JsonObject object = element.getAsJsonObject();
 		
-		assertEquals("200", status);
+		System.out.println("getAsJsonObject: " + object.getClass() + object);
+		
+		// from here, I tried the following line of code, but it made no difference in the error thrown, and it is not
+		//	allowing me to get the data under "body" in the output json
+		//object = object.getAsJsonObject();
+		JsonArray array = object.getAsJsonArray("body");
+		//JsonElement code = object.get("httpCode");
+		//JsonArray array = object.getAsJsonArray("body");
+		
+		
+		System.out.println("2: " + stringOutput);
+		System.out.println("3; " + parserOutput);
+		System.out.println("4: " + element);
+		System.out.println("5: " + object);
+		System.out.println("6: " + array);
+		
+		
+		//System.out.println("6: " + element2);
+		//System.out.print("7: " + status);
+		//String status = new JsonParser().parse(output.toString()).getAsJsonObject().get("httpCode").getAsString();
+		
+		//assertEquals("200", status);
 		
 		
 		
 	}
 	
-	Context createContext(String apiCall) {
-      TestContext ctx = new TestContext();
-      ctx.setFunctionName(apiCall);
-      return ctx;
-  }
+//	Context createContext(String apiCall) {
+//      TestContext ctx = new TestContext();
+//      ctx.setFunctionName(apiCall);
+//      return ctx;
+//  }
 	
 	public void createSchedule()
 	{
