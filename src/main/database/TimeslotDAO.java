@@ -30,6 +30,8 @@ public class TimeslotDAO
     	}
     }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     public Timeslot getTimeslot(String timeslotID) throws Exception
     {
         try
@@ -56,55 +58,7 @@ public class TimeslotDAO
         }
     }
     
-    
-    
-/////////////////////////// added by me
-    public Timeslot getTimeslotWithScheduleID(String scheduleID) throws Exception
-    {
-        try
-        {
-            Timeslot timeslot = null;
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Timeslots WHERE scheduleID=?;");
-            ps.setString(1,  scheduleID);
-            ResultSet resultSet = ps.executeQuery();
-            
-            // This will theoretically create multiple timeslots if there are multiples with the same
-            //	ID, but Ideally that won't be allowed to happen...?
-            while (resultSet.next())
-            {
-                timeslot = generateTimeslot(resultSet);
-            }
-            resultSet.close();
-            ps.close();
-            
-            return timeslot;
-
-        } catch (Exception e) {
-        	e.printStackTrace();
-            throw new Exception("Failed to get Timeslot: " + e.getMessage());
-        }
-    } 
-    
-    public boolean deleteTimeslotWithScheduleID(String scheduleID) throws Exception
-    {
-        try {
-            PreparedStatement ps = connection.prepareStatement("DELETE FROM Timeslots WHERE scheduleID = ?;");
-            ps.setString(1, scheduleID);
-            // Returns num rows changed (deleted, in this case)
-            int numAffected = ps.executeUpdate();
-            ps.close();
-            
-            // Should only delete one single Timeslot, so if numAffected isn't 1, there was a problem
-            return (numAffected >= 1);
-
-        } catch (Exception e)
-        {
-            throw new Exception("Failed to delete Timeslot: " + e.getMessage());
-        }
-    }
-///////////////////////////end of added by me
-    
-    
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     public boolean deleteTimeslot(String timeslotID) throws Exception
     {
@@ -124,14 +78,12 @@ public class TimeslotDAO
         }
     }
 
-    // Updates a timeslot with a timeslotID equivalent to the inputed timeslot's to be
-    //	equivalent to the inputed timeslot
-    //TODO Never inputs a timeslotID here boys
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     public boolean updateTimeslot(Timeslot timeslot) throws Exception
     {
         try
         {
-        	// TODO: Make sure this updating of multiple values works properly
         	String query = "UPDATE Timeslots SET scheduleID=?, week=?, dayInWeek=?, slotNumInDay=?, startTime=?, isReserved=?, isOpen=? "
         					+ "WHERE timeslotID=?;";
         	PreparedStatement ps = connection.prepareStatement(query);
@@ -156,6 +108,7 @@ public class TimeslotDAO
         }
     }
     
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     public boolean addTimeslot(Timeslot timeslot) throws Exception
     {
@@ -164,17 +117,7 @@ public class TimeslotDAO
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM Timeslots WHERE timeslotID = ?;");
             ps.setString(1, timeslot.getTimeslotID());
             ResultSet resultSet = ps.executeQuery();
-            
-//            // Timeslot already present?
-//            while (resultSet.next())
-//            {
-//                @SuppressWarnings("unused")
-//				Timeslot t = generateTimeslot(resultSet);
-//                resultSet.close();
-//                return false;
-//            }
 
-            //TODO: cannot yet do the RDS calls, as do not yet have the database up and running
             ps = connection.prepareStatement("INSERT INTO Timeslots (timeslotID, scheduleID, week, dayInWeek, slotNumInDay, startTime, isReserved, isOpen) "
             									+ " values(?,?,?,?,?,?,?,?);");
             ps.setString(1,  timeslot.getTimeslotID());
@@ -193,8 +136,10 @@ public class TimeslotDAO
             throw new Exception("Failed to insert Timeslot: " + e.getMessage());
         }
     }
+    
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public List<Timeslot> getAllTimeslots() throws Exception
+    public List<Timeslot> getAllTimeslots(String scheduleID) throws Exception
     {
         List<Timeslot> timeslots = new ArrayList<>();
         try
@@ -206,7 +151,9 @@ public class TimeslotDAO
             while (resultSet.next())
             {
                 Timeslot timeslot = generateTimeslot(resultSet);
-                timeslots.add(timeslot);
+                if(timeslot.getScheduleID().equals(scheduleID)) {
+                	timeslots.add(timeslot);
+                }
             }
             resultSet.close();
             statement.close();
@@ -217,6 +164,8 @@ public class TimeslotDAO
             throw new Exception("Failed in getting Timeslot: " + e.getMessage());
         }
     }
+    
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     private Timeslot generateTimeslot(ResultSet resultSet) throws Exception
     {

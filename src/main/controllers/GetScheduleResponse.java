@@ -1,46 +1,28 @@
 package main.controllers;
 
-import main.entities.Schedule;
+import java.util.List;
 
-public class GetScheduleResponse
-{
-	String respMessage;
-	String scheduleName;
-	String scheduleID;
-	String secretCode;
-	String startDate;
-	String endDate;
-	int startTime;
-	int endTime;
-	int increment;
+import main.entities.Timeslot;
+
+public class GetScheduleResponse {
+	String message;
+	List<Timeslot> TimeSlots;
 	int httpCode;
 	
-	// 200 means success
-	public GetScheduleResponse(Schedule schedule)
-	{
-		this.scheduleName = schedule.getScheduleName();
-		this.scheduleID = schedule.getScheduleID();
-		this.secretCode = schedule.getSecretCode();
-		this.startDate = schedule.getStartDate().toString();
-		this.endDate = schedule.getEndDate().toString();
-		this.startTime = schedule.getDayStartTime();
-		this.endTime = schedule.getDayEndTime();
-		this.increment = schedule.getTimeSlotDuration();
-
-		this.respMessage = "Successful Retrieval of Schedule";
-		this.httpCode = 200;
-	}
-	
-	// not 200 means failure
-	public GetScheduleResponse(String message, int code)
-	{
-		this.respMessage = message;
+	public GetScheduleResponse (String message, int code) {
+		this.message = message;
+		this.TimeSlots = null;
 		this.httpCode = code;
 	}
 	
+	// 200 means success
+	public GetScheduleResponse (String message, List<Timeslot> TimeSlots) {
+		this.message = message;
+		this.TimeSlots = TimeSlots;
+		this.httpCode = 200;
+	}
 	
-	public String toString()
-	{
-		return "Response(" + respMessage + ")";
+	public String toString() {
+		return "Response(" + message + ")";
 	}
 }

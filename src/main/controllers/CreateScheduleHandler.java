@@ -37,13 +37,6 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 	 * 
 	 * @throws Exception 
 	 */
-	/*
-	 * public Schedule(String scheduleName, String scheduleID, String secretCode, Date startDate, Date endDate,
-						Time dayStartTime, Time dayEndTime, int timeSlotDuration)
-	{
-	 */
-	
-
 	
 	@Override
 	public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
@@ -91,30 +84,19 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 		}
 
 		if (!processed) {
+			//Create new request by tamplet
 			CreateScheduleRequest req = new Gson().fromJson(body, CreateScheduleRequest.class);
 			logger.log(req.toString());
-
-			/*
-			 * From HTML
-			 * data["scheduleName"] = arg1;
-			 * data["startDate"] = arg2;
-			 * data["endDate"] = arg3;
-			 * data["startTime"] = arg4;
-			 * data["endTime"] = arg5;
-			 * data["increment"] = arg6;
-			 */
-
-			//Schedule newSchedule = new Schedule(req.scheduleName, req.startDate, req.endDate, req.startTime, req.endTime, req.increment);
-			//Need a call function
+			
+			//Create the new schedule
 			Schedule newSchedule = createSchedule(req.scheduleName, req.startDate, req.endDate, req.dailyStartTime, req.dailyEndTime, req.timeSlotDuration);
-			String ID = newSchedule.getScheduleID();
-			String key = newSchedule.getSecretCode();
-
-			// compute proper response
-			CreateScheduleResponse resp = new CreateScheduleResponse("OK", ID, key);
+			
+			//Create the response for the new schedule
+			CreateScheduleResponse resp = new CreateScheduleResponse("OK", newSchedule.getScheduleID(), newSchedule.getSecretCode());
 	        responseJson.put("body", new Gson().toJson(resp));  
 		}
 		
+		//return the result
         logger.log("end result:" + responseJson.toJSONString());
         logger.log(responseJson.toJSONString());
         OutputStreamWriter writer = new OutputStreamWriter(output, "UTF-8");
@@ -129,74 +111,88 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 		if (logger != null) { logger.log("in createSchedule"); }
 		ScheduleDAO dao = new ScheduleDAO();
 		
-		// check if present
-		//ScheduleDAO exist = dao.getConstant(name);
 		
-		
-		
-		//	public Schedule(String scheduleName, String startDate, String endDate, int dayStartTime, int dayEndTime, int timeSlotDuration)
+		//create new schedule only
 		Schedule schedule = new Schedule(scheduleName, startDate, endDate, dayStartTime, dayEndTime, timeSlotDuration);
+		
+		//try to add to the RDS schedule table
 		try {
 			boolean ans = dao.addSchedule(schedule);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log("Failed to add schedule to the RDS's Schedule Table");
 		}
-		createTimeslots(schedule.getScheduleID(),  schedule.getStartDate(), schedule.getEndDate(), schedule.getDayStartTime(), schedule.getDayEndTime(), schedule.getTimeSlotDuration());
+		
+		//Create time slots for the newly created schedule
+		createTimeSlots(schedule.getScheduleID(),  schedule.getStartDate(), schedule.getEndDate(), schedule.getDayStartTime(), schedule.getDayEndTime(), schedule.getTimeSlotDuration());
 		
 		return schedule;
 	}
 	
 	
 	
-	void createTimeslots(String scheduleID, LocalDate startDate, LocalDate endDate, int startTime, int endTime, int duration) {
+	void createTimeSlots(String scheduleID, LocalDate startDate, LocalDate endDate, int startTime, int endTime, int duration) {
+		
+		//make connection to the RDS timeslot table
 		TimeslotDAO tdao = new TimeslotDAO(); 
 		
+		//Calculate the different paramaters
 		long dailyTime = (endTime - startTime)*60;
 		long numTimeslotsPerDay = dailyTime/duration;
 		long numDays= ChronoUnit.DAYS.between(startDate, endDate);
 		
+		//check if the start date and adjust the starting week if needed
 		int currentWeek = 1;
 		if(startDate.getDayOfWeek().name() == "MONDAY" || startDate.getDayOfWeek().name() == "SATURDAY" || startDate.getDayOfWeek().name() == "SUNDAY") {
 			currentWeek = 0;
 		}
 		
+		//create variables
 		LocalDate itterationDate = startDate;
 		LocalTime sTime = LocalTime.of(startTime, 0);
 		int currentSlotNum;
 		int currentDayOfWeek;
 		
+		//Loop through and create the time slots for each day
 		for (int i = 0; i < (int) numDays; i++)
 		{
+			//If Monday, time slots are added to a new week, increment the week counter
 			if(itterationDate.getDayOfWeek().name() == "MONDAY") {
 				currentWeek = currentWeek + 1;
 			}
 			
+			//check if the current day is Saturday or Sunday. If so skip those days
 			if (itterationDate.getDayOfWeek().name() == "SATURDAY" || itterationDate.getDayOfWeek().name() == "SUNDAY")
 				itterationDate = itterationDate.plusDays(1);
-			
 			else {
+				//Reset the time slot number counter for day for every new date
 				currentSlotNum = 1;
+				
+				//Loop through and create time slots for the given time frame
 				for (long j = 0; j < numTimeslotsPerDay; j++)
 				{
+					//Get the current day of the week in int
 					currentDayOfWeek = itterationDate.getDayOfWeek().getValue();
+					
+					//Create new time slot
 					Timeslot ts = new Timeslot(scheduleID, currentWeek, currentDayOfWeek, currentSlotNum, LocalDateTime.of(itterationDate, sTime), false, true);
+					
+					//Try to add the time slot to the RDS timeSlot table
 					try {
 						boolean ans = tdao.addTimeslot(ts);
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.log("Failed to add timeslot to the RDS's TimeSlot Table");
 					}
+					
+					//Inctiment the new start time for next time slot and the slot number for the day
 					sTime = sTime.plusMinutes(duration);
 					currentSlotNum = currentSlotNum + 1;
 				}
 				
+				//Inciment the date by one day and reset the start time for the next day to specified time
 				itterationDate = itterationDate.plusDays(1);
 				sTime = LocalTime.of(startTime, 0); 
 			}
 		}
-		
 	}
-	
 
 }

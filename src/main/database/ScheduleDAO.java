@@ -142,29 +142,7 @@ public class ScheduleDAO
 
         return new Schedule(name, ID, secretCode, startDate, endDate, startTime, endTime, duration);
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    ////Verified Working Code: Milap Edition
+
     public boolean addSchedule(Schedule schedule) throws Exception
     {
         try
