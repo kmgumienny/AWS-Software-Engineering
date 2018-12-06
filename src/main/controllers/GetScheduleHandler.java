@@ -17,7 +17,9 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 
+import main.database.MeetingDAO;
 import main.database.TimeslotDAO;
+import main.entities.Meeting;
 import main.entities.Timeslot;
 
 /**
@@ -42,7 +44,7 @@ public class GetScheduleHandler implements RequestStreamHandler {
 	@Override
 	public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
 		logger = context.getLogger();
-		logger.log("Loading Java Lambda handler to create Meeting");
+		logger.log("Loading Java Lambda handler to get timeslots and meeting for given schedule");
 
 		JSONObject headerJson = new JSONObject();
 		headerJson.put("Content-Type",  "application/json");  // not sure if needed anymore?
@@ -94,10 +96,11 @@ public class GetScheduleHandler implements RequestStreamHandler {
 			 * data["meetingName"] = arg2;
 			 */
 			
-			List<Timeslot> TimeSlots = getSchedule(req.scheduleID);
+			List<Timeslot> timeSlots = getScheduleTimeslots(req.scheduleID);
+			List<Meeting>  meetings = getScheduleMeetings(req.scheduleID);
 
 			// compute proper response
-			GetScheduleResponse resp = new GetScheduleResponse("OK", TimeSlots);
+			GetScheduleResponse resp = new GetScheduleResponse("OK", timeSlots, meetings);
 	        responseJson.put("body", new Gson().toJson(resp));  
 		}
 		
@@ -109,18 +112,33 @@ public class GetScheduleHandler implements RequestStreamHandler {
 	}
 	
 	
-///////////////////////////////// Milap Code edition Working 
+////////////////////////////////////////////////////////////////////////////////////
 	
-	List<Timeslot> getSchedule(String scheduleID) {
-		
-		List<Timeslot> TS = null;
+	List<Timeslot> getScheduleTimeslots(String scheduleID) {
 		TimeslotDAO timeSlotDAO = new TimeslotDAO();
+		List<Timeslot> timeSlots = null;
+		
 		try {
-			TS = timeSlotDAO.getAllTimeslots(scheduleID);
+			timeSlots = timeSlotDAO.getAllTimeslotsWithScheduleID(scheduleID);
 		} catch (Exception e) {
 			logger.log("Failed to get timeslots.");
 		}
 		
-		return TS;
+		return timeSlots;
+	}
+	
+////////////////////////////////////////////////////////////////////////////////////
+	
+	List<Meeting> getScheduleMeetings(String scheduleID) {
+		MeetingDAO cd = new MeetingDAO();
+		List<Meeting> meetings = null;
+		
+		try {
+			meetings = cd.getAllMeetingsWithScheduleID(scheduleID);
+		} catch (Exception e) {
+			logger.log("Failed to get meetings.");
+		}
+		
+		return meetings;
 	}
 }
