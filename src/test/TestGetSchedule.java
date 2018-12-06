@@ -54,7 +54,7 @@ public class TestGetSchedule
 	}
 	
 	@Test
-	public void testGetScheduleHeandler() throws IOException
+	public void testGetScheduleHandler() throws IOException
 	{
 		
 		
@@ -96,11 +96,12 @@ public class TestGetSchedule
 	public void createSchedule()
 	{
 		ScheduleDAO dao = new ScheduleDAO();
+		Schedule schedule = new Schedule(SCHEDULE_NAME, SCHEDULE_ID,
+				SECRET_CODE, START_DATE, END_DATE,
+				DAY_START_TIME, DAY_END_TIME, TIME_SLOT_DURATION);
 		try
 		{
-		dao.addSchedule(new Schedule(SCHEDULE_NAME, SCHEDULE_ID,
-				SECRET_CODE, START_DATE, END_DATE,
-				DAY_START_TIME, DAY_END_TIME, TIME_SLOT_DURATION));
+		dao.addSchedule(schedule);
 		} catch (Exception e)
 		{
 			fail ("did not add schedule " + e.getMessage());
