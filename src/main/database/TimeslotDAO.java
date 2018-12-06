@@ -159,7 +159,7 @@ public class TimeslotDAO
     
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public List<Timeslot> getAllTimeslots(String scheduleID) throws Exception
+    public List<Timeslot> getAllTimeslotsWithScheduleID(String scheduleID) throws Exception
     {
         List<Timeslot> timeslots = new ArrayList<>();
         try
