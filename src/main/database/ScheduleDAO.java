@@ -54,6 +54,8 @@ public class ScheduleDAO
         }
     }
     
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     public boolean deleteSchedule(String scheduleID) throws Exception
     {
         try {
@@ -71,8 +73,8 @@ public class ScheduleDAO
         }
     }
 
-    // Updates a schedule with a scheduleID equivalent to the inputed schedule's to be
-    //	equivalent to the inputed schedule
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     public boolean updateSchedule(Schedule schedule) throws Exception
     {
         try
@@ -103,7 +105,8 @@ public class ScheduleDAO
         }
     }
     
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     public List<Schedule> getAllSchedules() throws Exception
     {
         List<Schedule> schedules = new ArrayList<>();
@@ -128,6 +131,8 @@ public class ScheduleDAO
         }
     }
     
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     private Schedule generateSchedule(ResultSet resultSet) throws Exception
     {
     	// TODO: Confirm this is what the Column Label is for each parameter in Schedule(...)
@@ -143,6 +148,8 @@ public class ScheduleDAO
         return new Schedule(name, ID, secretCode, startDate, endDate, startTime, endTime, duration);
     }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     public boolean addSchedule(Schedule schedule) throws Exception
     {
         try

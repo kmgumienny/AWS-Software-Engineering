@@ -32,6 +32,35 @@ public class TimeslotDAO
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
+    public boolean addTimeslot(Timeslot timeslot) throws Exception
+    {
+        try
+        {
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Timeslots WHERE timeslotID = ?;");
+            ps.setString(1, timeslot.getTimeslotID());
+            ResultSet resultSet = ps.executeQuery();
+
+            ps = connection.prepareStatement("INSERT INTO Timeslots (timeslotID, scheduleID, week, dayInWeek, slotNumInDay, startTime, isReserved, isOpen) "
+            									+ " values(?,?,?,?,?,?,?,?);");
+            ps.setString(1,  timeslot.getTimeslotID());
+            ps.setString(2,  timeslot.getScheduleID());
+            ps.setInt(3, timeslot.getWeek());
+            ps.setInt(4, timeslot.getDayInWeek());
+            ps.setInt(5, timeslot.getSlotNumInDay());
+            ps.setTimestamp(6, Timestamp.valueOf(timeslot.getStartTime()));
+            ps.setBoolean(7, timeslot.getIsReserved());
+            ps.setBoolean(8, timeslot.getIsOpen());
+            ps.execute();
+            return true;
+
+        } catch (Exception e)
+        {
+            throw new Exception("Failed to insert Timeslot: " + e.getMessage());
+        }
+    }
+    
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     public Timeslot getTimeslot(String timeslotID) throws Exception
     {
         try
@@ -80,6 +109,26 @@ public class TimeslotDAO
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
+    public boolean deleteTimeslotWithScheduleID(String scheduleID) throws Exception
+    {
+        try {
+            PreparedStatement ps = connection.prepareStatement("DELETE FROM Timeslots WHERE scheduleID = ?;");
+            ps.setString(1, scheduleID);
+            // Returns num rows changed (deleted, in this case)
+            int numAffected = ps.executeUpdate();
+            ps.close();
+            
+            // Should only delete one single Timeslot, so if numAffected isn't 1, there was a problem
+            return (numAffected >= 1);
+
+        } catch (Exception e)
+        {
+            throw new Exception("Failed to delete Timeslot: " + e.getMessage());
+        }
+    }
+    
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     public boolean updateTimeslot(Timeslot timeslot) throws Exception
     {
         try
@@ -105,35 +154,6 @@ public class TimeslotDAO
         } catch (Exception e)
         {
             throw new Exception("Failed to update Timeslot: " + e.getMessage());
-        }
-    }
-    
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    public boolean addTimeslot(Timeslot timeslot) throws Exception
-    {
-        try
-        {
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Timeslots WHERE timeslotID = ?;");
-            ps.setString(1, timeslot.getTimeslotID());
-            ResultSet resultSet = ps.executeQuery();
-
-            ps = connection.prepareStatement("INSERT INTO Timeslots (timeslotID, scheduleID, week, dayInWeek, slotNumInDay, startTime, isReserved, isOpen) "
-            									+ " values(?,?,?,?,?,?,?,?);");
-            ps.setString(1,  timeslot.getTimeslotID());
-            ps.setString(2,  timeslot.getScheduleID());
-            ps.setInt(3, timeslot.getWeek());
-            ps.setInt(4, timeslot.getDayInWeek());
-            ps.setInt(5, timeslot.getSlotNumInDay());
-            ps.setTimestamp(6, Timestamp.valueOf(timeslot.getStartTime()));
-            ps.setBoolean(7, timeslot.getIsReserved());
-            ps.setBoolean(8, timeslot.getIsOpen());
-            ps.execute();
-            return true;
-
-        } catch (Exception e)
-        {
-            throw new Exception("Failed to insert Timeslot: " + e.getMessage());
         }
     }
     
@@ -169,7 +189,6 @@ public class TimeslotDAO
     
     private Timeslot generateTimeslot(ResultSet resultSet) throws Exception
     {
-    	// TODO: Confirm this is what the Column Label is for each parameter in Timeslot(...)
         String timeslotID = resultSet.getString("timeslotID");
         String scheduleID = resultSet.getString("scheduleID");
         int week = resultSet.getInt("week");
