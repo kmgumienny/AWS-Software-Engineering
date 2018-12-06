@@ -17,6 +17,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 import main.controllers.GetScheduleHandler;
 import main.database.ScheduleDAO;
@@ -75,7 +76,7 @@ public class TestGetSchedule
 		InputStream inputVal = new ByteArrayInputStream(input.toString().getBytes());
 		OutputStream output = new ByteArrayOutputStream();
 		Context context = new TestContext();
-		
+
 		// request is handled
 		handler.handleRequest(inputVal, output, context);
 		
@@ -89,30 +90,42 @@ public class TestGetSchedule
 		// parse the stringOutput (converted from the output as type ByteArrayOutputStream), and make it a JsonObject
 		JsonParser parserOutput = new JsonParser();
 		JsonElement element = parserOutput.parse(stringOutput);
+
 		JsonObject object = element.getAsJsonObject();
+		// convert output from type ByteArrayInputStream to String, and then parse it into a Json
 		
 		System.out.println("getAsJsonObject: " + object.getClass() + object);
 		
 		// from here, I tried the following line of code, but it made no difference in the error thrown, and it is not
 		//	allowing me to get the data under "body" in the output json
 		//object = object.getAsJsonObject();
-		JsonArray array = object.getAsJsonArray("body");
+		JsonPrimitive array = new JsonPrimitive(stringOutput);
+		System.out.println(array.getClass());
+		//System.out.println(object.getAsJsonArray("body").getClass());
+		array = object.getAsJsonPrimitive("body");
+		String stringArray = array.getAsString();
+		JsonElement element2 = parserOutput.parse(stringArray);
+		System.out.println("Element2: " + element2);
+		JsonObject obj2 = element2.getAsJsonObject();
+		JsonPrimitive code = obj2.getAsJsonPrimitive("httpCode");
+		int intCode = code.getAsInt();
+		System.out.println("intCode: " + intCode);
 		//JsonElement code = object.get("httpCode");
 		//JsonArray array = object.getAsJsonArray("body");
 		
 		
-		System.out.println("2: " + stringOutput);
-		System.out.println("3; " + parserOutput);
-		System.out.println("4: " + element);
-		System.out.println("5: " + object);
-		System.out.println("6: " + array);
+//		System.out.println("2: " + stringOutput);
+//		System.out.println("3; " + parserOutput);
+//		System.out.println("4: " + element);
+//		System.out.println("5: " + object);
+//		System.out.println("6: " + array);
 		
 		
 		//System.out.println("6: " + element2);
 		//System.out.print("7: " + status);
 		//String status = new JsonParser().parse(output.toString()).getAsJsonObject().get("httpCode").getAsString();
 		
-		//assertEquals("200", status);
+		assertEquals(200, intCode);
 		
 		
 		
