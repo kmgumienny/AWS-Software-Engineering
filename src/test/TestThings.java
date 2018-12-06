@@ -42,7 +42,7 @@ public class TestThings {
 //	@Test
 //	public void deleteScheduleAndTimeslotsAndMeetings() {
 //		
-//		String scheduleID = "WoA1Y0T1Mv";
+//		String scheduleID = "kn8R0sPzzp";
 //	
 //		MeetingDAO cd0 = new MeetingDAO();
 //		try {
@@ -98,7 +98,7 @@ public class TestThings {
 //		
 //		TimeslotDAO cd = new TimeslotDAO();
 //	    try {
-//	    	Timeslot timeslot = new Timeslot("adskfjsadk", localDateTime.toLocalDate(), localDateTime, false, true);
+//	    	Timeslot timeslot = new Timeslot("adskfjsadk", 3, 2, 1, localDateTime.toLocalDate(), localDateTime, false, true);
 //	    	boolean b = cd.addTimeslot(timeslot);
 //	    	System.out.println("Create new timeslot in database: " + b);
 //	    	
@@ -385,11 +385,11 @@ public class TestThings {
 //		
 //		JsonObject input = new JsonObject();
 //		input.addProperty("scheduleName", "test1");
-//		input.addProperty("startDate", "2018-12-09");
-//		input.addProperty("endDate", "2018-12-24");
+//		input.addProperty("startDate", "2018-12-12");
+//		input.addProperty("endDate", "2018-12-27");
 //		input.addProperty("dailyStartTime", 6);
-//		input.addProperty("dailyEndTime", 6);
-//		input.addProperty("timeSlotDuration", 60);
+//		input.addProperty("dailyEndTime", 9);
+//		input.addProperty("timeSlotDuration", 30);
 //		
 //		JsonObject body = new JsonObject();
 //		body.addProperty("body", input.toString());
@@ -409,5 +409,7 @@ public class TestThings {
 //		
 //		
 //	}
+	
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 }
