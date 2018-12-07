@@ -3,10 +3,12 @@ package main.controllers;
 import java.util.List;
 
 import main.entities.Meeting;
+import main.entities.Schedule;
 import main.entities.Timeslot;
 
 public class GetScheduleResponse {
 	String message;
+	Schedule schedule;
 	List<Timeslot> timeSlots;
 	List<Meeting> meetings;
 	int httpCode;
@@ -19,8 +21,9 @@ public class GetScheduleResponse {
 	}
 	
 	// 200 means success
-	public GetScheduleResponse (String message, List<Timeslot> timeSlots, List<Meeting> meetings) {
+	public GetScheduleResponse (String message, Schedule schedule, List<Timeslot> timeSlots, List<Meeting> meetings) {
 		this.message = message;
+		this.schedule = schedule;
 		this.timeSlots = timeSlots;
 		this.meetings = meetings;
 		this.httpCode = 200;

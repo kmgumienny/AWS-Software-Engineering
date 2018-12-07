@@ -32,6 +32,7 @@ import main.entities.Timeslot;
 public class CreateScheduleHandler implements RequestStreamHandler {
 
 	public LambdaLogger logger = null;
+	String status = "OK";
 
 	/** Load from RDS, if it exists
 	 * 
@@ -91,9 +92,15 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 			//Create the new schedule
 			Schedule newSchedule = createSchedule(req.scheduleName, req.startDate, req.endDate, req.dailyStartTime, req.dailyEndTime, req.timeSlotDuration);
 			
-			//Create the response for the new schedule
-			CreateScheduleResponse resp = new CreateScheduleResponse("OK", newSchedule.getScheduleID(), newSchedule.getSecretCode());
-	        responseJson.put("body", new Gson().toJson(resp));  
+			if(status.equals("Something went wrong and request failed to exicute. Please recreate the schedule.")){
+				CreateScheduleResponse resp = new CreateScheduleResponse(status, 500);
+				responseJson.put("body", new Gson().toJson(resp));  
+			}
+			else {
+				//Create the response for the new schedule
+				CreateScheduleResponse resp = new CreateScheduleResponse("Schedule sucessifully created.", newSchedule.getScheduleID(), newSchedule.getSecretCode());
+				responseJson.put("body", new Gson().toJson(resp));  
+			}
 		}
 		
 		//return the result
@@ -120,6 +127,7 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 			boolean ans = dao.addSchedule(schedule);
 		} catch (Exception e) {
 			logger.log("Failed to add schedule to the RDS's Schedule Table");
+			status = "Something went wrong and request failed to exicute. Please recreate the schedule.";
 		}
 		
 		//Create time slots for the newly created schedule
@@ -181,6 +189,7 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 						boolean ans = tdao.addTimeslot(ts);
 					} catch (Exception e) {
 						logger.log("Failed to add timeslot to the RDS's TimeSlot Table");
+						status = "Something went wrong and request failed to exicute. Please recreate the schedule.";
 					}
 					
 					//Inctiment the new start time for next time slot and the slot number for the day

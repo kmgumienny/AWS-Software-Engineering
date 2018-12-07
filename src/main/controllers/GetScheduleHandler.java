@@ -18,8 +18,10 @@ import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 
 import main.database.MeetingDAO;
+import main.database.ScheduleDAO;
 import main.database.TimeslotDAO;
 import main.entities.Meeting;
+import main.entities.Schedule;
 import main.entities.Timeslot;
 
 /**
@@ -29,22 +31,18 @@ import main.entities.Timeslot;
 public class GetScheduleHandler implements RequestStreamHandler {
 
 	public LambdaLogger logger = null;
+	String status = "OK";
 
 	/** Load from RDS, if it exists
 	 * 
 	 * @throws Exception 
 	 */
-	/*
-	 * public Meeting(String meetingID, String scheduleID, String timeslotID, String meetingName, String secretCode)
-	{
-	 */
 	
-
 	
 	@Override
 	public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
 		logger = context.getLogger();
-		logger.log("Loading Java Lambda handler to get timeslots and meeting for given schedule");
+		logger.log("Loading Java Lambda handler to get timeslots and meeting for the given schedule ID");
 
 		JSONObject headerJson = new JSONObject();
 		headerJson.put("Content-Type",  "application/json");  // not sure if needed anymore?
@@ -90,18 +88,24 @@ public class GetScheduleHandler implements RequestStreamHandler {
 			GetScheduleRequest req = new Gson().fromJson(body, GetScheduleRequest.class);
 			logger.log(req.toString());
 
-			/*
-			 * From HTML:
-			 * data["scheduleID"] = arg1;
-			 * data["meetingName"] = arg2;
-			 */
+			Schedule schedule = getSchedule(req.scheduleID);
 			
-			List<Timeslot> timeSlots = getScheduleTimeslots(req.scheduleID);
-			List<Meeting>  meetings = getScheduleMeetings(req.scheduleID);
-
-			// compute proper response
-			GetScheduleResponse resp = new GetScheduleResponse("OK", timeSlots, meetings);
-	        responseJson.put("body", new Gson().toJson(resp));  
+			if(status.equals("Something went wrong and request failed to exicute. Please retry")){
+				response = new GetScheduleResponse(status, 500);
+		        responseJson.put("body", new Gson().toJson(response));
+			}
+			else if(schedule != null) {
+				List<Timeslot> timeSlots = getScheduleTimeslots(req.scheduleID);
+				List<Meeting>  meetings = getScheduleMeetings(req.scheduleID);
+				
+				// compute proper response for success
+				GetScheduleResponse resp = new GetScheduleResponse("Schedule, timeslots and meetings retrieved.", schedule, timeSlots, meetings);
+		        responseJson.put("body", new Gson().toJson(resp));  
+			}
+			else {
+				response = new GetScheduleResponse("Schedule does not exist with given schedule ID of: " + req.scheduleID + ".", 422);
+		        responseJson.put("body", new Gson().toJson(response));
+			}
 		}
 		
         logger.log("end result:" + responseJson.toJSONString());
@@ -114,6 +118,22 @@ public class GetScheduleHandler implements RequestStreamHandler {
 	
 ////////////////////////////////////////////////////////////////////////////////////
 	
+	Schedule getSchedule(String scheduleID) {
+		ScheduleDAO scheduleDAO = new ScheduleDAO();
+		Schedule schedule = null;
+
+		try {
+			schedule =scheduleDAO.getSchedule(scheduleID);
+		} catch (Exception e) {
+			logger.log("Failed to get the schedule.");
+			status = "Something went wrong and request failed to exicute. Please retry";
+		}
+
+		return schedule;
+	}
+	
+////////////////////////////////////////////////////////////////////////////////////
+	
 	List<Timeslot> getScheduleTimeslots(String scheduleID) {
 		TimeslotDAO timeSlotDAO = new TimeslotDAO();
 		List<Timeslot> timeSlots = null;
@@ -122,6 +142,7 @@ public class GetScheduleHandler implements RequestStreamHandler {
 			timeSlots = timeSlotDAO.getAllTimeslotsWithScheduleID(scheduleID);
 		} catch (Exception e) {
 			logger.log("Failed to get timeslots.");
+			status = "Something went wrong and request failed to exicute. Please retry";
 		}
 		
 		return timeSlots;
@@ -130,15 +151,17 @@ public class GetScheduleHandler implements RequestStreamHandler {
 ////////////////////////////////////////////////////////////////////////////////////
 	
 	List<Meeting> getScheduleMeetings(String scheduleID) {
-		MeetingDAO cd = new MeetingDAO();
+		MeetingDAO meetingDAO = new MeetingDAO();
 		List<Meeting> meetings = null;
 		
 		try {
-			meetings = cd.getAllMeetingsWithScheduleID(scheduleID);
+			meetings = meetingDAO.getAllMeetingsWithScheduleID(scheduleID);
 		} catch (Exception e) {
 			logger.log("Failed to get meetings.");
+			status = "Something went wrong and request failed to exicute. Please retry";
 		}
 		
 		return meetings;
 	}
+	
 }

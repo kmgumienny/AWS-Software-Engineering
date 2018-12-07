@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -39,42 +40,42 @@ import main.entities.Timeslot;
 public class TestThings {
 
 
-//	@Test
-//	public void deleteScheduleAndTimeslotsAndMeetings() {
-//		
-//		String scheduleID = "kn8R0sPzzp";
-//	
-//		MeetingDAO cd0 = new MeetingDAO();
-//		try {
-//			boolean worked = cd0.deleteMeetingWithScheduleID(scheduleID);
-//			System.out.println("Meeting was deleted: " + worked);
-//		} catch (Exception e) {
-//			System.out.println("Couldn't delete meeting with ID: " + scheduleID);
-//			fail ("didn't work:" + e.getMessage());
-//		}
-//		
-//	
-//		TimeslotDAO cd = new TimeslotDAO();
-//    
-//		try {
-//			boolean worked = cd.deleteTimeslotWithScheduleID(scheduleID);
-//			System.out.println("Timeslot was deleted: " + worked);
-//		} catch (Exception e) {
-//			System.out.println("Couldn't delete timeslot with ID: " + scheduleID);
-//			fail ("didn't work:" + e.getMessage());
-//		}
-//		
-//		
-//		ScheduleDAO cd2 = new ScheduleDAO();
-//		
-//	    try {
-//	    	boolean worked = cd2.deleteSchedule(scheduleID);
-//	    	System.out.println("Schedule with ID was deleted: " + worked);
-//	    } catch (Exception e) {
-//	    	System.out.println("Couldn't delete the schedule with ID: " + scheduleID);
-//	    	fail ("didn't work:" + e.getMessage());
-//	    }
-//	}
+	@Test
+	public void deleteScheduleAndTimeslotsAndMeetings() {
+		
+		String scheduleID = "3CRFpELhwm";
+	
+		MeetingDAO cd0 = new MeetingDAO();
+		try {
+			boolean worked = cd0.deleteMeetingWithScheduleID(scheduleID);
+			System.out.println("Meeting was deleted: " + worked);
+		} catch (Exception e) {
+			System.out.println("Couldn't delete meeting with ID: " + scheduleID);
+			fail ("didn't work:" + e.getMessage());
+		}
+		
+	
+		TimeslotDAO cd = new TimeslotDAO();
+    
+		try {
+			boolean worked = cd.deleteTimeslotWithScheduleID(scheduleID);
+			System.out.println("Timeslot was deleted: " + worked);
+		} catch (Exception e) {
+			System.out.println("Couldn't delete timeslot with ID: " + scheduleID);
+			fail ("didn't work:" + e.getMessage());
+		}
+		
+		
+		ScheduleDAO cd2 = new ScheduleDAO();
+		
+	    try {
+	    	boolean worked = cd2.deleteSchedule(scheduleID);
+	    	System.out.println("Schedule with ID was deleted: " + worked);
+	    } catch (Exception e) {
+	    	System.out.println("Couldn't delete the schedule with ID: " + scheduleID);
+	    	fail ("didn't work:" + e.getMessage());
+	    }
+	}
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
@@ -248,7 +249,7 @@ public class TestThings {
 //	@Test
 //	public void getTimeslotWithScheduleID() {
 //		TimeslotDAO cd = new TimeslotDAO();
-//		String scheduleID = "adskfjsadk";
+//		String scheduleID = "gsSRraViDP";
 //		
 //		try {
 //			Timeslot timeslot = cd.getTimeslotWithScheduleID(scheduleID);
@@ -411,5 +412,37 @@ public class TestThings {
 //	}
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+//	@Test
+//	public void getAllTimeslotWithScheduleID() {
+//		TimeslotDAO cd = new TimeslotDAO();
+//		String scheduleID = "xQ6YcV0ElA";
+//		
+//		try {
+//			List<Timeslot> timeslot = cd.getAllTimeslotsWithScheduleID(scheduleID);
+//			System.out.println(timeslot);
+//		} catch (Exception e) {
+//			System.out.println("Couldn't find timeslot with scheduleID: ");
+//			fail ("didn't work:" + e.getMessage());
+//		}
+//	}
+	
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+//	@Test
+//	public void getAllMeetingWithScheduleID() {
+//		MeetingDAO cd = new MeetingDAO();
+//		String scheduleID = "8N2HZTHfC2";
+//		
+//		try {
+//			List<Meeting> meetings = cd.getAllMeetingsWithScheduleID(scheduleID);
+//			System.out.println(meetings);
+//		} catch (Exception e) {
+//			System.out.println("Couldn't find timeslot with scheduleID: ");
+//			fail ("didn't work:" + e.getMessage());
+//		}
+//	}
+
+	
 	
 }

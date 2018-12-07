@@ -28,6 +28,8 @@ import main.entities.Timeslot;
 public class CreateMeetingHandler implements RequestStreamHandler {
 
 	public LambdaLogger logger = null;
+	boolean isReserved = true;
+	String status = "OK";
 
 	/** Load from RDS, if it exists
 	 * 
@@ -38,7 +40,6 @@ public class CreateMeetingHandler implements RequestStreamHandler {
 	{
 	 */
 	
-
 	
 	@Override
 	public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
@@ -88,21 +89,36 @@ public class CreateMeetingHandler implements RequestStreamHandler {
 		if (!processed) {
 			CreateMeetingRequest req = new Gson().fromJson(body, CreateMeetingRequest.class);
 			logger.log(req.toString());
-
-			/*
-			 * From HTML:
-			 * data["scheduleID"] = arg1;
-			 * data["meetingName"] = arg2;
-			 */
 			
-			Meeting newMeeting = createMeeting(req.timeslotID, req.meetingName);
-			String meetingName = newMeeting.getMeetingName();
-			String meetingID = newMeeting.getMeetingID();
-			String secretCode = newMeeting.getSecretCode();
-
-			// compute proper response
-			CreateMeetingResponse resp = new CreateMeetingResponse("OK", meetingName, meetingID, secretCode);
-	        responseJson.put("body", new Gson().toJson(resp));  
+			//check if the time slot is already reserved
+			TimeslotDAO timeslotDAO = new TimeslotDAO();
+			
+			//Check if the time slot is reserved and the time slot with the given time slot ID
+			Timeslot timeSlot = checkTimeSlot(req.timeslotID, timeslotDAO);
+			
+			if(timeSlot != null) {
+				if(!isReserved) {
+					Meeting newMeeting = createMeeting(req.meetingName, timeslotDAO, timeSlot);
+					
+					if(status.equals("Something went wrong and request failed to exicute.")){
+						CreateMeetingResponse resp = new CreateMeetingResponse(status, 500);
+						responseJson.put("body", new Gson().toJson(resp));
+					}
+					else {
+						CreateMeetingResponse resp = new CreateMeetingResponse("Meeting successifully created and reserved in the given time slot.", newMeeting.getMeetingName(), newMeeting.getMeetingID(), newMeeting.getSecretCode());
+						responseJson.put("body", new Gson().toJson(resp));  
+					}
+				}
+				else {
+					logger.log("Time slot already reserved");
+					CreateMeetingResponse resp = new CreateMeetingResponse("Antoher meeting is already reserved for the selected time slot. Please retry with an unreserved time slot.", 422);
+					responseJson.put("body", new Gson().toJson(resp));
+				}
+			}
+			else {
+				CreateMeetingResponse resp = new CreateMeetingResponse("Time slot does not exist with the given time slot ID. Please retry with valid time slot ID.", 422);
+				responseJson.put("body", new Gson().toJson(resp));
+			}
 		}
 		
         logger.log("end result:" + responseJson.toJSONString());
@@ -112,39 +128,46 @@ public class CreateMeetingHandler implements RequestStreamHandler {
         writer.close();
 	}
 	
+///////////////////////////////////////////////////////////////////////////////////////////////////
 	
-///////////////////////////////// Milap Code edition Working 
-	
-	Meeting createMeeting(String timeslotID, String meetingName) {
-		if (logger != null) { logger.log("in createMeeting"); }
-		TimeslotDAO timeslotDAO = new TimeslotDAO();
-		MeetingDAO meetingDAO = new MeetingDAO();
+	Timeslot checkTimeSlot(String timeslotID, TimeslotDAO timeslotDAO) {
+		Timeslot timeSlot = null;
 		
-		Timeslot ts = null;
 		try {
-			ts = timeslotDAO.getTimeslot(timeslotID);
+			timeSlot = timeslotDAO.getTimeslot(timeslotID);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.log("Failed to retrieve time slot");
 		}
 		
+		if(timeSlot != null) {
+			isReserved = timeSlot.getIsReserved();
+		}
+		return timeSlot;
+	}
+	
+///////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	Meeting createMeeting(String meetingName, TimeslotDAO timeslotDAO, Timeslot timeSlot) {
 		Meeting meeting = null;
-		if(ts != null) {
-			if(ts.getIsReserved() == false) {
-				meeting = new Meeting(ts.getScheduleID(), ts.getTimeslotID(), meetingName);
-				ts.setIsReserved(true);
-				try {
-					boolean worked = timeslotDAO.updateTimeslot(ts);
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				try {
-					boolean ans = meetingDAO.addMeeting(meeting);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+		boolean worked = false;
+		
+		timeSlot.setIsReserved(true);
+		try {
+			worked = timeslotDAO.updateTimeslot(timeSlot);
+		} catch (Exception e1) {
+			logger.log("Time slot failed to update");
+			status = "Something went wrong and request failed to exicute.";
+		}
+		
+		if(worked) {
+			MeetingDAO meetingDAO = new MeetingDAO();
+			meeting = new Meeting(timeSlot.getScheduleID(), timeSlot.getTimeslotID(), meetingName);
+			
+			try {
+				boolean ans = meetingDAO.addMeeting(meeting);
+			} catch (Exception e) {
+				logger.log("Meeting failed to be created");
+				status = "Something went wrong and request failed to exicute.";
 			}
 		}
 		
