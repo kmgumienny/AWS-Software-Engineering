@@ -93,32 +93,41 @@ public class TestCreateMeeting
 	@Test
 	public void testCreateMeetingHandler() throws IOException
 	{
+		TimeslotDAO timeslotDAO = new TimeslotDAO();
+		LocalDateTime START_TIME = LocalDateTime.of(2018, Month.DECEMBER, 10, 10, 30, 0);
+		Timeslot timeslot = new Timeslot(TIMESLOT_ID_2, SCHEDULE_ID_2, WEEK, DAY_IN_WEEK, SLOT_NUM_IN_DAY,
+				START_TIME, false, true);
+		MeetingDAO meetingDAO = new MeetingDAO();
+	
+		// Delete any Timeslot with this TimeslotID
+		try
 		{
-			TimeslotDAO timeslotDAO = new TimeslotDAO();
-			LocalDateTime START_TIME = LocalDateTime.of(2018, Month.DECEMBER, 10, 10, 30, 0);
-			Timeslot timeslot = new Timeslot(TIMESLOT_ID_2, SCHEDULE_ID_2, WEEK, DAY_IN_WEEK, SLOT_NUM_IN_DAY,
-					START_TIME, false, true);
-			MeetingDAO meetingDAO = new MeetingDAO();
+			timeslotDAO.deleteTimeslot(TIMESLOT_ID_2);
+		}
+		catch(Exception e)
+		{
+			System.out.println("This should have done this, unless the timeslot already existed");
+		}
 		
-			// Add the Timeslot to which the meeting will belong
-			try
-			{
-				timeslotDAO.addTimeslot(timeslot);
-			}
-			catch(Exception e)
-			{
-				fail ("createTimeslot failed: " + e.getMessage());
-			}
-			
-			// make sure a meeting with this ID does not already exist
-			try
-			{
-				meetingDAO.deleteMeeting(MEETING_ID_2);
-			}
-			catch (Exception e)
-			{
-				fail ("deleteMeeting failed: " + e.getMessage());
-			}
+		// Add the Timeslot to which the meeting will belong
+		try
+		{
+			timeslotDAO.addTimeslot(timeslot);
+		}
+		catch(Exception e)
+		{
+			fail ("createTimeslot failed: " + e.getMessage());
+		}
+		
+		// make sure a meeting with this ID does not already exist
+		try
+		{
+			meetingDAO.deleteMeeting(MEETING_ID_2);
+		}
+		catch (Exception e)
+		{
+			fail ("deleteMeeting failed: " + e.getMessage());
+		}
 //			
 //			// add the meeting to the database
 //			try
@@ -129,38 +138,37 @@ public class TestCreateMeeting
 //			{
 //				fail ("addMeeting failed: " + e.getMessage());
 //			}
-			
-			CreateMeetingHandler handler = new CreateMeetingHandler();
-			JsonParser parser = new JsonParser();
-			
-			//create sample Json
-			JsonObject input = new JsonObject();
-			input.addProperty("meetingID", MEETING_ID_2);
-			input.addProperty("scheduleID", SCHEDULE_ID_2);
-			input.addProperty("timeslotID", TIMESLOT_ID_2);
-			input.addProperty("meetingName", MEETING_NAME_2);
-			input.addProperty("secretCode", SECRET_CODE_2);
-			
-			// set the sample json as a ByteArrayInputStream, to be sent into handler.handleRequest(...);
-			InputStream inputVal = new ByteArrayInputStream(input.toString().getBytes());
-			OutputStream output = new ByteArrayOutputStream();
-			Context context = new TestContext();
+		
+		CreateMeetingHandler handler = new CreateMeetingHandler();
+		JsonParser parser = new JsonParser();
+		
+		//create sample Json
+		JsonObject input = new JsonObject();
+		input.addProperty("meetingID", MEETING_ID_2);
+		input.addProperty("scheduleID", SCHEDULE_ID_2);
+		input.addProperty("timeslotID", TIMESLOT_ID_2);
+		input.addProperty("meetingName", MEETING_NAME_2);
+		input.addProperty("secretCode", SECRET_CODE_2);
+		
+		// set the sample json as a ByteArrayInputStream, to be sent into handler.handleRequest(...);
+		InputStream inputVal = new ByteArrayInputStream(input.toString().getBytes());
+		OutputStream output = new ByteArrayOutputStream();
+		Context context = new TestContext();
 
-			// request is handled
-			handler.handleRequest(inputVal, output, context);
-			
-			// convert output from type ByteArrayInputStream to String, and then parse it into a Json
-			JsonObject object = parser.parse(output.toString()).getAsJsonObject();
-			
-			// get "body" String from the output Json (because that is how we have it set up, apparently)
-			//	as type JsonPrimitive, and then convert it to type String in order to convert it again to type JsonObject
-			JsonObject bodyJson = parser.parse(object.getAsJsonPrimitive("body").getAsString()).getAsJsonObject();
+		// request is handled
+		handler.handleRequest(inputVal, output, context);
+		
+		// convert output from type ByteArrayInputStream to String, and then parse it into a Json
+		JsonObject object = parser.parse(output.toString()).getAsJsonObject();
+		
+		// get "body" String from the output Json (because that is how we have it set up, apparently)
+		//	as type JsonPrimitive, and then convert it to type String in order to convert it again to type JsonObject
+		JsonObject bodyJson = parser.parse(object.getAsJsonPrimitive("body").getAsString()).getAsJsonObject();
 
-			// extract the httpCode int from the previously parsed bodyJson
-			int intCode = bodyJson.getAsJsonPrimitive("httpCode").getAsInt();
-			
-			// test case
-			assertEquals(200, intCode);
-		}
+		// extract the httpCode int from the previously parsed bodyJson
+		int intCode = bodyJson.getAsJsonPrimitive("httpCode").getAsInt();
+		
+		// test case
+		assertEquals(200, intCode);
 	}
 }
