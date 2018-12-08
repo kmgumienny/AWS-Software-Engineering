@@ -96,8 +96,8 @@ public class DeleteMeetingHandler implements RequestStreamHandler {
 				DeleteMeetingResponse resp = new DeleteMeetingResponse(ans);
 		        responseJson.put("body", new Gson().toJson(resp));  
 			}
-			else if(ans.equals("Meeting does not exist with the given meeting ID.")) {
-				DeleteMeetingResponse resp = new DeleteMeetingResponse(ans, 422);
+			else if(ans.equals("Meeting not found with the given meeting ID.")) {
+				DeleteMeetingResponse resp = new DeleteMeetingResponse(ans, 404);
 		        responseJson.put("body", new Gson().toJson(resp));  
 			}
 			else if(ans.equals("Secret code provided was not correct.")) {
