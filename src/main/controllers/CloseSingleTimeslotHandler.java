@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -17,18 +16,15 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 
-import main.database.MeetingDAO;
 import main.database.ScheduleDAO;
 import main.database.TimeslotDAO;
-import main.entities.Meeting;
-import main.entities.Schedule;
 import main.entities.Timeslot;
 
 /**
  * Found gson JAR file from
  * https://repo1.maven.org/maven2/com/google/code/gson/gson/2.6.2/gson-2.6.2.jar
  */
-public class GetScheduleHandler implements RequestStreamHandler {
+public class CloseSingleTimeslotHandler implements RequestStreamHandler {
 
 	public LambdaLogger logger = null;
 	String status = "OK";
@@ -42,7 +38,7 @@ public class GetScheduleHandler implements RequestStreamHandler {
 	@Override
 	public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
 		logger = context.getLogger();
-		logger.log("Loading Java Lambda handler to get timeslots and meeting for the given schedule ID");
+		logger.log("Loading Java Lambda handler to close single time slot");
 
 		JSONObject headerJson = new JSONObject();
 		headerJson.put("Content-Type",  "application/json");  // not sure if needed anymore?
@@ -52,7 +48,7 @@ public class GetScheduleHandler implements RequestStreamHandler {
 		JSONObject responseJson = new JSONObject();
 		responseJson.put("headers", headerJson);
 
-		GetScheduleResponse response = null;
+		CloseSingleTimeslotResponse response = null;
 		
 		// extract body from incoming HTTP POST request. If any error, then return 422 error
 		String body;
@@ -66,7 +62,7 @@ public class GetScheduleHandler implements RequestStreamHandler {
 			String method = (String) event.get("httpMethod");
 			if (method != null && method.equalsIgnoreCase("OPTIONS")) {
 				logger.log("Options request");
-				response = new GetScheduleResponse("name", 200);  // OPTIONS needs a 200 response
+				response = new CloseSingleTimeslotResponse("name", 200);  // OPTIONS needs a 200 response
 		        responseJson.put("body", new Gson().toJson(response));
 		        processed = true;
 		        body = null;
@@ -78,33 +74,31 @@ public class GetScheduleHandler implements RequestStreamHandler {
 			}
 		} catch (ParseException pe) {
 			logger.log(pe.toString());
-			response = new GetScheduleResponse("Bad Request:" + pe.getMessage(), 422);  // unable to process input
+			response = new CloseSingleTimeslotResponse("Bad Request:" + pe.getMessage(), 422);  // unable to process input
 	        responseJson.put("body", new Gson().toJson(response));
 	        processed = true;
 	        body = null;
 		}
 
 		if (!processed) {
-			GetScheduleRequest req = new Gson().fromJson(body, GetScheduleRequest.class);
+			CloseSingleTimelsotRequest req = new Gson().fromJson(body, CloseSingleTimelsotRequest.class);
 			logger.log(req.toString());
-			String status = "OK";
-
-			Schedule schedule = getSchedule(req.scheduleID);
+			status = "OK";
 			
-			if(status.equals("Something went wrong and request failed to exicute. Please retry")){
-				response = new GetScheduleResponse(status, 500);
+			deleteSchedule(req.timeSlotID, req.originizerSecretCode);
+			
+			//Response creation
+			if(status.equals("OK")){
+				response = new CloseSingleTimeslotResponse("Selected time slot closed successifully.");
 		        responseJson.put("body", new Gson().toJson(response));
 			}
-			else if(schedule != null) {
-				List<Timeslot> timeSlots = getScheduleTimeslots(req.scheduleID);
-				List<Meeting>  meetings = getScheduleMeetings(req.scheduleID);
+			else if(status.equals("Something went wrong and request failed to exicute. Please retry")) {
 				
-				// compute proper response for success
-				GetScheduleResponse resp = new GetScheduleResponse("Schedule, timeslots and meetings retrieved.", schedule, timeSlots, meetings);
-		        responseJson.put("body", new Gson().toJson(resp));  
+				response = new CloseSingleTimeslotResponse(status, 500);
+		        responseJson.put("body", new Gson().toJson(response));
 			}
 			else {
-				response = new GetScheduleResponse("Schedule does not exist with given schedule ID of: " + req.scheduleID + ".", 422);
+				response = new CloseSingleTimeslotResponse(status, 422);
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 		}
@@ -119,51 +113,45 @@ public class GetScheduleHandler implements RequestStreamHandler {
 	
 ////////////////////////////////////////////////////////////////////////////////////
 	
-	Schedule getSchedule(String scheduleID) {
-		ScheduleDAO scheduleDAO = new ScheduleDAO();
-		Schedule schedule = null;
-
-		try {
-			schedule =scheduleDAO.getSchedule(scheduleID);
-			schedule.setSecretCode(null);
-		} catch (Exception e) {
-			logger.log("Failed to get the schedule.");
-			status = "Something went wrong and request failed to exicute. Please retry";
-		}
-
-		return schedule;
-	}
-	
-////////////////////////////////////////////////////////////////////////////////////
-	
-	List<Timeslot> getScheduleTimeslots(String scheduleID) {
+	void deleteSchedule(String timeslotID, String originizerSecretCode) {
 		TimeslotDAO timeSlotDAO = new TimeslotDAO();
-		List<Timeslot> timeSlots = null;
+		ScheduleDAO scheduleDAO = new ScheduleDAO();
+		String secretCode = null;
+		Timeslot timeSlot = null;
 		
 		try {
-			timeSlots = timeSlotDAO.getAllTimeslotsWithScheduleID(scheduleID);
+			timeSlot = timeSlotDAO.getTimeslot(timeslotID);
+			secretCode = scheduleDAO.getSchedule(timeSlot.getScheduleID()).getSecretCode();
 		} catch (Exception e) {
-			logger.log("Failed to get timeslots.");
+			logger.log("Failed to get timeslot or the schedule.");
 			status = "Something went wrong and request failed to exicute. Please retry";
 		}
 		
-		return timeSlots;
-	}
-	
-////////////////////////////////////////////////////////////////////////////////////
-	
-	List<Meeting> getScheduleMeetings(String scheduleID) {
-		MeetingDAO meetingDAO = new MeetingDAO();
-		List<Meeting> meetings = null;
-		
-		try {
-			meetings = meetingDAO.getAllMeetingsWithScheduleID(scheduleID);
-		} catch (Exception e) {
-			logger.log("Failed to get meetings.");
-			status = "Something went wrong and request failed to exicute. Please retry";
+		if(secretCode.equals(originizerSecretCode)) {
+			if(!timeSlot.getIsReserved()) {
+				if(timeSlot.getIsOpen()) {
+					timeSlot.setIsOpen(false);
+					try {
+						timeSlotDAO.updateTimeslot(timeSlot);
+					} catch (Exception e) {
+						logger.log("Failed to update timeslot.");
+						status = "Something went wrong and request failed to exicute. Please retry";
+					}
+				}
+				else {
+					logger.log("Time slot is already closed.");
+					status = "Time slot is already closed.";
+				}
+			}
+			else {
+				logger.log("Time slot is reserved.");
+				status = "The selected time slot is currently reserved. Please cancel the meeting first then attempt to close the selected time slot.";
+			}
 		}
-		
-		return meetings;
+		else {
+			logger.log("Secret code provided is incorrect.");
+			status = "Orginizer secret code provided is not correct to complete this action. Please try again with the correct secret code.";
+		}
 	}
 	
 }

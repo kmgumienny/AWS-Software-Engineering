@@ -88,6 +88,7 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 			//Create new request by tamplet
 			CreateScheduleRequest req = new Gson().fromJson(body, CreateScheduleRequest.class);
 			logger.log(req.toString());
+			status = "OK";
 			
 			//Create the new schedule
 			Schedule newSchedule = createSchedule(req.scheduleName, req.startDate, req.endDate, req.dailyStartTime, req.dailyEndTime, req.timeSlotDuration);
