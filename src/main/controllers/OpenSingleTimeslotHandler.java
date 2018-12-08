@@ -24,7 +24,7 @@ import main.entities.Timeslot;
  * Found gson JAR file from
  * https://repo1.maven.org/maven2/com/google/code/gson/gson/2.6.2/gson-2.6.2.jar
  */
-public class CloseSingleTimeslotHandler implements RequestStreamHandler {
+public class OpenSingleTimeslotHandler implements RequestStreamHandler {
 
 	public LambdaLogger logger = null;
 	String status = "OK";
@@ -38,7 +38,7 @@ public class CloseSingleTimeslotHandler implements RequestStreamHandler {
 	@Override
 	public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
 		logger = context.getLogger();
-		logger.log("Loading Java Lambda handler to close single time slot");
+		logger.log("Loading Java Lambda handler to open single time slot");
 
 		JSONObject headerJson = new JSONObject();
 		headerJson.put("Content-Type",  "application/json");  // not sure if needed anymore?
@@ -85,11 +85,11 @@ public class CloseSingleTimeslotHandler implements RequestStreamHandler {
 			logger.log(req.toString());
 			status = "OK";
 			
-			closeSingleTimeSlot(req.timeSlotID, req.originizerSecretCode);
+			openSingleTimeSlot(req.timeSlotID, req.originizerSecretCode);
 			
 			//Response creation
 			if(status.equals("OK")){
-				response = new CloseSingleTimeslotResponse("Selected time slot closed successifully.");
+				response = new CloseSingleTimeslotResponse("Selected time slot opened successifully.");
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 			else if(status.equals("Something went wrong and request failed to exicute. Please retry")) {
@@ -113,41 +113,34 @@ public class CloseSingleTimeslotHandler implements RequestStreamHandler {
 	
 ////////////////////////////////////////////////////////////////////////////////////
 	
-	void closeSingleTimeSlot(String timeslotID, String originizerSecretCode) {
+	void openSingleTimeSlot(String timeslotID, String originizerSecretCode) {
 		TimeslotDAO timeSlotDAO = new TimeslotDAO();
 		ScheduleDAO scheduleDAO = new ScheduleDAO();
 		String secretCode = null;
 		Timeslot timeSlot = null;
-		
+
 		try {
 			timeSlot = timeSlotDAO.getTimeslot(timeslotID);
 			secretCode = scheduleDAO.getSchedule(timeSlot.getScheduleID()).getSecretCode();
 		} catch (Exception e) {
 			logger.log("Failed to get timeslot or the schedule.");
 			status = "Something went wrong and request failed to exicute. Please retry";
-			secretCode = "not right";
 		}
-		
+
 		if(timeSlot != null) {
 			if(secretCode.equals(originizerSecretCode)) {
-				if(!timeSlot.getIsReserved()) {
-					if(timeSlot.getIsOpen()) {
-						timeSlot.setIsOpen(false);
-						try {
-							timeSlotDAO.updateTimeslot(timeSlot);
-						} catch (Exception e) {
-							logger.log("Failed to update timeslot.");
-							status = "Something went wrong and request failed to exicute. Please retry";
-						}
-					}
-					else {
-						logger.log("Time slot is already closed.");
-						status = "Time slot is already closed.";
+				if(!timeSlot.getIsOpen()) {
+					timeSlot.setIsOpen(true);
+					try {
+						timeSlotDAO.updateTimeslot(timeSlot);
+					} catch (Exception e) {
+						logger.log("Failed to update timeslot.");
+						status = "Something went wrong and request failed to exicute. Please retry";
 					}
 				}
 				else {
-					logger.log("Time slot is reserved.");
-					status = "The selected time slot is currently reserved. Please cancel the meeting first then attempt to close the selected time slot.";
+					logger.log("Time slot is already opened.");
+					status = "Time slot is already opened.";
 				}
 			}
 			else {
