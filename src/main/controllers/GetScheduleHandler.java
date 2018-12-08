@@ -104,7 +104,7 @@ public class GetScheduleHandler implements RequestStreamHandler {
 		        responseJson.put("body", new Gson().toJson(resp));  
 			}
 			else {
-				response = new GetScheduleResponse("Schedule does not exist with given schedule ID of: " + req.scheduleID + ".", 422);
+				response = new GetScheduleResponse("Schedule does not exist with given schedule ID of: " + req.scheduleID + ".", 404);
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 		}
