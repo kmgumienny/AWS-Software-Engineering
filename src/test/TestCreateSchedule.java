@@ -87,7 +87,7 @@ public class TestCreateSchedule
 	}
 	
 	@Test
-	public void testCreateMeetingHandler() throws IOException
+	public void testCreateScheduleHandler() throws IOException
 	{
 		{
 			CreateScheduleHandler handler = new CreateScheduleHandler();
