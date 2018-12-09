@@ -123,7 +123,7 @@ public class CreateMeetingHandler implements RequestStreamHandler {
 				}
 			}
 			else {
-				CreateMeetingResponse resp = new CreateMeetingResponse("Time slot does not exist with the given time slot ID. Please retry with valid time slot ID.", 404);
+				CreateMeetingResponse resp = new CreateMeetingResponse("Time slot does not exist with the given time slot ID. Please retry with valid time slot ID.", 422);
 				responseJson.put("body", new Gson().toJson(resp));
 			}
 		}

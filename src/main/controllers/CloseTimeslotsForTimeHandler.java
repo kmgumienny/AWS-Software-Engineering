@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -30,7 +31,7 @@ import main.entities.Timeslot;
  * Found gson JAR file from
  * https://repo1.maven.org/maven2/com/google/code/gson/gson/2.6.2/gson-2.6.2.jar
  */
-public class CloseTimeslotsForDayHandler implements RequestStreamHandler {
+public class CloseTimeslotsForTimeHandler implements RequestStreamHandler {
 
 	public LambdaLogger logger = null;
 	String status = "OK";
@@ -44,7 +45,7 @@ public class CloseTimeslotsForDayHandler implements RequestStreamHandler {
 	@Override
 	public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
 		logger = context.getLogger();
-		logger.log("Loading Java Lambda handler to close time slots for whole day");
+		logger.log("Loading Java Lambda handler to close time slots on each day for selected time");
 
 		JSONObject headerJson = new JSONObject();
 		headerJson.put("Content-Type",  "application/json");  // not sure if needed anymore?
@@ -54,7 +55,7 @@ public class CloseTimeslotsForDayHandler implements RequestStreamHandler {
 		JSONObject responseJson = new JSONObject();
 		responseJson.put("headers", headerJson);
 
-		CloseTimeslotsForDayResponse response = null;
+		CloseTimeslotsForTimeResponse response = null;
 		
 		// extract body from incoming HTTP POST request. If any error, then return 422 error
 		String body;
@@ -68,7 +69,7 @@ public class CloseTimeslotsForDayHandler implements RequestStreamHandler {
 			String method = (String) event.get("httpMethod");
 			if (method != null && method.equalsIgnoreCase("OPTIONS")) {
 				logger.log("Options request");
-				response = new CloseTimeslotsForDayResponse("name", 200);  // OPTIONS needs a 200 response
+				response = new CloseTimeslotsForTimeResponse("name", 200);  // OPTIONS needs a 200 response
 		        responseJson.put("body", new Gson().toJson(response));
 		        processed = true;
 		        body = null;
@@ -80,31 +81,33 @@ public class CloseTimeslotsForDayHandler implements RequestStreamHandler {
 			}
 		} catch (ParseException pe) {
 			logger.log(pe.toString());
-			response = new CloseTimeslotsForDayResponse("Bad Request:" + pe.getMessage(), 422);  // unable to process input
+			response = new CloseTimeslotsForTimeResponse("Bad Request:" + pe.getMessage(), 422);  // unable to process input
 	        responseJson.put("body", new Gson().toJson(response));
 	        processed = true;
 	        body = null;
 		}
 
 		if (!processed) {
-			CloseTimelsotsForDayRequest req = new Gson().fromJson(body, CloseTimelsotsForDayRequest.class);
+			CloseTimelsotsForTimeRequest req = new Gson().fromJson(body, CloseTimelsotsForTimeRequest.class);
 			logger.log(req.toString());
 			status = "OK";
 			
-			closeTimeSlotsForDay(req.scheduleID, req.originizerSecretCode, req.closeDate);
+			LocalTime closeTime = LocalTime.of(req.hour, req.minute);
+			
+			closeTimeSlotsForTime(req.scheduleID, req.originizerSecretCode, closeTime);
 			
 			//Response creation
 			if(status.equals("OK")){
-				response = new CloseTimeslotsForDayResponse("Selected time slots closed successifully.");
+				response = new CloseTimeslotsForTimeResponse("Selected time slots closed successifully.");
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 			else if(status.equals("Something went wrong and request failed to exicute. Please retry")) {
 				
-				response = new CloseTimeslotsForDayResponse(status, 500);
+				response = new CloseTimeslotsForTimeResponse(status, 500);
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 			else {
-				response = new CloseTimeslotsForDayResponse(status, 422);
+				response = new CloseTimeslotsForTimeResponse(status, 422);
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 		}
@@ -119,11 +122,10 @@ public class CloseTimeslotsForDayHandler implements RequestStreamHandler {
 	
 ////////////////////////////////////////////////////////////////////////////////////
 	
-	void closeTimeSlotsForDay(String scheduleID, String originizerSecretCode, String closeDates) {
+	void closeTimeSlotsForTime(String scheduleID, String originizerSecretCode, LocalTime closeTime) {
 		TimeslotDAO timeSlotDAO = new TimeslotDAO();
 		ScheduleDAO scheduleDAO = new ScheduleDAO();
-		LocalDate date = parseDate(closeDates);
-		boolean dateExists = false;
+		boolean timeExists = false;
 		boolean IsReserved = false;
 		boolean worked = true;
 		Schedule schedule = null;
@@ -143,9 +145,9 @@ public class CloseTimeslotsForDayHandler implements RequestStreamHandler {
 					Iterator<Timeslot> timeSlotsIterator = timeSlots.iterator();
 					while (timeSlotsIterator.hasNext() && !IsReserved){
 						Timeslot timeSlot = timeSlotsIterator.next();
-						LocalDate currentSlotDate = timeSlot.getStartTime().toLocalDate();
-						if(date.equals(currentSlotDate)) {
-							dateExists = true;
+						LocalTime currentSlotTime = timeSlot.getStartTime().toLocalTime();
+						if(closeTime.equals(currentSlotTime)) {
+							timeExists = true;
 							if(timeSlot.getIsReserved()) {
 								IsReserved = true;
 								logger.log("Time slot is reserved in one of the time slots being closed.");
@@ -156,7 +158,7 @@ public class CloseTimeslotsForDayHandler implements RequestStreamHandler {
 							}
 						}
 					}
-					if(dateExists) {
+					if(timeExists) {
 						if(!IsReserved) {
 							Iterator<Timeslot> correctTimeSlotsIterator = corretTimeSlots.iterator();
 							while (correctTimeSlotsIterator.hasNext() && worked){
@@ -171,8 +173,8 @@ public class CloseTimeslotsForDayHandler implements RequestStreamHandler {
 						}
 					}
 					else {
-						logger.log("Wrong date.");
-						status = "No time slots exist in the selected date. Please select another date with atleast one time slot.";
+						logger.log("Wrong time.");
+						status = "No time slots exist in the selected time frame. Please select another time frame with atleast one time slot.";
 					}
 				} catch (Exception e) {
 					logger.log(e.getMessage());
