@@ -1,16 +1,16 @@
 package main.controllers;
 
-public class CloseSingleTimeslotResponse {
+public class DeleteMeetingByOrginizerResponse {
 	String message;
 	int httpCode;
 	
-	public CloseSingleTimeslotResponse (String message, int code) {
+	public DeleteMeetingByOrginizerResponse (String message, int code) {
 		this.message = message;
 		this.httpCode = code;
 	}
 	
 	// 200 means success
-	public CloseSingleTimeslotResponse (String message) {
+	public DeleteMeetingByOrginizerResponse (String message) {
 		this.message = message;
 		this.httpCode = 200;
 	}

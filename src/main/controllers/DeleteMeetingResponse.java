@@ -1,10 +1,5 @@
 package main.controllers;
 
-import java.util.List;
-
-import main.entities.Meeting;
-import main.entities.Timeslot;
-
 public class DeleteMeetingResponse {
 	String message;
 	int httpCode;

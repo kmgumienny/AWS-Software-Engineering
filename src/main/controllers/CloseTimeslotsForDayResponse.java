@@ -1,11 +1,5 @@
 package main.controllers;
 
-import java.util.List;
-
-import main.entities.Meeting;
-import main.entities.Schedule;
-import main.entities.Timeslot;
-
 public class CloseTimeslotsForDayResponse {
 	String message;
 	int httpCode;
