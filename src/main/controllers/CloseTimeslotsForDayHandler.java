@@ -6,6 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -18,13 +23,14 @@ import com.google.gson.Gson;
 
 import main.database.ScheduleDAO;
 import main.database.TimeslotDAO;
+import main.entities.Schedule;
 import main.entities.Timeslot;
 
 /**
  * Found gson JAR file from
  * https://repo1.maven.org/maven2/com/google/code/gson/gson/2.6.2/gson-2.6.2.jar
  */
-public class OpenSingleTimeslotHandler implements RequestStreamHandler {
+public class CloseTimeslotsForDayHandler implements RequestStreamHandler {
 
 	public LambdaLogger logger = null;
 	String status = "OK";
@@ -38,7 +44,7 @@ public class OpenSingleTimeslotHandler implements RequestStreamHandler {
 	@Override
 	public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
 		logger = context.getLogger();
-		logger.log("Loading Java Lambda handler to open single time slot");
+		logger.log("Loading Java Lambda handler to close time slots for whole day");
 
 		JSONObject headerJson = new JSONObject();
 		headerJson.put("Content-Type",  "application/json");  // not sure if needed anymore?
@@ -48,7 +54,7 @@ public class OpenSingleTimeslotHandler implements RequestStreamHandler {
 		JSONObject responseJson = new JSONObject();
 		responseJson.put("headers", headerJson);
 
-		OpenSingleTimeslotResponse response = null;
+		CloseTimeslotsForDayResponse response = null;
 		
 		// extract body from incoming HTTP POST request. If any error, then return 422 error
 		String body;
@@ -62,7 +68,7 @@ public class OpenSingleTimeslotHandler implements RequestStreamHandler {
 			String method = (String) event.get("httpMethod");
 			if (method != null && method.equalsIgnoreCase("OPTIONS")) {
 				logger.log("Options request");
-				response = new OpenSingleTimeslotResponse("name", 200);  // OPTIONS needs a 200 response
+				response = new CloseTimeslotsForDayResponse("name", 200);  // OPTIONS needs a 200 response
 		        responseJson.put("body", new Gson().toJson(response));
 		        processed = true;
 		        body = null;
@@ -74,31 +80,31 @@ public class OpenSingleTimeslotHandler implements RequestStreamHandler {
 			}
 		} catch (ParseException pe) {
 			logger.log(pe.toString());
-			response = new OpenSingleTimeslotResponse("Bad Request:" + pe.getMessage(), 422);  // unable to process input
+			response = new CloseTimeslotsForDayResponse("Bad Request:" + pe.getMessage(), 422);  // unable to process input
 	        responseJson.put("body", new Gson().toJson(response));
 	        processed = true;
 	        body = null;
 		}
 
 		if (!processed) {
-			OpenSingleTimelsotRequest req = new Gson().fromJson(body, OpenSingleTimelsotRequest.class);
+			CloseTimelsotsForDayRequest req = new Gson().fromJson(body, CloseTimelsotsForDayRequest.class);
 			logger.log(req.toString());
 			status = "OK";
 			
-			openSingleTimeSlot(req.timeSlotID, req.originizerSecretCode);
+			closeTimeSlotsForDay(req.scheduleID, req.originizerSecretCode, req.closeDate);
 			
 			//Response creation
 			if(status.equals("OK")){
-				response = new OpenSingleTimeslotResponse("Selected time slot opened successifully.");
+				response = new CloseTimeslotsForDayResponse("Selected time slots closed successifully.");
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 			else if(status.equals("Something went wrong and request failed to exicute. Please retry")) {
 				
-				response = new OpenSingleTimeslotResponse(status, 500);
+				response = new CloseTimeslotsForDayResponse(status, 500);
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 			else {
-				response = new OpenSingleTimeslotResponse(status, 422);
+				response = new CloseTimeslotsForDayResponse(status, 422);
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 		}
@@ -113,34 +119,64 @@ public class OpenSingleTimeslotHandler implements RequestStreamHandler {
 	
 ////////////////////////////////////////////////////////////////////////////////////
 	
-	void openSingleTimeSlot(String timeslotID, String originizerSecretCode) {
+	void closeTimeSlotsForDay(String scheduleID, String originizerSecretCode, String closeDates) {
 		TimeslotDAO timeSlotDAO = new TimeslotDAO();
 		ScheduleDAO scheduleDAO = new ScheduleDAO();
-		String secretCode = null;
-		Timeslot timeSlot = null;
-
+		LocalDate date = parseDate(closeDates);
+		boolean dateExists = false;
+		boolean IsReserved = false;
+		boolean worked = true;
+		Schedule schedule = null;
+		
 		try {
-			timeSlot = timeSlotDAO.getTimeslot(timeslotID);
-			secretCode = scheduleDAO.getSchedule(timeSlot.getScheduleID()).getSecretCode();
+			schedule = scheduleDAO.getSchedule(scheduleID);
 		} catch (Exception e) {
-			logger.log("Failed to get timeslot or the schedule.");
-			status = "Something went wrong and request failed to exicute. Please retry";
+			logger.log("Schedule does not exist with provided schedule ID.");
+			status = "Schedule does not exist with provided schedule ID.";
 		}
-
-		if(timeSlot != null) {
-			if(secretCode.equals(originizerSecretCode)) {
-				if(!timeSlot.getIsOpen()) {
-					timeSlot.setIsOpen(true);
-					try {
-						timeSlotDAO.updateTimeslot(timeSlot);
-					} catch (Exception e) {
-						logger.log("Failed to update timeslot.");
-						status = "Something went wrong and request failed to exicute. Please retry";
+		
+		if(schedule != null) {
+			if(schedule.getSecretCode().equals(originizerSecretCode)) {
+				try {
+					List<Timeslot> timeSlots = timeSlotDAO.getAllTimeslotsWithScheduleID(scheduleID);
+					List<Timeslot> corretTimeSlots = new ArrayList<Timeslot>();
+					Iterator<Timeslot> timeSlotsIterator = timeSlots.iterator();
+					while (timeSlotsIterator.hasNext() && !IsReserved){
+						Timeslot timeSlot = timeSlotsIterator.next();
+						LocalDate currentSlotDate = timeSlot.getStartTime().toLocalDate();
+						if(date.equals(currentSlotDate)) {
+							dateExists = true;
+							if(timeSlot.getIsReserved()) {
+								IsReserved = true;
+								logger.log("Time slot is reserved in one of the time slots being closed.");
+								status = "One or more of the time slots being closed are currently reserved for a meeting. Please cancel all the meeting first then attempt to close the selected time slots.";
+							}
+							else {
+								corretTimeSlots.add(timeSlot);
+							}
+						}
 					}
-				}
-				else {
-					logger.log("Time slot is already opened.");
-					status = "Time slot is already opened.";
+					if(dateExists) {
+						if(!IsReserved) {
+							Iterator<Timeslot> correctTimeSlotsIterator = corretTimeSlots.iterator();
+							while (correctTimeSlotsIterator.hasNext() && worked){
+								Timeslot timeSlot = correctTimeSlotsIterator.next();
+								timeSlot.setIsOpen(false);
+								worked = timeSlotDAO.updateTimeslot(timeSlot);
+								if(!worked) {
+									logger.log("Time slot failed to update.");
+									status = "Something went wrong and request failed to exicute. Please retry";
+								}
+							}
+						}
+					}
+					else {
+						logger.log("Wrong date.");
+						status = "No time slots exist in the selected date. Please select another date with atleast one time slot.";
+					}
+				} catch (Exception e) {
+					logger.log(e.getMessage());
+					status = "Something went wrong and request failed to exicute. Please retry";
 				}
 			}
 			else {
@@ -148,10 +184,13 @@ public class OpenSingleTimeslotHandler implements RequestStreamHandler {
 				status = "Orginizer secret code provided is not correct to complete this action. Please try again with the correct secret code.";
 			}
 		}
-		else {
-			logger.log("Incorrect time slot ID or time slot does not exist.");
-			status = "Incorrect time slot ID or time slot does not exist.";
-		}
 	}
+	
+////////////////////////////////////////////////////////////////////////////////////
+	
+	LocalDate parseDate(String date) {
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(date, dtf);
+	  }
 	
 }

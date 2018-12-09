@@ -16,15 +16,15 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 
+import main.database.MeetingDAO;
 import main.database.ScheduleDAO;
 import main.database.TimeslotDAO;
-import main.entities.Timeslot;
 
 /**
  * Found gson JAR file from
  * https://repo1.maven.org/maven2/com/google/code/gson/gson/2.6.2/gson-2.6.2.jar
  */
-public class OpenSingleTimeslotHandler implements RequestStreamHandler {
+public class DeleteScheduleHandler implements RequestStreamHandler {
 
 	public LambdaLogger logger = null;
 	String status = "OK";
@@ -38,7 +38,7 @@ public class OpenSingleTimeslotHandler implements RequestStreamHandler {
 	@Override
 	public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
 		logger = context.getLogger();
-		logger.log("Loading Java Lambda handler to open single time slot");
+		logger.log("Loading Java Lambda handler to delete schedule");
 
 		JSONObject headerJson = new JSONObject();
 		headerJson.put("Content-Type",  "application/json");  // not sure if needed anymore?
@@ -48,7 +48,7 @@ public class OpenSingleTimeslotHandler implements RequestStreamHandler {
 		JSONObject responseJson = new JSONObject();
 		responseJson.put("headers", headerJson);
 
-		OpenSingleTimeslotResponse response = null;
+		DeleteScheduleResponse response = null;
 		
 		// extract body from incoming HTTP POST request. If any error, then return 422 error
 		String body;
@@ -62,7 +62,7 @@ public class OpenSingleTimeslotHandler implements RequestStreamHandler {
 			String method = (String) event.get("httpMethod");
 			if (method != null && method.equalsIgnoreCase("OPTIONS")) {
 				logger.log("Options request");
-				response = new OpenSingleTimeslotResponse("name", 200);  // OPTIONS needs a 200 response
+				response = new DeleteScheduleResponse("name", 200);  // OPTIONS needs a 200 response
 		        responseJson.put("body", new Gson().toJson(response));
 		        processed = true;
 		        body = null;
@@ -74,31 +74,31 @@ public class OpenSingleTimeslotHandler implements RequestStreamHandler {
 			}
 		} catch (ParseException pe) {
 			logger.log(pe.toString());
-			response = new OpenSingleTimeslotResponse("Bad Request:" + pe.getMessage(), 422);  // unable to process input
+			response = new DeleteScheduleResponse("Bad Request:" + pe.getMessage(), 422);  // unable to process input
 	        responseJson.put("body", new Gson().toJson(response));
 	        processed = true;
 	        body = null;
 		}
 
 		if (!processed) {
-			OpenSingleTimelsotRequest req = new Gson().fromJson(body, OpenSingleTimelsotRequest.class);
+			DeleteScheduleRequest req = new Gson().fromJson(body, DeleteScheduleRequest.class);
 			logger.log(req.toString());
 			status = "OK";
 			
-			openSingleTimeSlot(req.timeSlotID, req.originizerSecretCode);
+			boolean worked = deleteSchedule(req.scheduleID, req.originizerSecretCode);
 			
 			//Response creation
-			if(status.equals("OK")){
-				response = new OpenSingleTimeslotResponse("Selected time slot opened successifully.");
+			if(worked){
+				response = new DeleteScheduleResponse("Selected schedule was deleted successifully.");
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 			else if(status.equals("Something went wrong and request failed to exicute. Please retry")) {
 				
-				response = new OpenSingleTimeslotResponse(status, 500);
+				response = new DeleteScheduleResponse(status, 500);
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 			else {
-				response = new OpenSingleTimeslotResponse(status, 422);
+				response = new DeleteScheduleResponse(status, 422);
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 		}
@@ -113,45 +113,34 @@ public class OpenSingleTimeslotHandler implements RequestStreamHandler {
 	
 ////////////////////////////////////////////////////////////////////////////////////
 	
-	void openSingleTimeSlot(String timeslotID, String originizerSecretCode) {
+	boolean deleteSchedule(String scheduleID, String originizerSecretCode) {
+		MeetingDAO meetingDAO = new MeetingDAO();
 		TimeslotDAO timeSlotDAO = new TimeslotDAO();
 		ScheduleDAO scheduleDAO = new ScheduleDAO();
+		boolean worked = false;
+		
 		String secretCode = null;
-		Timeslot timeSlot = null;
-
+		
 		try {
-			timeSlot = timeSlotDAO.getTimeslot(timeslotID);
-			secretCode = scheduleDAO.getSchedule(timeSlot.getScheduleID()).getSecretCode();
+			secretCode = scheduleDAO.getSchedule(scheduleID).getSecretCode();
 		} catch (Exception e) {
-			logger.log("Failed to get timeslot or the schedule.");
+			logger.log("Failed to get the schedule.");
 			status = "Something went wrong and request failed to exicute. Please retry";
+			secretCode = "not right";
 		}
-
-		if(timeSlot != null) {
-			if(secretCode.equals(originizerSecretCode)) {
-				if(!timeSlot.getIsOpen()) {
-					timeSlot.setIsOpen(true);
-					try {
-						timeSlotDAO.updateTimeslot(timeSlot);
-					} catch (Exception e) {
-						logger.log("Failed to update timeslot.");
-						status = "Something went wrong and request failed to exicute. Please retry";
-					}
-				}
-				else {
-					logger.log("Time slot is already opened.");
-					status = "Time slot is already opened.";
-				}
-			}
-			else {
-				logger.log("Secret code provided is incorrect.");
-				status = "Orginizer secret code provided is not correct to complete this action. Please try again with the correct secret code.";
+		
+		if(secretCode.equals(originizerSecretCode)) {
+			try {
+				worked = meetingDAO.deleteMeetingWithScheduleID(scheduleID);
+				worked = timeSlotDAO.deleteTimeslotWithScheduleID(scheduleID);
+				worked = scheduleDAO.deleteSchedule(scheduleID);
+			} catch (Exception e) {
+				logger.log("Failed to delete schedule.");
+				status = "Something went wrong and request failed to exicute. Please retry";
 			}
 		}
-		else {
-			logger.log("Incorrect time slot ID or time slot does not exist.");
-			status = "Incorrect time slot ID or time slot does not exist.";
-		}
+		
+		return worked;
 	}
 	
 }
