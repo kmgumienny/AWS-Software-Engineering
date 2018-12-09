@@ -28,7 +28,6 @@ import main.entities.Timeslot;
 public class CreateMeetingHandler implements RequestStreamHandler {
 
 	public LambdaLogger logger = null;
-	boolean isReserved = true;
 	String status = "OK";
 
 	/** Load from RDS, if it exists
@@ -89,6 +88,7 @@ public class CreateMeetingHandler implements RequestStreamHandler {
 		if (!processed) {
 			CreateMeetingRequest req = new Gson().fromJson(body, CreateMeetingRequest.class);
 			logger.log(req.toString());
+			status = "OK";
 			
 			//check if the time slot is already reserved
 			TimeslotDAO timeslotDAO = new TimeslotDAO();
@@ -97,21 +97,28 @@ public class CreateMeetingHandler implements RequestStreamHandler {
 			Timeslot timeSlot = checkTimeSlot(req.timeslotID, timeslotDAO);
 			
 			if(timeSlot != null) {
-				if(!isReserved) {
-					Meeting newMeeting = createMeeting(req.meetingName, timeslotDAO, timeSlot);
-					
-					if(status.equals("Something went wrong and request failed to exicute.")){
-						CreateMeetingResponse resp = new CreateMeetingResponse(status, 500);
-						responseJson.put("body", new Gson().toJson(resp));
+				if(timeSlot.getIsOpen()) {
+					if(!timeSlot.getIsReserved()) {
+						Meeting newMeeting = createMeeting(req.meetingName, timeslotDAO, timeSlot);
+
+						if(status.equals("Something went wrong and request failed to exicute.")){
+							CreateMeetingResponse resp = new CreateMeetingResponse(status, 500);
+							responseJson.put("body", new Gson().toJson(resp));
+						}
+						else {
+							CreateMeetingResponse resp = new CreateMeetingResponse("Meeting successifully created and reserved in the given time slot.", newMeeting.getMeetingName(), newMeeting.getMeetingID(), newMeeting.getSecretCode());
+							responseJson.put("body", new Gson().toJson(resp));  
+						}
 					}
 					else {
-						CreateMeetingResponse resp = new CreateMeetingResponse("Meeting successifully created and reserved in the given time slot.", newMeeting.getMeetingName(), newMeeting.getMeetingID(), newMeeting.getSecretCode());
-						responseJson.put("body", new Gson().toJson(resp));  
+						logger.log("Time slot already reserved");
+						CreateMeetingResponse resp = new CreateMeetingResponse("Antoher meeting is already reserved for the selected time slot. Please retry with an unreserved time slot.", 422);
+						responseJson.put("body", new Gson().toJson(resp));
 					}
 				}
 				else {
-					logger.log("Time slot already reserved");
-					CreateMeetingResponse resp = new CreateMeetingResponse("Antoher meeting is already reserved for the selected time slot. Please retry with an unreserved time slot.", 422);
+					logger.log("Time slot closed");
+					CreateMeetingResponse resp = new CreateMeetingResponse("Selected time slot is currently closed. Please select another open timeslot to reserve a meeting in.", 422);
 					responseJson.put("body", new Gson().toJson(resp));
 				}
 			}
@@ -139,9 +146,6 @@ public class CreateMeetingHandler implements RequestStreamHandler {
 			logger.log("Failed to retrieve time slot");
 		}
 		
-		if(timeSlot != null) {
-			isReserved = timeSlot.getIsReserved();
-		}
 		return timeSlot;
 	}
 	

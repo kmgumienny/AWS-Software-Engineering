@@ -40,7 +40,7 @@ public class TestGetSchedule
 	{
 		ScheduleDAO dao = new ScheduleDAO();
 		Schedule schedule = null;
-		createSchedule(SCHEDULE_NAME);
+		createSchedule();
 	    try
 	    {
 	    	schedule = dao.getSchedule(SCHEDULE_ID);
@@ -71,7 +71,6 @@ public class TestGetSchedule
 		input.addProperty("dailyStartTime", DAY_START_TIME);
 		input.addProperty("dailyEndTime", DAY_END_TIME);
 		input.addProperty("timeSlotDuration", TIME_SLOT_DURATION);
-		input.addProperty("scheduleID", SCHEDULE_ID);
 		
 		// set the sample json as a ByteArrayInputStream, to be sent into handler.handleRequest(...);
 		InputStream inputVal = new ByteArrayInputStream(input.toString().getBytes());
@@ -90,6 +89,7 @@ public class TestGetSchedule
 
 		// extract the httpCode int from the previously parsed bodyJson
 		int intCode = bodyJson.getAsJsonPrimitive("httpCode").getAsInt();
+		//System.out.println("intCode: " + intCode);
 		
 		// test case
 		assertEquals(200, intCode);
@@ -98,10 +98,10 @@ public class TestGetSchedule
 		
 	}
 	
-	public void createSchedule(String name)
+	public void createSchedule()
 	{
 		ScheduleDAO dao = new ScheduleDAO();
-		Schedule schedule = new Schedule(name, SCHEDULE_ID,
+		Schedule schedule = new Schedule(SCHEDULE_NAME, SCHEDULE_ID,
 				SECRET_CODE, START_DATE, END_DATE,
 				DAY_START_TIME, DAY_END_TIME, TIME_SLOT_DURATION);
 		try

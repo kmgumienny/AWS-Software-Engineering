@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -18,31 +17,33 @@ import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 
 import main.database.MeetingDAO;
-import main.database.ScheduleDAO;
 import main.database.TimeslotDAO;
 import main.entities.Meeting;
-import main.entities.Schedule;
 import main.entities.Timeslot;
 
 /**
  * Found gson JAR file from
  * https://repo1.maven.org/maven2/com/google/code/gson/gson/2.6.2/gson-2.6.2.jar
  */
-public class GetScheduleHandler implements RequestStreamHandler {
+public class DeleteMeetingHandler implements RequestStreamHandler {
 
 	public LambdaLogger logger = null;
-	String status = "OK";
 
 	/** Load from RDS, if it exists
 	 * 
 	 * @throws Exception 
 	 */
+	/*
+	 * public Meeting(String meetingID, String scheduleID, String timeslotID, String meetingName, String secretCode)
+	{
+	 */
 	
+
 	
 	@Override
 	public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
 		logger = context.getLogger();
-		logger.log("Loading Java Lambda handler to get timeslots and meeting for the given schedule ID");
+		logger.log("Loading Java Lambda handler to delete meeting");
 
 		JSONObject headerJson = new JSONObject();
 		headerJson.put("Content-Type",  "application/json");  // not sure if needed anymore?
@@ -85,27 +86,27 @@ public class GetScheduleHandler implements RequestStreamHandler {
 		}
 
 		if (!processed) {
-			GetScheduleRequest req = new Gson().fromJson(body, GetScheduleRequest.class);
+			DeleteMeetingRequest req = new Gson().fromJson(body, DeleteMeetingRequest.class);
 			logger.log(req.toString());
-			String status = "OK";
 
-			Schedule schedule = getSchedule(req.scheduleID);
+			String ans = deleteMeeting(req.meetingID, req.secretCode);
 			
-			if(status.equals("Something went wrong and request failed to exicute. Please retry")){
-				response = new GetScheduleResponse(status, 500);
-		        responseJson.put("body", new Gson().toJson(response));
-			}
-			else if(schedule != null) {
-				List<Timeslot> timeSlots = getScheduleTimeslots(req.scheduleID);
-				List<Meeting>  meetings = getScheduleMeetings(req.scheduleID);
-				
-				// compute proper response for success
-				GetScheduleResponse resp = new GetScheduleResponse("Schedule, timeslots and meetings retrieved.", schedule, timeSlots, meetings);
+			// compute proper response:
+			if(ans.equals("Meeting is deleted successifully.")) {
+				DeleteMeetingResponse resp = new DeleteMeetingResponse(ans);
 		        responseJson.put("body", new Gson().toJson(resp));  
 			}
-			else {
-				response = new GetScheduleResponse("Schedule does not exist with given schedule ID of: " + req.scheduleID + ".", 422);
-		        responseJson.put("body", new Gson().toJson(response));
+			else if(ans.equals("Meeting does not exist with the given meeting ID.")) {
+				DeleteMeetingResponse resp = new DeleteMeetingResponse(ans, 422);
+		        responseJson.put("body", new Gson().toJson(resp));  
+			}
+			else if(ans.equals("Secret code provided was not correct.")) {
+				DeleteMeetingResponse resp = new DeleteMeetingResponse(ans, 422);
+		        responseJson.put("body", new Gson().toJson(resp));  
+			}
+			else if(ans.equals("Something went wrong and request failed to exicute." )) {
+				DeleteMeetingResponse resp = new DeleteMeetingResponse(ans, 500);
+		        responseJson.put("body", new Gson().toJson(resp));  
 			}
 		}
 		
@@ -119,51 +120,67 @@ public class GetScheduleHandler implements RequestStreamHandler {
 	
 ////////////////////////////////////////////////////////////////////////////////////
 	
-	Schedule getSchedule(String scheduleID) {
-		ScheduleDAO scheduleDAO = new ScheduleDAO();
-		Schedule schedule = null;
-
-		try {
-			schedule =scheduleDAO.getSchedule(scheduleID);
-			schedule.setSecretCode(null);
-		} catch (Exception e) {
-			logger.log("Failed to get the schedule.");
-			status = "Something went wrong and request failed to exicute. Please retry";
-		}
-
-		return schedule;
-	}
-	
-////////////////////////////////////////////////////////////////////////////////////
-	
-	List<Timeslot> getScheduleTimeslots(String scheduleID) {
-		TimeslotDAO timeSlotDAO = new TimeslotDAO();
-		List<Timeslot> timeSlots = null;
-		
-		try {
-			timeSlots = timeSlotDAO.getAllTimeslotsWithScheduleID(scheduleID);
-		} catch (Exception e) {
-			logger.log("Failed to get timeslots.");
-			status = "Something went wrong and request failed to exicute. Please retry";
-		}
-		
-		return timeSlots;
-	}
-	
-////////////////////////////////////////////////////////////////////////////////////
-	
-	List<Meeting> getScheduleMeetings(String scheduleID) {
+	String deleteMeeting(String meetingID, String secretCode) {
 		MeetingDAO meetingDAO = new MeetingDAO();
-		List<Meeting> meetings = null;
+		Meeting meeting = null;
+		String response = "Something went wrong and request failed to exicute.";
 		
+		//Get the meeting with specified meeting ID
 		try {
-			meetings = meetingDAO.getAllMeetingsWithScheduleID(scheduleID);
+			meeting = meetingDAO.getMeeting(meetingID);
 		} catch (Exception e) {
-			logger.log("Failed to get meetings.");
-			status = "Something went wrong and request failed to exicute. Please retry";
+			logger.log("Failed to get meeting.");
+			response = "Meeting does not exist with the given meeting ID.";
 		}
 		
-		return meetings;
+		if(meeting != null) {
+			//check of the secret code is correct
+			if(meeting.getSecretCode().equals(secretCode)) {
+				TimeslotDAO timeSlotDAO = new TimeslotDAO();
+				Timeslot timeSlot = null;
+				
+				//Get the time slot associated with the meeting being deleted
+				try {
+					timeSlot = timeSlotDAO.getTimeslot(meeting.getTimeslotID());
+				} catch (Exception e) {
+					response = "Something went wrong and request failed to exicute.";
+				}
+				
+				if(timeSlot != null) {
+					timeSlot.setIsReserved(false);
+					boolean timeSlotUpdated = false;
+					
+					//Update the time slot no not have meeting resvered
+					try {
+						timeSlotDAO.updateTimeslot(timeSlot);
+						timeSlotUpdated = true;
+					} catch (Exception e) {
+						logger.log("Failed to update time slot");
+						response = "Something went wrong and request failed to exicute.";
+					}
+					
+					if(timeSlotUpdated) {
+						//Delete the meeting
+						try {
+							boolean ans = meetingDAO.deleteMeeting(meetingID);
+							response =  "Meeting is deleted successifully.";
+						} catch (Exception e) {
+							logger.log("Failed to delete meeting");
+							response = "Something went wrong and request failed to exicute.";
+						}
+					}
+				}
+			}
+			else {
+				logger.log("Secret code provided was not correct.");
+				response = "Secret code provided was not correct.";
+			}
+		}
+		else {
+			logger.log("Failed to get meeting.");
+			response = "Meeting does not exist with the given meeting ID.";
+		}
+		
+		return response;
 	}
-	
 }

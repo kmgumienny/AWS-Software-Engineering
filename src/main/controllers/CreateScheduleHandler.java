@@ -88,6 +88,7 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 			//Create new request by tamplet
 			CreateScheduleRequest req = new Gson().fromJson(body, CreateScheduleRequest.class);
 			logger.log(req.toString());
+			status = "OK";
 			
 			//Create the new schedule
 			Schedule newSchedule = createSchedule(req.scheduleName, req.startDate, req.endDate, req.dailyStartTime, req.dailyEndTime, req.timeSlotDuration);
@@ -161,7 +162,7 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 		int currentDayOfWeek;
 		
 		//Loop through and create the time slots for each day
-		for (int i = 0; i < (int) numDays; i++)
+		for (int i = 0; i <= (int) numDays; i++)
 		{
 			//If Monday, time slots are added to a new week, increment the week counter
 			if(itterationDate.getDayOfWeek().name() == "MONDAY") {
