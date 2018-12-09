@@ -88,7 +88,7 @@ public class CloseTimeslotsForTimeHandler implements RequestStreamHandler {
 		}
 
 		if (!processed) {
-			CloseTimelsotsForTimeRequest req = new Gson().fromJson(body, CloseTimelsotsForTimeRequest.class);
+			CloseTimeslotsForTimeRequest req = new Gson().fromJson(body, CloseTimeslotsForTimeRequest.class);
 			logger.log(req.toString());
 			status = "OK";
 			

@@ -81,7 +81,7 @@ public class CloseSingleTimeslotHandler implements RequestStreamHandler {
 		}
 
 		if (!processed) {
-			CloseSingleTimelsotRequest req = new Gson().fromJson(body, CloseSingleTimelsotRequest.class);
+			CloseSingleTimeslotRequest req = new Gson().fromJson(body, CloseSingleTimeslotRequest.class);
 			logger.log(req.toString());
 			status = "OK";
 			

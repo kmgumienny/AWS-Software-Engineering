@@ -87,7 +87,7 @@ public class CloseTimeslotsForDayHandler implements RequestStreamHandler {
 		}
 
 		if (!processed) {
-			CloseTimelsotsForDayRequest req = new Gson().fromJson(body, CloseTimelsotsForDayRequest.class);
+			CloseTimeslotsForDayRequest req = new Gson().fromJson(body, CloseTimeslotsForDayRequest.class);
 			logger.log(req.toString());
 			status = "OK";
 			
