@@ -1,14 +1,10 @@
 package main.database;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +34,6 @@ public class TimeslotDAO
         {
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM Timeslots WHERE timeslotID = ?;");
             ps.setString(1, timeslot.getTimeslotID());
-            ResultSet resultSet = ps.executeQuery();
 
             ps = connection.prepareStatement("INSERT INTO Timeslots (timeslotID, scheduleID, week, dayInWeek, slotNumInDay, startTime, isReserved, isOpen) "
             									+ " values(?,?,?,?,?,?,?,?);");
