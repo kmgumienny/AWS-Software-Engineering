@@ -83,22 +83,26 @@
             <input id="createButton" type="button" value="Submit"  onClick="JavaScript:handleCreateClick(this)">
             <br>
         </label>
-
-        <label id="key" style="margin-bottom: 15px; visibility: hidden; display: block;">
-            Your key is:
-            <input id="keyField" style="" readonly />
-            <br>
-        </label>
-
-        <label id="keyLabel" style="margin-bottom: 15px; display: block; visibility: hidden">
-            <br>
-            Enter Key to see Schedule
-            <input id="keyID" type="text" required>
-            <input type="button" value="submit" onClick="JavaScript:handleCreateSchedule()">
-
-            <br>
-        </label>
     </form>
+
+    <label id="keys" style="margin-bottom: 15px; visibility: hidden; display: block;">
+            Schedule ID is:
+            <input id="idField" style="" readonly />
+            Your Secret Key is:
+            <input id="keyField" style="" readonly />
+
+            <br>
+        </label>
+
+        <!--<label id="keyLabel" style="margin-bottom: 15px; display: block; visibility: hidden">-->
+            <!--<br>-->
+            <!--Enter Key to see Schedule-->
+            <!--<input id="keyID" type="text" required>-->
+            <!--<input type="button" value="submit" onClick="JavaScript:handleCreateSchedule()">-->
+
+            <!--<br>-->
+        <!--</label>-->
+
 </div>
 <div>
     <p id="dateP"></p>
@@ -116,98 +120,6 @@
 
     var createURL = "https://megq95j44i.execute-api.us-east-2.amazonaws.com/alpha/createschedulefunction";
     var data = {};
-
-    function handleCreateSchedule(){
-        var keyEntered = document.getElementById("keyID").value;
-        if (keyEntered == "abc123"){
-            document.getElementById("scheduleForm").style.display = "none";
-            document.getElementById("title").innerText = data.scheduleName + " Schedule";
-            //alert(typeof data.startDate);
-            var startDate = new Date(data.startDate);
-            var endDate = new Date(data.endDate);
-
-            var numDays = (endDate - startDate)/86400000;
-            //0=sunday, 6= saturday
-            var startDay = startDate.getDay();
-            var checkDay = new Date(data.startDate);
-            var curr = new Date(data.startDate);
-
-
-            var startTime = data.startTime;
-            var endTime = data.endTime;
-            var increment = data.increment;
-
-            var numMeetings = ((endTime - startTime)*60)/increment;
-            console.log(numMeetings);
-            var nonDays = [];
-
-            //setDate(startDate);
-
-            for(var i = 0; i < numDays; i++){
-                //alert(checkDay.getDate() + i + " " + (checkDay.getDate() + i) % 7);
-                if((checkDay.getDate() + i)% 7 == 0 || (checkDay.getDate() + i)% 7 == 6) {
-                    nonDays.push(checkDay.getDate() + i);
-                    //alert(nonDays.length);
-                }
-            }
-
-            var calDiv = document.getElementById("calendarDiv");
-
-            var ourTable     = document.createElement("table");
-            var ourTableBody = document.createElement("tbody");
-
-
-            for (var i = startDate.getDay(); i < 6; i++) {
-
-                var row = document.createElement("tr");
-
-                for (var j = 0; j <numMeetings; j++) {
-
-
-                    var cell = document.createElement("td");
-                    var cellText = document.createElement("button");
-                    cellText.innerHTML = "Create Meeting";
-                    cell.appendChild(cellText);
-                    row.appendChild(cell);
-                }
-
-
-                ourTableBody.appendChild(row);
-            }
-
-
-            ourTable.appendChild(ourTableBody);
-
-            calDiv.appendChild(ourTable);
-
-            ourTable.setAttribute("border", "2");
-
-            }
-
-        var first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
-        var last = first + 6; // last day is the first day + 6
-
-        var firstday = new Date(curr.setDate(first)).toUTCString();
-        var lastday = new Date(curr.setDate(last)).toUTCString();
-
-
-        alert(firstday + " to " + lastday);
-
-
-
-    }
-
-    function setDate(curr){
-        var first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
-        var last = first + 6; // last day is the first day + 6
-
-        var firstday = new Date(curr.setDate(first)).toUTCString();
-        var lastday = new Date(curr.setDate(last)).toUTCString();
-
-
-        alert(firstday + " to " + lastday);
-    }
-
 
     function handleCreateClick(e) {
 
@@ -235,12 +147,13 @@
             data["dailyEndTime"] = arg5;
             data["timeSlotDuration"] = arg6;
 
-            document.getElementById("createButton").disabled = true;
-            document.getElementById("keyField").value= "abc123";
-            document.getElementById("key").style.visibility = "visible";
-            document.getElementById("keyLabel").style.visibility = "visible";
+            //document.getElementById("createButton").disabled = true;
+
+            var wait = '<h3> Please wait while AWS boots up</h3>';
+            document.getElementById("scheduleForm").innerHTML = wait;
 
             var js = JSON.stringify(data);
+            alert('stringified' + js);
             var xhr = new XMLHttpRequest();
             xhr.open("POST", createURL, true);
 
@@ -255,6 +168,16 @@
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     console.log ("XHR:" + xhr.responseText);
                     alert(xhr.responseText)
+                    xhr.response.valueOf();
+                    var jsonResponse = JSON.parse(xhr.responseText);
+                    var responseRecieved = '<h3> Copy these values down! You will need the ID for participants to find your schedule and the key to edit your schedule in the future!</h3>';
+                    document.getElementById("scheduleForm").innerHTML = responseRecieved;
+                    document.getElementById('keys').innerHTML += '<button onclick="window.location.href = \'./LandingPage.html\'"/>\n' +
+                        'Go Back to Home Page</button>';
+                    document.getElementById("keys").style.visibility = "visible";
+                    document.getElementById("idField").value = jsonResponse['ID'];
+                    document.getElementById("keyField").value = jsonResponse['secret'];
+
                     //alert("Success!");
 
 

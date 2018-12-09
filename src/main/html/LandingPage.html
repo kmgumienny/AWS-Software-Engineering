@@ -5,30 +5,289 @@
     <title>Scheduler</title>
 </head>
 <body>
-<h1 style="text-align: center">Welcome to Scheduler</h1>
+<h1 style="text-align: center" id="title">Welcome to Scheduler</h1>
 <div style="text-align: center">
-    <button onclick="window.location.href = './CreateMeetingPage.html'" />>Create Schedule</button>
+    <div id="createScheduleDiv">
+        <button onclick="window.location.href = './CreateMeetingPage.html'"/>
+        >Create Schedule</button>
+    </div>
+
+    <div  style="text-align: center; margin-top: 5%;">
+        <p id="errMessage" style="color: red;">
+
+        </p>
+
+
+    </div>
 
     <div style="text-align: center; margin-top: 5%;">
-        <form id="scheduleForm" name="scheduleForm">
+        <form id="scheduleForm" name="scheduleForm" onsubmit="JavaScript:handleGetClick()">
             <label style="margin-bottom: 15px; display: block;">
                 If you are a participant, enter ScheduleID you wish to access:
-                <input id="scheduleName" type="password" required>
+                <input id="scheduleID" type="text" required>
                 <br>
             </label>
 
 
             <label style="margin-bottom: 15px; display: block;">
-                <input id="createButton" type="button" value="Submit"  onClick="JavaScript:handleAdminClick()">
+                <input id="createButton" type="button" value="Submit" onClick="JavaScript:handleGetClick()">
                 <br>
             </label>
 
         </form>
     </div>
+
+    <div id="calendarDiv"></div>
+
+
 </div>
 
 <div style="position: fixed; left: 0; bottom: 15px; width: 100%; color: white; text-align: center;">
     <a href="./AdminPanel.html">Enter the Admin Panel by clicking here!</a>
 </div>
+
+<script>
+
+    var getURL = 'https://0ssnizv9l4.execute-api.us-east-2.amazonaws.com/alpha/getschedule';
+    function handleGetClick(){
+        event.preventDefault();
+        if(document.getElementById("scheduleID").value == "")
+            alert("Please Enter a Valid ScheduleID");
+        else{
+            var scheduleID = document.getElementById("scheduleID").value;
+            document.getElementById("scheduleForm").style.visibility = "hidden";
+            document.getElementById("createScheduleDiv").style.visibility = "hidden";
+            var getString= {};
+            getString["scheduleID"] = scheduleID;
+            var js = JSON.stringify(getString);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", getURL, true);
+
+            // send the collected data as JSON
+            xhr.send(js);
+
+            // This will process results and update HTML as appropriate.
+            xhr.onloadend = function () {
+                console.log(xhr);
+                console.log(xhr.request);
+
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                    console.log ("XHR:" + xhr.responseText);
+                    var jsonResponse = JSON.parse(xhr.responseText);
+
+                    if (jsonResponse.httpCode == 422)
+                        noScheduleFound();
+                    else if (jsonResponse.httpCode == 200)
+                        generateSchedule(jsonResponse);
+                    else
+                        alert(jsonResponse.message);
+                    //alert(jsonResponse.schedule.scheduleName);
+
+                    // xhr.response.valueOf();
+                    // var jsonResponse = JSON.parse(xhr.responseText);
+                    // var responseRecieved = '<h3> Copy these values down! You will need the ID for participants to find your ID and the key to edit your schedule in the future!</h3>';
+                    // document.getElementById("scheduleForm").innerHTML = responseRecieved;
+                    // document.getElementById('keys').innerHTML += '<button onclick="window.location.href = \'./LandingPage.html\'"/>\n' +
+                    //     'Go Back to Home Page</button>';
+                    // document.getElementById("keys").style.visibility = "visible";
+                    // document.getElementById("idField").value = jsonResponse['ID'];
+                    // document.getElementById("keyField").value = jsonResponse['secret'];
+
+                    //alert("Success!");
+
+                }
+            };
+        }
+    }
+
+    function generateSchedule(js) {
+        document.getElementById('title').innerText = 'Welcome to the ' + js.schedule.scheduleName + ' schedule';
+        //var startDate = new Date(js.schedule.startDate.year, js.schedule.startDate.month, js.schedule.startDate.day);
+        var startDate = new Date(js.schedule.startDate.year, parseInt(js.schedule.startDate.month) - 1,js.schedule.startDate.day);
+        var endDate = new Date(js.schedule.endDate.year, parseInt(js.schedule.endDate.month) - 1, js.schedule.endDate.day);
+
+        var numDays = (endDate - startDate) / 86400000;
+
+        var startTime = js.schedule.dayStartTime;
+        var endTime = js.schedule.dayEndTime;
+        var increment = js.schedule.timeSlotDuration;
+
+        var numMeetings = ((endTime - startTime) * 60) / increment;
+
+        var calDiv = document.getElementById("calendarDiv");
+
+        var ourTable = document.createElement("table");
+        var ourTableBody = document.createElement("tbody");
+
+        var testDate = new Date(js.schedule.startDate.year, parseInt(js.schedule.startDate.month) - 1, js.schedule.startDate.day);
+        var timeSlotDate = new Date(1776, 6, 4);
+        var startWeekDate = new Date(startDate.getTime())
+        //Add this to the function call
+        var weekNum = 0;
+        startWeekDate = new Date(startWeekDate.getTime() + (604800000)*weekNum);
+
+        var shouldAdd = false;
+        var shouldBuild = false;
+        var shouldDatesBuild = true;
+
+
+        for (var j = 0; j < numMeetings; j++) {
+
+            var row = document.createElement("tr");
+
+            // if(j == -1){
+            //     alert('yeet');
+            // }
+            // else {
+                for (var i = startDate.getDay() - 1; i < 6; i++) {
+
+                    testDate.setDate(startDate.getDate() + i);
+                    if (testDate <= endDate) {
+                        for (var x = 0; x < js.timeSlots.length; x++) {
+                            //alert(js.timeSlots[x].slotNumInDay);
+                            timeSlotDate = new Date(js.timeSlots[x].startTime.date.year, parseInt(js.timeSlots[x].startTime.date.month) - 1, js.timeSlots[x].startTime.date.day);
+                            if ((timeSlotDate.valueOf() === testDate.valueOf()) && ((js.timeSlots[x].slotNumInDay - 1) == j)) {
+                                if (js.timeSlots[x].slotNumInDay == 1 && j == 0 && shouldDatesBuild) {
+                                    var dateRow = document.createElement("tr");
+                                    shouldDatesBuild = false;
+                                    var builderDate = new Date(testDate.getTime());
+                                    var emptyCell = true;
+                                    for (var y = 0; y < 5; y++) {
+                                        builderDate.setDate(testDate.getDate() + y);
+                                        alert(builderDate - endDate);
+                                        if ((builderDate.getTime() <= endDate.getTime())) {
+                                            if(emptyCell){
+                                                emptyCell = false;
+                                                var cellDate = document.createElement("td");
+                                                dateRow.appendChild(cellDate);
+                                            }
+                                            var cellDate = document.createElement("td");
+                                            var cellDateText = document.createTextNode(builderDate.getMonth() + '-' + builderDate.getDate() + '-' + builderDate.getFullYear());
+                                            cellDate.appendChild(cellDateText);
+                                            dateRow.appendChild(cellDate);
+                                        }
+                                    }
+                                    ourTableBody.appendChild(dateRow);
+                                }
+                                shouldBuild = true;
+                                shouldAdd = true;
+                                if(js.timeSlots[x].startTime.date.year == startWeekDate.getFullYear()
+                                    && js.timeSlots[x].startTime.date.month == startWeekDate.getMonth()+1
+                                    && js.timeSlots[x].startTime.date.day == startWeekDate.getDate()
+                                    && js.timeSlots[x].slotNumInDay == j+1){
+                                    var cellTime = document.createElement("td");
+                                    var cellTimeText = document.createTextNode(js.timeSlots[x].startTime.time.hour+  ":" + js.timeSlots[x].startTime.time.minute);
+                                    cellTime.appendChild(cellTimeText);
+                                    row.appendChild(cellTime);
+                                }
+                                var cell = document.createElement("td");
+                                //var cellText = document.createTextNode("cell in row " + i + ", column " + j);
+                                var cellText = document.createTextNode(js.timeSlots[x].startTime.time.minute + " " + js.timeSlots[x].startTime.date.day);
+                                cell.appendChild(cellText);
+                                row.appendChild(cell);
+                            }
+                        }
+
+                    } else
+                        console.log("Chief says no");
+
+                }
+
+
+            if (shouldAdd)
+                ourTableBody.appendChild(row);
+            shouldAdd = false;
+        }
+
+
+        if (shouldBuild) {
+            ourTable.appendChild(ourTableBody);
+            ourTable.setAttribute("border", "2");
+
+            calDiv.appendChild(ourTable);
+        }else
+            alert("nothing to build here");
+    }
+
+    function jsonDateToDateString(jsonDate){
+        return jsonDate.year + '-' + jsonDate.month + '-' + jsonDate.day;
+
+    }
+
+    function noScheduleFound(){
+        document.getElementById("scheduleForm").style.visibility = "visible";
+        document.getElementById("createScheduleDiv").style.visibility = "visible";
+        document.getElementById('errMessage').innerText = 'No Schedule with an id of ' + document.getElementById("scheduleID").value + ' found. Try again or create your own.';
+        document.getElementById("scheduleID").value = '';
+    }
+
+
+    function handleGenerateSchedule(){
+        var keyEntered = document.getElementById("keyID").value;
+        if (keyEntered == "abc123"){
+            document.getElementById("scheduleForm").style.display = "none";
+            document.getElementById("title").innerText = data.scheduleName + " Schedule";
+            //alert(typeof data.startDate);
+            var startDate = new Date(data.startDate);
+            var endDate = new Date(data.endDate);
+
+            var numDays = (endDate - startDate)/86400000;
+            //0=sunday, 6= saturday
+            var startDay = startDate.getDay();
+            var checkDay = new Date(data.startDate);
+            var curr = new Date(data.startDate);
+
+
+            var startTime = data.startTime;
+            var endTime = data.endTime;
+            var increment = data.increment;
+
+            var numMeetings = ((endTime - startTime)*60)/increment;
+            console.log(numMeetings);
+            var nonDays = [];
+
+            //setDate(startDate);
+
+            for(var i = 0; i < numDays; i++){
+                //alert(checkDay.getDate() + i + " " + (checkDay.getDate() + i) % 7);
+                if((checkDay.getDate() + i)% 7 == 0 || (checkDay.getDate() + i)% 7 == 6) {
+                    nonDays.push(checkDay.getDate() + i);
+                    //alert(nonDays.length);
+                }
+            }
+
+            var calDiv = document.getElementById("calendarDiv");
+
+
+
+        }
+
+        var first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
+        var last = first + 6; // last day is the first day + 6
+
+        var firstday = new Date(curr.setDate(first)).toUTCString();
+        var lastday = new Date(curr.setDate(last)).toUTCString();
+
+
+        alert(firstday + " to " + lastday);
+
+
+
+    }
+
+    function setDate(curr){
+        var first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
+        var last = first + 6; // last day is the first day + 6
+
+        var firstday = new Date(curr.setDate(first)).toUTCString();
+        var lastday = new Date(curr.setDate(last)).toUTCString();
+
+
+        alert(firstday + " to " + lastday);
+    }
+
+</script>
+
 </body>
 </html>
