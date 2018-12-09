@@ -37,6 +37,16 @@
         </form>
     </div>
 
+<div id="changeWeekButtons" style="visibility: hidden;">
+    <div style="float: left;">
+        <input type="button" value="Previous Week" onClick="JavaScript:generateSchedule(js, -1)">
+    </div>
+    <div style="float: right;">
+        <input type="button" value="Next Week" onClick="Javascript:generateSchedule(js, 1)">
+    </div>
+    <br>
+    <br>
+</div>
     <div id="calendarDiv"></div>
 
 
@@ -48,7 +58,10 @@
 
 <script>
 
+    var weekNum;
+    var js = {};
     var getURL = 'https://0ssnizv9l4.execute-api.us-east-2.amazonaws.com/alpha/getschedule';
+
     function handleGetClick(){
         event.preventDefault();
         if(document.getElementById("scheduleID").value == "")
@@ -78,8 +91,11 @@
 
                     if (jsonResponse.httpCode == 422)
                         noScheduleFound();
-                    else if (jsonResponse.httpCode == 200)
-                        generateSchedule(jsonResponse);
+                    else if (jsonResponse.httpCode == 200) {
+                            js = jsonResponse;
+                            weekNum = 0;
+                            generateSchedule(jsonResponse, 0);
+                        }
                     else
                         alert(jsonResponse.message);
                     //alert(jsonResponse.schedule.scheduleName);
@@ -101,9 +117,12 @@
         }
     }
 
-    function generateSchedule(js) {
+    function generateSchedule(json, weekNumIndicator) {
+        document.getElementById('errMessage').style.visibility = 'hidden';
+        js = json;
         document.getElementById('title').innerText = 'Welcome to the ' + js.schedule.scheduleName + ' schedule';
-        //var startDate = new Date(js.schedule.startDate.year, js.schedule.startDate.month, js.schedule.startDate.day);
+        document.getElementById('changeWeekButtons').style.visibility = "visible";
+        weekNum += weekNumIndicator;
         var startDate = new Date(js.schedule.startDate.year, parseInt(js.schedule.startDate.month) - 1,js.schedule.startDate.day);
         var endDate = new Date(js.schedule.endDate.year, parseInt(js.schedule.endDate.month) - 1, js.schedule.endDate.day);
 
@@ -120,12 +139,25 @@
         var ourTable = document.createElement("table");
         var ourTableBody = document.createElement("tbody");
 
-        var testDate = new Date(js.schedule.startDate.year, parseInt(js.schedule.startDate.month) - 1, js.schedule.startDate.day);
         var timeSlotDate = new Date(1776, 6, 4);
         var startWeekDate = new Date(startDate.getTime())
         //Add this to the function call
-        var weekNum = 0;
         startWeekDate = new Date(startWeekDate.getTime() + (604800000)*weekNum);
+        if(weekNum != 0) {
+            var testFirstDay = startWeekDate.getDay();
+            startWeekDate.setDate(startWeekDate.getDate() - testFirstDay+1)
+        }
+        var testDate = new Date(startWeekDate.getTime());
+
+        var firstOccurance = 5;
+        var lastOccurance = 0;
+        for (var x = 0; x < js.timeSlots.length; x++) {
+            if (js.timeSlots[x].dayInWeek < firstOccurance && js.timeSlots[x].week -1 == weekNum)
+                firstOccurance = js.timeSlots[x].dayInWeek;
+            if (js.timeSlots[x].dayInWeek > lastOccurance && js.timeSlots[x].week -1 == weekNum)
+                lastOccurance = js.timeSlots[x].dayInWeek;
+        }
+
 
         var shouldAdd = false;
         var shouldBuild = false;
@@ -136,61 +168,72 @@
 
             var row = document.createElement("tr");
 
-            // if(j == -1){
-            //     alert('yeet');
-            // }
-            // else {
-                for (var i = startDate.getDay() - 1; i < 6; i++) {
+                for (var i = startWeekDate.getDay() - 1; i < 7; i++) {
 
-                    testDate.setDate(startDate.getDate() + i);
+                    testDate.setDate(startWeekDate.getDate() + i - startWeekDate.getDay() - 1);
+
                     if (testDate <= endDate) {
                         for (var x = 0; x < js.timeSlots.length; x++) {
-                            //alert(js.timeSlots[x].slotNumInDay);
+                            //get the date of a timeslot
                             timeSlotDate = new Date(js.timeSlots[x].startTime.date.year, parseInt(js.timeSlots[x].startTime.date.month) - 1, js.timeSlots[x].startTime.date.day);
+
                             if ((timeSlotDate.valueOf() === testDate.valueOf()) && ((js.timeSlots[x].slotNumInDay - 1) == j)) {
+
+                                //Building Dates on top of the table, only runs once
                                 if (js.timeSlots[x].slotNumInDay == 1 && j == 0 && shouldDatesBuild) {
-                                    var dateRow = document.createElement("tr");
                                     shouldDatesBuild = false;
+                                    var dateRow = document.createElement("tr");
                                     var builderDate = new Date(testDate.getTime());
+
+                                    //Set empty cell top right corner
                                     var emptyCell = true;
-                                    for (var y = 0; y < 5; y++) {
+
+
+                                    for (var y = 0; y < lastOccurance-firstOccurance + 1; y++) {
                                         builderDate.setDate(testDate.getDate() + y);
-                                        alert(builderDate - endDate);
-                                        if ((builderDate.getTime() <= endDate.getTime())) {
+                                        if ((builderDate.getTime() <= endDate.getTime()) && builderDate.getDay() < 6) {
+
+                                            //Create empty cell top right corner
                                             if(emptyCell){
                                                 emptyCell = false;
                                                 var cellDate = document.createElement("td");
                                                 dateRow.appendChild(cellDate);
                                             }
+
                                             var cellDate = document.createElement("td");
-                                            var cellDateText = document.createTextNode(builderDate.getMonth() + '-' + builderDate.getDate() + '-' + builderDate.getFullYear());
+                                            var cellDateText = document.createTextNode(builderDate.getMonth() + 1 + '-' + builderDate.getDate() + '-' + builderDate.getFullYear());
                                             cellDate.appendChild(cellDateText);
                                             dateRow.appendChild(cellDate);
                                         }
                                     }
                                     ourTableBody.appendChild(dateRow);
                                 }
+
                                 shouldBuild = true;
                                 shouldAdd = true;
+
+                                //Create time slots in the beginning of rows
                                 if(js.timeSlots[x].startTime.date.year == startWeekDate.getFullYear()
                                     && js.timeSlots[x].startTime.date.month == startWeekDate.getMonth()+1
                                     && js.timeSlots[x].startTime.date.day == startWeekDate.getDate()
                                     && js.timeSlots[x].slotNumInDay == j+1){
                                     var cellTime = document.createElement("td");
-                                    var cellTimeText = document.createTextNode(js.timeSlots[x].startTime.time.hour+  ":" + js.timeSlots[x].startTime.time.minute);
+                                    if (js.timeSlots[x].startTime.time.minute == 0)
+                                        var cellTimeText = document.createTextNode(js.timeSlots[x].startTime.time.hour+  ":00");
+                                    else
+                                        var cellTimeText = document.createTextNode(js.timeSlots[x].startTime.time.hour+  ":" + js.timeSlots[x].startTime.time.minute);
                                     cellTime.appendChild(cellTimeText);
                                     row.appendChild(cellTime);
                                 }
+
                                 var cell = document.createElement("td");
-                                //var cellText = document.createTextNode("cell in row " + i + ", column " + j);
                                 var cellText = document.createTextNode(js.timeSlots[x].startTime.time.minute + " " + js.timeSlots[x].startTime.date.day);
                                 cell.appendChild(cellText);
                                 row.appendChild(cell);
                             }
                         }
 
-                    } else
-                        console.log("Chief says no");
+                    }
 
                 }
 
@@ -204,16 +247,19 @@
         if (shouldBuild) {
             ourTable.appendChild(ourTableBody);
             ourTable.setAttribute("border", "2");
+            ourTable.setAttribute("width", "100%");
+            ourTable.setAttribute("margin-right", "auto");
+            ourTable.setAttribute("margin-left", "auto");
 
+            if (calDiv.hasChildNodes())
+                calDiv.removeChild(calDiv.firstChild);
             calDiv.appendChild(ourTable);
-        }else
-            alert("nothing to build here");
+        }else {
+            alert("You have reached the limit of the Schedule. No schedule left to be generated.");
+            weekNum = weekNum - weekNumIndicator;
+        }
     }
 
-    function jsonDateToDateString(jsonDate){
-        return jsonDate.year + '-' + jsonDate.month + '-' + jsonDate.day;
-
-    }
 
     function noScheduleFound(){
         document.getElementById("scheduleForm").style.visibility = "visible";
