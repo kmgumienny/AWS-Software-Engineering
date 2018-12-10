@@ -220,6 +220,7 @@
         if(document.getElementById("scheduleID").value == "")
             alert("Please Enter a Valid ScheduleID");
         else{
+            $("body").css("cursor", "progress");
             var scheduleID = document.getElementById("scheduleID").value;
             document.getElementById("scheduleForm").style.visibility = "hidden";
             document.getElementById("createScheduleDiv").style.visibility = "hidden";
@@ -239,6 +240,8 @@
                 console.log(xhr.request);
 
                 if (xhr.readyState == XMLHttpRequest.DONE) {
+                    $("body").css("cursor", "default");
+
                     console.log ("XHR:" + xhr.responseText);
                     var jsonResponse = JSON.parse(xhr.responseText);
 
@@ -471,6 +474,7 @@
     function createMeeting(){
         var timeslotID = document.getElementById('timeslotKeyField').value;
         var meetingName = document.getElementById('nameTimeslot').value;
+        $("body").css("cursor", "progress");
 
         var createMeetingData = {
             'timeslotID': timeslotID,
@@ -489,6 +493,7 @@
 
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 console.log ("XHR:" + xhr.responseText);
+                $("body").css("cursor", "default");
                 var jsonResponse = JSON.parse(xhr.responseText);
 
                 if (jsonResponse.httpCode == 500)
@@ -510,6 +515,8 @@
     function deleteMeeting(){
         var meetingID = document.getElementById('timeslotKeyField2').value;
         var secretCode = document.getElementById('meetingSecretKey').value;
+        $("body").css("cursor", "progress");
+
 
         var deleteMeetingData = {
             'meetingID': meetingID,
@@ -529,6 +536,7 @@
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 console.log ("XHR:" + xhr.responseText);
                 var jsonResponse = JSON.parse(xhr.responseText);
+                $("body").css("cursor", "default");
 
                 if (jsonResponse.httpCode == 500)
                     document.getElementById('scheduleMeetingErrorMessage').innerText = "Error Making Meeting";
@@ -548,6 +556,8 @@
     function organizerCancelMeeting(){
         var meetingID = document.getElementById('organizerCancelMeetingID').value;
         var secretCode = document.getElementById('cancelMeetingSecretKey').value;
+        $("body").css("cursor", "progress");
+
 
         var organizerDeleteMeetingData = {
             'meetingID': meetingID,
@@ -565,6 +575,7 @@
             console.log(xhr.request);
 
             if (xhr.readyState == XMLHttpRequest.DONE) {
+                $("body").css("cursor", "default");
                 console.log ("XHR:" + xhr.responseText);
                 var jsonResponse = JSON.parse(xhr.responseText);
 
@@ -595,6 +606,8 @@
     function organizerCloseMeeting(){
         var timeSlotID = document.getElementById('organizerCloseMeetingID').value;
         var secretCode = document.getElementById('closeMeetingSecretKey').value;
+        $("body").css("cursor", "progress");
+
 
         var organizerDeleteMeetingData = {
             'timeSlotID': timeSlotID,
@@ -612,6 +625,7 @@
             console.log(xhr.request);
 
             if (xhr.readyState == XMLHttpRequest.DONE) {
+                $("body").css("cursor", "default");
                 console.log ("XHR:" + xhr.responseText);
                 var jsonResponse = JSON.parse(xhr.responseText);
 
@@ -632,6 +646,8 @@
     function organizerOpenMeeting(){
         var timeSlotID = document.getElementById('organizerCloseMeetingID').value;
         var secretCode = document.getElementById('closeMeetingSecretKey').value;
+        $("body").css("cursor", "progress");
+
 
         var organizerDeleteMeetingData = {
             'timeSlotID': timeSlotID,
@@ -649,6 +665,7 @@
             console.log(xhr.request);
 
             if (xhr.readyState == XMLHttpRequest.DONE) {
+                $("body").css("cursor", "default");
                 console.log ("XHR:" + xhr.responseText);
                 var jsonResponse = JSON.parse(xhr.responseText);
 
@@ -701,6 +718,8 @@
     function deleteSchedule(){
         var secretKey = document.getElementById('secretKey').value;
         var scheduleID = document.getElementById('scheduleIDDelete').value;
+        $("body").css("cursor", "progress");
+
 
         var deleteScheduleData = {
             'scheduleID': scheduleID,
@@ -718,6 +737,7 @@
             console.log(xhr.request);
 
             if (xhr.readyState == XMLHttpRequest.DONE) {
+                $("body").css("cursor", "default");
                 console.log ("XHR:" + xhr.responseText);
                 var jsonResponse = JSON.parse(xhr.responseText);
 
