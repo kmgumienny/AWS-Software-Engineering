@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Create Meeting</title>
 </head>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <body>
 <h1 style="text-align: center" id="title">Organizer, create schedule!</h1>
 <div style="text-align: center; margin-top: 5%;">
@@ -132,6 +133,9 @@
             data["dailyEndTime"] = arg5;
             data["timeSlotDuration"] = arg6;
 
+
+            $("body").css("cursor", "progress");
+
             //document.getElementById("createButton").disabled = true;
 
             var wait = '<h3> Please wait while AWS boots up</h3>';
@@ -151,7 +155,7 @@
 
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     console.log ("XHR:" + xhr.responseText);
-                    xhr.response.valueOf();
+                    $("body").css("cursor", "default");
                     var jsonResponse = JSON.parse(xhr.responseText);
                     var responseRecieved = '<h3> Copy these values down! You will need the ID for participants to find your schedule and the key to edit your schedule in the future!</h3>';
                     document.getElementById("scheduleForm").innerHTML = responseRecieved;
