@@ -39,7 +39,7 @@
         </form>
     </div>
 
-<div id="changeWeekButtons" style="visibility: hidden;">
+<div id="changeWeekButtons" style="margin-top: 10%; visibility: hidden;">
     <div style="float: left;">
         <input type="button" value="Previous Week" onClick="JavaScript:generateSchedule(js, -1)">
     </div>
@@ -202,7 +202,7 @@
 
 
 
-<div style=" left: 0; bottom: 15px; width: 100%; margin-top: 10%; color: white; text-align: center;">
+<div style="position: fixed;z-index: -1; left: 0; bottom: 15px; width: 100%; margin-top: 5%; color: white; text-align: center;">
     <a href="./AdminPanel.html">Enter the Admin Panel by clicking here!</a>
 </div>
 
@@ -224,8 +224,10 @@
         else{
             $("body").css("cursor", "progress");
             var scheduleID = document.getElementById("scheduleID").value;
-            document.getElementById("scheduleForm").style.visibility = "hidden";
-            document.getElementById("createScheduleDiv").style.visibility = "hidden";
+            //document.getElementById("scheduleForm").style.visibility = "hidden";
+            document.getElementById("scheduleForm").style.display = "none";
+            //document.getElementById("createScheduleDiv").style.visibility = "hidden";
+            document.getElementById("createScheduleDiv").style.display = "none";
             var getString= {};
             getString["scheduleID"] = scheduleID;
             var js = JSON.stringify(getString);
