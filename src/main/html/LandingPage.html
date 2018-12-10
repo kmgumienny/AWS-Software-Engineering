@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <title>Scheduler</title>
 </head>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
 <body>
 <h1 style="text-align: center" id="title">Welcome to Scheduler</h1>
 <div style="text-align: center">
     <div id="createScheduleDiv">
         <button onclick="window.location.href = './CreateMeetingPage.html'"/>
-        >Create Schedule</button>
+        Create Schedule</button>
     </div>
 
     <div  style="text-align: center; margin-top: 5%;">
@@ -52,6 +54,52 @@
 
 </div>
 
+<div style="text-align: center; margin-top: 5%;">
+    <input type="button" value="If you are the organizer, click here" onclick="JavaScript:showOrganizerDiv()">
+</div>
+
+<div id="organizerDiv" style="text-align: center; border-width: 2px; border-color: black; margin-top: 20px; display: none;">
+    Delete Schedule
+    <br>
+    <form id="deleteForm" onsubmit="JavaScript:deleteSchedule()">
+        <label>
+            What is the Secret Key?
+            <input id="secretKey" type="text" required/>
+        </label>
+        <label style="margin-bottom: 15px; display: block;">
+            What is the id
+            <input id="scheduleIDDelete" type="text" required>
+        </label>
+        <label style="margin-bottom: 15px; display: block;">
+            <input id="deleteMeetingButton" type="button" value="Submit" onClick="JavaScript:deleteSchedule()">
+            <br>
+        </label>
+    </form>
+    <P id="deleteErrorMessage" style="color: red;"></P>
+</div>
+
+
+<div id="meetingDiv">
+    <h3>For Attendee</h3>
+    <form id="meetingForm" name="meetingForm" onsubmit="">
+        <label>
+            Your selected Timeslot has an ID of:
+            <input id="keyField" style="" readonly />
+        </label>
+        <label style="margin-bottom: 15px; display: block;">
+            If you are a participant, enter your name below to reserve the timeslot:
+            <input id="nameTimeslot" type="text" required>
+
+        </label>
+
+        <label style="margin-bottom: 15px; display: block;">
+            <input id="createMeetingButton" type="button" value="Submit" onClick="">
+            <br>
+        </label>
+    </form>
+
+</div>
+
 <div style="position: fixed; left: 0; bottom: 15px; width: 100%; color: white; text-align: center;">
     <a href="./AdminPanel.html">Enter the Admin Panel by clicking here!</a>
 </div>
@@ -61,6 +109,7 @@
     var weekNum;
     var js = {};
     var getURL = 'https://0ssnizv9l4.execute-api.us-east-2.amazonaws.com/alpha/getschedule';
+    var deleteURL = 'https://gh13hei2z1.execute-api.us-east-2.amazonaws.com/alpha/deleteschedule';
 
     function handleGetClick(){
         event.preventDefault();
@@ -227,8 +276,13 @@
                                 }
 
                                 var cell = document.createElement("td");
-                                var cellText = document.createTextNode(js.timeSlots[x].startTime.time.minute + " " + js.timeSlots[x].startTime.date.day);
-                                cell.appendChild(cellText);
+                                //var cellText = document.createTextNode(js.timeSlots[x].startTime.time.minute + " " + js.timeSlots[x].startTime.date.day);
+                                var scheduleButton = document.createElement("button");
+                                scheduleButton.id = js.timeSlots[x].timeslotID;
+                                scheduleButton.innerText = js.timeSlots[x].timeslotID;
+                                scheduleButton.className = "meetingButton";
+                                scheduleButton.addEventListener('click',createMeeting(), false);
+                                cell.appendChild(scheduleButton);
                                 row.appendChild(cell);
                             }
                         }
@@ -254,10 +308,32 @@
             if (calDiv.hasChildNodes())
                 calDiv.removeChild(calDiv.firstChild);
             calDiv.appendChild(ourTable);
+            attachEventListeners();
         }else {
             alert("You have reached the limit of the Schedule. No schedule left to be generated.");
             weekNum = weekNum - weekNumIndicator;
         }
+    }
+
+    function attachEventListeners(){
+        //$('.meetingButton').on('click', function(this))
+        // var allButtons = document.getElementsByClassName("meetingButton");
+        //
+        //
+        // for (var i = 0; i < allButtons.length; i++) {
+        //     allButtons[i].addEventListener('click', createMeeting(), false);
+        // }
+        //$('.meetingButton').on('click', createMeeting());
+        var meetingButtons = document.getElementsByClassName('meetingButton');
+        for (var x = 0; x < meetingButtons.length; x++) {
+            meetingButtons[x].addEventListener('click', function () {
+                alert(this.id);
+
+            });
+        }
+    }
+
+        function createMeeting(){
     }
 
 
@@ -269,68 +345,57 @@
     }
 
 
-    function handleGenerateSchedule(){
-        var keyEntered = document.getElementById("keyID").value;
-        if (keyEntered == "abc123"){
-            document.getElementById("scheduleForm").style.display = "none";
-            document.getElementById("title").innerText = data.scheduleName + " Schedule";
-            //alert(typeof data.startDate);
-            var startDate = new Date(data.startDate);
-            var endDate = new Date(data.endDate);
+    function meetingPanel(){
 
-            var numDays = (endDate - startDate)/86400000;
-            //0=sunday, 6= saturday
-            var startDay = startDate.getDay();
-            var checkDay = new Date(data.startDate);
-            var curr = new Date(data.startDate);
+    }
 
 
-            var startTime = data.startTime;
-            var endTime = data.endTime;
-            var increment = data.increment;
+    function deleteSchedule(){
+        var secretKey = document.getElementById('secretKey').value;
+        var scheduleID = document.getElementById('scheduleIDDelete').value;
 
-            var numMeetings = ((endTime - startTime)*60)/increment;
-            console.log(numMeetings);
-            var nonDays = [];
+        var deleteScheduleData = {
+            'scheduleID': scheduleID,
+            'originizerSecretCode': secretKey
+        };
 
-            //setDate(startDate);
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", deleteURL, true);
 
-            for(var i = 0; i < numDays; i++){
-                //alert(checkDay.getDate() + i + " " + (checkDay.getDate() + i) % 7);
-                if((checkDay.getDate() + i)% 7 == 0 || (checkDay.getDate() + i)% 7 == 6) {
-                    nonDays.push(checkDay.getDate() + i);
-                    //alert(nonDays.length);
+        var stringified = JSON.stringify(deleteScheduleData);
+
+        xhr.send(stringified);
+        xhr.onloadend = function () {
+            console.log(xhr);
+            console.log(xhr.request);
+
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                console.log ("XHR:" + xhr.responseText);
+                var jsonResponse = JSON.parse(xhr.responseText);
+
+                if (jsonResponse.httpCode == 500)
+                    document.getElementById('deleteErrorMessage').innerText = "Values do not match up.";
+                else if (jsonResponse.httpCode == 200) {
+                    alert('200');
+                    document.getElementById('deleteErrorMessage').innerText = "Delete Successful. Refreshing in 3 seconds";
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 3000);
                 }
+                else
+                    alert(jsonResponse.message);
+
             }
-
-            var calDiv = document.getElementById("calendarDiv");
-
-
-
-        }
-
-        var first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
-        var last = first + 6; // last day is the first day + 6
-
-        var firstday = new Date(curr.setDate(first)).toUTCString();
-        var lastday = new Date(curr.setDate(last)).toUTCString();
-
-
-        alert(firstday + " to " + lastday);
-
+        };
 
 
     }
 
-    function setDate(curr){
-        var first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
-        var last = first + 6; // last day is the first day + 6
-
-        var firstday = new Date(curr.setDate(first)).toUTCString();
-        var lastday = new Date(curr.setDate(last)).toUTCString();
-
-
-        alert(firstday + " to " + lastday);
+    function showOrganizerDiv(){
+        if (document.getElementById("organizerDiv").style.display == "none")
+            document.getElementById("organizerDiv").style.display = "block";
+        else
+            document.getElementById("organizerDiv").style.display = "none";
     }
 
 </script>
