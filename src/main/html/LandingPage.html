@@ -100,8 +100,31 @@
             <input type="button" value="Reload" onClick="JavaScript:handleGetClick()">
             <br>
         </label>
-
     </div>
+
+<div style="width: 33%; margin-left: auto; margin-right: auto;">
+    <h3>Close TimeSlot</h3>
+    <form onsubmit="JavaScript:organizerCloseMeeting()">
+        <label>
+            What is the Schedule Secret Key?
+            <input id="closeMeetingSecretKey" type="text" required/>
+        </label>
+        <label style="margin-bottom: 15px; display: block;">
+            Selected Time Slot has an ID of:
+            <input id="organizerCloseMeetingID" type="text" readonly>
+        </label>
+        <label style="margin-bottom: 15px; display: block;">
+            <input id="organizerCloseMeetingButton" type="button" value="Submit" onClick="JavaScript:organizerCloseMeeting()">
+            <br>
+        </label>
+    </form>
+    <P id="organizerCloseErrorMessage" style="color: red;"></P>
+    <label id="organizerCloseReload" style="margin-bottom: 15px; display: none;">
+        <input type="button" value="Reload" onClick="JavaScript:handleGetClick()">
+        <br>
+    </label>
+
+</div>
 
 </div>
 
@@ -187,6 +210,7 @@
     var scheduleMeetingURL = 'https://bf8e9h7l2j.execute-api.us-east-2.amazonaws.com/alpha/schedulemeeting'
     var deleteMeetingsURL = 'https://ejsjv6iale.execute-api.us-east-2.amazonaws.com/alpha/deletemeeting';
     var deleteMeetingOrganizerURL = 'https://rfz4c5o1lf.execute-api.us-east-2.amazonaws.com/alpha/deletemeetingbyorginizer';
+    var closeMeetingOrganizerURL = 'https://x0o3pw5l8k.execute-api.us-east-2.amazonaws.com/alpha/closesingletimeslot';
 
     function handleGetClick(){
         event.preventDefault();
@@ -358,7 +382,7 @@
                                         cell.style.backgroundColor = 'rgba(11, 202, 11, 0.43)';
                                     } else
                                         if (js.timeSlots[x].isOpen == false) {
-                                            scheduleButton.innerText = 'closed';
+                                            scheduleButton.innerText = 'CLOSED';
                                             scheduleButton.disabled = true;
                                             cell.style.backgroundColor = 'rgba(255, 0, 0, 0.44)';
                                         }
@@ -407,10 +431,16 @@
         for (var x = 0; x < meetingButtons.length; x++) {
             meetingButtons[x].addEventListener('click', function () {
                 if(document.getElementById("organizerDiv").style.display == "flex"){
-                    if (this.innerText == 'OPEN')
+                    if (this.innerText == 'OPEN') {
                         document.getElementById('organizerCancelMeetingButton').disabled = true;
+                        document.getElementById('organizerCloseMeetingButton').disabled = false;
+                        document.getElementById('organizerCloseMeetingID').value = this.id;
+                    }
                     else{
                         document.getElementById('organizerCancelMeetingID').value = this.id;
+                        document.getElementById('organizerCancelMeetingButton').disabled = false;
+                        document.getElementById('organizerCloseMeetingButton').disabled = true;
+
                     }
 
                 }else if(this.innerText == 'OPEN') {
@@ -541,6 +571,43 @@
         };
     }
 
+    function organizerCloseMeeting(){
+        var timeSlotID = document.getElementById('organizerCloseMeetingID').value;
+        var secretCode = document.getElementById('closeMeetingSecretKey').value;
+
+        var organizerDeleteMeetingData = {
+            'timeSlotID': timeSlotID,
+            'originizerSecretCode': secretCode
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", closeMeetingOrganizerURL, true);
+
+        var stringified = JSON.stringify(organizerDeleteMeetingData);
+
+        xhr.send(stringified);
+        xhr.onloadend = function () {
+            console.log(xhr);
+            console.log(xhr.request);
+
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                console.log ("XHR:" + xhr.responseText);
+                var jsonResponse = JSON.parse(xhr.responseText);
+
+                if (jsonResponse.httpCode == 500)
+                    document.getElementById('organizerCloseErrorMessage').innerText = "Error closing timeslot by organizer";
+                else if (jsonResponse.httpCode == 200) {
+                    document.getElementById('organizerCloseReload').style.display = "block";
+                    document.getElementById('organizerCloseErrorMessage').innerText = "Timeslot Successfully Closed by Organizer";
+
+                }
+                else
+                    alert(jsonResponse.message);
+
+            }
+        };
+    }
+
     function hideDivs(){
         document.getElementById('meetingDiv').style.display = 'none';
         document.getElementById('confirmMeetingForm').style.display = 'none';
@@ -548,7 +615,10 @@
         document.getElementById("cancelMeetingDiv").style.display = "none";
         document.getElementById("organizerDeleteReload").style.display = "none";
         document.getElementById("cancelScheduleMeetingErrorMessage").value = "";
+        document.getElementById("organizerCloseReload").style.display = "none";
+        document.getElementById("cancelScheduleMeetingErrorMessage").value = "";
         document.getElementById("cancelMeetingSecretKey").value = "";
+        document.getElementById("closeMeetingSecretKey").value = "";
         document.getElementById("organizerDeleteErrorMessage").innerText = "";
         document.getElementById("confirmCancelMeetingForm").value = "";
         document.getElementById("meetingSecretKey").value = "";
