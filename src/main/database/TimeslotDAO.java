@@ -82,6 +82,37 @@ public class TimeslotDAO
         }
     }
     
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public Timeslot getTimeslotWithTimestemp(String scheduleID, LocalDateTime dateTime) throws Exception
+    {
+    	try
+    	{
+    		Timeslot timeslot = null;
+    		Timeslot correcttimeslot = null;
+    		PreparedStatement ps = connection.prepareStatement("SELECT * FROM Timeslots WHERE scheduleID=?;");
+    		ps.setString(1,  scheduleID);
+    		ResultSet resultSet = ps.executeQuery();
+
+    		while (resultSet.next())
+    		{
+    			timeslot = generateTimeslot(resultSet);
+    			if(dateTime.equals(timeslot.getStartTime())){
+    				correcttimeslot = timeslot;
+    			}
+    		}
+    		resultSet.close();
+    		ps.close();
+
+    		return correcttimeslot;
+
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		throw new Exception("Failed to get Timeslot: " + e.getMessage());
+    	}
+    }
+    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     public boolean deleteTimeslot(String timeslotID) throws Exception

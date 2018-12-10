@@ -30,7 +30,7 @@ import main.entities.Timeslot;
  * Found gson JAR file from
  * https://repo1.maven.org/maven2/com/google/code/gson/gson/2.6.2/gson-2.6.2.jar
  */
-public class ExtandEndDateHandler implements RequestStreamHandler {
+public class ExtandStartDateHandler implements RequestStreamHandler {
 
 	public LambdaLogger logger = null;
 	String status = "OK";
@@ -44,7 +44,7 @@ public class ExtandEndDateHandler implements RequestStreamHandler {
 	@Override
 	public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
 		logger = context.getLogger();
-		logger.log("Loading Java Lambda handler to extand schedule end date");
+		logger.log("Loading Java Lambda handler to extand schedule start date");
 
 		JSONObject headerJson = new JSONObject();
 		headerJson.put("Content-Type",  "application/json");  // not sure if needed anymore?
@@ -54,7 +54,7 @@ public class ExtandEndDateHandler implements RequestStreamHandler {
 		JSONObject responseJson = new JSONObject();
 		responseJson.put("headers", headerJson);
 
-		ExtandEndDateResponse response = null;
+		ExtandStartDateResponse response = null;
 		
 		// extract body from incoming HTTP POST request. If any error, then return 422 error
 		String body;
@@ -68,7 +68,7 @@ public class ExtandEndDateHandler implements RequestStreamHandler {
 			String method = (String) event.get("httpMethod");
 			if (method != null && method.equalsIgnoreCase("OPTIONS")) {
 				logger.log("Options request");
-				response = new ExtandEndDateResponse("name", 200);  // OPTIONS needs a 200 response
+				response = new ExtandStartDateResponse("name", 200);  // OPTIONS needs a 200 response
 		        responseJson.put("body", new Gson().toJson(response));
 		        processed = true;
 		        body = null;
@@ -80,33 +80,33 @@ public class ExtandEndDateHandler implements RequestStreamHandler {
 			}
 		} catch (ParseException pe) {
 			logger.log(pe.toString());
-			response = new ExtandEndDateResponse("Bad Request:" + pe.getMessage(), 422);  // unable to process input
+			response = new ExtandStartDateResponse("Bad Request:" + pe.getMessage(), 422);  // unable to process input
 	        responseJson.put("body", new Gson().toJson(response));
 	        processed = true;
 	        body = null;
 		}
 
 		if (!processed) {
-			ExtandEndDateRequest req = new Gson().fromJson(body, ExtandEndDateRequest.class);
+			ExtandStartDateRequest req = new Gson().fromJson(body, ExtandStartDateRequest.class);
 			logger.log(req.toString());
 			status = "OK";
 			
-			LocalDate newDate = parseDate(req.newDate);
+			LocalDate newDate = parseDate(req.newStartDate);
 			
-			extandScheduleEndingDate(req.scheduleID, req.originizerSecretCode, newDate);
+			extandScheduleStartingDate(req.scheduleID, req.originizerSecretCode, newDate);
 			
 			//Response creation
 			if(status.equals("OK")){
-				response = new ExtandEndDateResponse("End date for schedule applied and updated successifully.");
+				response = new ExtandStartDateResponse("Start date for schedule applied and updated successifully.");
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 			else if(status.equals("Something went wrong and request failed to exicute. Please retry")) {
 				
-				response = new ExtandEndDateResponse(status, 500);
+				response = new ExtandStartDateResponse(status, 500);
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 			else {
-				response = new ExtandEndDateResponse(status, 422);
+				response = new ExtandStartDateResponse(status, 422);
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 		}
@@ -121,11 +121,8 @@ public class ExtandEndDateHandler implements RequestStreamHandler {
 	
 ////////////////////////////////////////////////////////////////////////////////////
 	
-	void extandScheduleEndingDate(String scheduleID, String originizerSecretCode, LocalDate newDate) {
-		TimeslotDAO timeSlotDAO = new TimeslotDAO();
+	void extandScheduleStartingDate(String scheduleID, String originizerSecretCode, LocalDate newDate) {
 		ScheduleDAO scheduleDAO = new ScheduleDAO();
-		boolean timeExists = false;
-		boolean worked = true;
 		Schedule schedule = null;
 
 		try {
@@ -137,14 +134,14 @@ public class ExtandEndDateHandler implements RequestStreamHandler {
 
 		if(schedule != null) {
 			if(schedule.getSecretCode().equals(originizerSecretCode)) {
-				if(newDate.isAfter(schedule.getEndDate())) {
-					LocalDate startDate = schedule.getStartDate();
+				if(newDate.isBefore(schedule.getStartDate())) {
+					LocalDate endDate = schedule.getEndDate();
 					int startTime = schedule.getDayStartTime();
 					int endTime = schedule.getDayEndTime();
 					int duration = schedule.getTimeSlotDuration();
-					createTimeSlots(scheduleID, startDate, newDate, startTime, endTime, duration);
+					createTimeSlots(scheduleID, newDate, endDate, startTime, endTime, duration);
 					if(!status.equals("Something went wrong and request failed to exicute. Please retry")) {
-						schedule.setEndDate(newDate);
+						schedule.setStartDate(newDate);
 						try {
 							scheduleDAO.updateSchedule(schedule);
 						} catch (Exception e) {
@@ -154,8 +151,8 @@ public class ExtandEndDateHandler implements RequestStreamHandler {
 					}
 				}
 				else {
-					logger.log("The date is not after current end date.");
-					status = "The desired schedule end date does not come after the current schedule end date. Please select another valid future end date.";
+					logger.log("The date is not before current start date.");
+					status = "The desired schedule start date does not come before the current schedule start date. Please select another valid earlier start date.";
 				}
 			}
 			else {
@@ -204,7 +201,7 @@ public class ExtandEndDateHandler implements RequestStreamHandler {
 
 				//check if the current day is Saturday or Sunday. If so skip those days
 				if (itterationDate.getDayOfWeek().name() == "SATURDAY" || itterationDate.getDayOfWeek().name() == "SUNDAY") {
-					//itterationDate = itterationDate.plusDays(1);
+//					itterationDate = itterationDate.plusDays(1);
 				}
 				else {
 					//Reset the time slot number counter for day for every new date
