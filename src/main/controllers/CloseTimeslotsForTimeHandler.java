@@ -6,9 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -191,12 +189,5 @@ public class CloseTimeslotsForTimeHandler implements RequestStreamHandler {
 			status = "Schedule does not exist with provided schedule ID.";
 		}
 	}
-	
-////////////////////////////////////////////////////////////////////////////////////
-	
-	LocalDate parseDate(String date) {
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(date, dtf);
-	  }
 	
 }
