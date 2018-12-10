@@ -59,7 +59,9 @@
 </div>
 
 <div id="organizerDiv" style="text-align: center; border-width: 2px; border-color: black; margin-top: 20px; display: none;">
+<p style="color: salmon;">By having the organizer panel open, participant functions are disabled.</p>
 
+    <div style="display: flex;">
     <div style="width: 33%; margin-left: auto; margin-right: auto;">
     <h3>Delete Schedule</h3>
     <form id="deleteForm" onsubmit="JavaScript:deleteSchedule()">
@@ -126,6 +128,7 @@
 
 </div>
 
+</div>
 </div>
 
 
@@ -431,7 +434,7 @@
         var meetingButtons = document.getElementsByClassName('meetingButton');
         for (var x = 0; x < meetingButtons.length; x++) {
             meetingButtons[x].addEventListener('click', function () {
-                if(document.getElementById("organizerDiv").style.display == "flex"){
+                if(document.getElementById("organizerDiv").style.display == "block"){
                     if (this.innerText == 'OPEN' || this.innerText == 'CLOSED') {
                         if(this.innerText == 'OPEN'){
                             document.getElementById('closeOpenH3').innerText = 'Close Timeslot'
@@ -667,7 +670,6 @@
         document.getElementById('meetingDiv').style.display = 'none';
         document.getElementById('confirmMeetingForm').style.display = 'none';
         document.getElementById("cancelMeetingDiv").style.display = "none";
-        document.getElementById("cancelMeetingDiv").style.display = "none";
         document.getElementById("organizerDeleteReload").style.display = "none";
         document.getElementById("cancelScheduleMeetingErrorMessage").value = "";
         document.getElementById("organizerCloseReload").style.display = "none";
@@ -677,6 +679,8 @@
         document.getElementById("organizerDeleteErrorMessage").innerText = "";
         document.getElementById("confirmCancelMeetingForm").value = "";
         document.getElementById("meetingSecretKey").value = "";
+        document.getElementById("organizerCloseMeetingID").value = "";
+        document.getElementById("organizerCloseErrorMessage").innerText = "";
         document.getElementById('closeOpenH3').innerText = 'Close/Open TimeSlot'
 
     }
@@ -736,7 +740,7 @@
     function toggleOrganizerDiv(){
         var meetingButtons = document.getElementsByClassName('meetingButton');
         if (document.getElementById("organizerDiv").style.display == "none") {
-            document.getElementById("organizerDiv").style.display = "flex";
+            document.getElementById("organizerDiv").style.display = "block";
             for (var x = 0; x < meetingButtons.length; x++) {
                 if (meetingButtons[x].innerText == 'CLOSED')
                     meetingButtons[x].disabled = false;
