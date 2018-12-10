@@ -116,12 +116,16 @@
         var arg5 = +document.getElementById('endTime').value;
         var arg6 = +document.getElementById('increment').value;
 
-        if (arg3 < arg2){
-            alert ("Error! Please modify the start and end dates to continue");
+
+        if(arg1 == "" || arg2 == "" || arg3 == ""){
+            alert('You left some fields empty there. Enter Data to continue!');
+        }
+        else if (arg3 < arg2){
+            alert ("Error! Please modify the start and end dates to continue!");
         }
 
         else if (arg4 >= arg5){
-            alert("Error! Please modify the start and end times to continue");
+            alert("Error! Please modify the start and end times to continue!");
         }
         else{
             //alert(arg1 + " " + arg2 + " " + arg3 + " " + arg4 + " " + arg5 + " " + arg6);
