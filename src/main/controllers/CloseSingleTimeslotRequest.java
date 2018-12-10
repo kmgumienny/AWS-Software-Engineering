@@ -11,9 +11,9 @@ public class CloseSingleTimeslotRequest {
 	String timeSlotID;
 	String organizerSecretCode;
 	
-	public CloseSingleTimeslotRequest (String timeSlotID, String originizerSecretCode) {
+	public CloseSingleTimeslotRequest (String timeSlotID, String organizerSecretCode) {
 		this.timeSlotID = timeSlotID;
-		this.organizerSecretCode = originizerSecretCode;
+		this.organizerSecretCode = organizerSecretCode;
 	}
 	
 	public String toString() {
