@@ -80,7 +80,7 @@
 </div>
 
 
-<div id="meetingDiv">
+<div id="meetingDiv" style="display: none">
     <h3>For Attendee</h3>
     <form id="meetingForm" name="meetingForm" onsubmit="JavaScript:createMeeting()">
         <label>
@@ -99,8 +99,53 @@
         </label>
     </form>
     <P id="scheduleMeetingErrorMessage" style="color: red;"></P>
+    <form id="confirmMeetingForm" style="display: none;" onsubmit="JavaScript:handleGetClick()">
+        <label>
+            Your secret key is:
+            <input id="meetingSecretKeyField" style="" readonly />
+        </label>
+        <p>
+            Press 'Reload' to reload once you have copied down your key.
+        </p>
+        <label style="margin-bottom: 15px; display: block;">
+            <input type="button" value="Reload" onClick="JavaScript:handleGetClick()">
+            <br>
+        </label>
+    </form>
+</div>
 
+<div id="cancelMeetingDiv" style="display: none">
+    <h3>For Attendee</h3>
+    <form id="cancelMeetingForm" name="meetingForm" onsubmit="JavaScript:deleteMeeting()">
+        <label>
+            Your selected Timeslot has an ID of:
+            <input id="timeslotKeyField2" style="" readonly />
+        </label>
+        <label style="margin-bottom: 15px; display: block;">
+            This timeslot is reserved by:
+            <input id="nameTimeslot2" type="text" readonly>
+        </label>
 
+        <label>
+            Enter your secret key to continue:
+            <input id="meetingSecretKey" type="text" required>
+        </label>
+
+        <label style="margin-bottom: 15px; display: block;">
+            <input id="cancelMeetingButton" type="button" value="Submit" onClick="JavaScript:deleteMeeting()">
+            <br>
+        </label>
+    </form>
+    <P id="cancelScheduleMeetingErrorMessage" style="color: red;"></P>
+    <form id="confirmCancelMeetingForm" style="display: none;" onsubmit="JavaScript:handleGetClick()">
+        <p>
+            Press 'Reload' to reload once you have copied down your key.
+        </p>
+        <label style="margin-bottom: 15px; display: block;">
+            <input type="button" value="Reload" onClick="JavaScript:handleGetClick()">
+            <br>
+        </label>
+    </form>
 </div>
 
 <div style="position: fixed; left: 0; bottom: 15px; width: 100%; color: white; text-align: center;">
@@ -114,6 +159,7 @@
     var getURL = 'https://0ssnizv9l4.execute-api.us-east-2.amazonaws.com/alpha/getschedule';
     var deleteURL = 'https://gh13hei2z1.execute-api.us-east-2.amazonaws.com/alpha/deleteschedule';
     var scheduleMeetingURL = 'https://bf8e9h7l2j.execute-api.us-east-2.amazonaws.com/alpha/schedulemeeting'
+    var deleteMeetingsURL = 'https://ejsjv6iale.execute-api.us-east-2.amazonaws.com/alpha/deletemeeting';
 
     function handleGetClick(){
         event.preventDefault();
@@ -274,6 +320,7 @@
                                     for(var k = 0; k < js.meetings.length; k++){
                                         if( js.meetings[k].timeslotID == js.timeSlots[x].timeslotID){
                                             scheduleButton.innerText = js.meetings[k].meetingName;
+                                            scheduleButton.id = js.meetings[k].meetingID;
                                             cell.style.backgroundColor = 'rgba(59, 65, 255, 0.5)';
                                             break;
                                         }
@@ -323,6 +370,7 @@
             alert("You have reached the limit of the Schedule. No schedule left to be generated.");
             weekNum = weekNum - weekNumIndicator;
         }
+        hideDivs();
     }
 
 
@@ -330,8 +378,17 @@
         var meetingButtons = document.getElementsByClassName('meetingButton');
         for (var x = 0; x < meetingButtons.length; x++) {
             meetingButtons[x].addEventListener('click', function () {
-                document.getElementById("meetingDiv").style.display = "block";
-                document.getElementById("timeslotKeyField").value = this.id;
+                if(this.innerText == 'OPEN') {
+                    document.getElementById("meetingDiv").style.display = "block";
+                    document.getElementById("cancelMeetingDiv").style.display = "none";
+                    document.getElementById("timeslotKeyField").value = this.id;
+                }else {
+                    document.getElementById("meetingDiv").style.display = "none";
+                    document.getElementById("cancelMeetingDiv").style.display = "block";
+                    document.getElementById("timeslotKeyField2").value = this.id;
+                    document.getElementById("nameTimeslot2").value = this.innerText;
+
+                }
             });
         }
     }
@@ -362,9 +419,11 @@
                 if (jsonResponse.httpCode == 500)
                     document.getElementById('scheduleMeetingErrorMessage').innerText = "Error Making Meeting";
                 else if (jsonResponse.httpCode == 200) {
-                    alert('200');
                     document.getElementById('scheduleMeetingErrorMessage').innerText = "Meeting Scheduled";
-                    handleGetClick();
+                    document.getElementById('timeslotKeyField').value = '';
+                    document.getElementById('nameTimeslot').value = '';
+                    document.getElementById('meetingSecretKeyField').value = jsonResponse.secretCode;
+                    document.getElementById('confirmMeetingForm').style.display = 'block';
                 }
                 else
                     alert(jsonResponse.message);
@@ -373,9 +432,57 @@
         };
     }
 
-    function meetingPanel(){
+    function deleteMeeting(){
+        var meetingID = document.getElementById('timeslotKeyField2').value;
+        var secretCode = document.getElementById('meetingSecretKey').value;
 
+        var deleteMeetingData = {
+            'meetingID': meetingID,
+            'secretCode': secretCode
+        };
 
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", deleteMeetingsURL, true);
+
+        var stringified = JSON.stringify(deleteMeetingData);
+
+        xhr.send(stringified);
+        xhr.onloadend = function () {
+            console.log(xhr);
+            console.log(xhr.request);
+
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                console.log ("XHR:" + xhr.responseText);
+                var jsonResponse = JSON.parse(xhr.responseText);
+
+                if (jsonResponse.httpCode == 500)
+                    document.getElementById('scheduleMeetingErrorMessage').innerText = "Error Making Meeting";
+                else if (jsonResponse.httpCode == 200) {
+                    document.getElementById('cancelScheduleMeetingErrorMessage').innerText = "Meeting Canceled";
+                    document.getElementById('timeslotKeyField2').value = '';
+                    handleGetClick();
+                    //document.getElementById('nameTimeslot').value = '';
+                }
+                else
+                    alert(jsonResponse.message);
+
+            }
+        };
+    }
+
+    function handleCopiedKey(){
+
+        handleGetClick();
+    }
+
+    function hideDivs(){
+        document.getElementById('meetingDiv').style.display = 'none';
+        document.getElementById('confirmMeetingForm').style.display = 'none';
+        document.getElementById("cancelMeetingDiv").style.display = "none";
+        document.getElementById("cancelMeetingDiv").style.display = "none";
+        document.getElementById("cancelScheduleMeetingErrorMessage").value = "";
+        document.getElementById("confirmCancelMeetingForm").value = "";
+        document.getElementById("meetingSecretKey").value = "";
     }
 
 
