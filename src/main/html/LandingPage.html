@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Scheduler</title>
 </head>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
 <body>
 <h1 style="text-align: center" id="title">Welcome to Scheduler</h1>
 <div style="text-align: center">
@@ -227,8 +229,13 @@
                                 }
 
                                 var cell = document.createElement("td");
-                                var cellText = document.createTextNode(js.timeSlots[x].startTime.time.minute + " " + js.timeSlots[x].startTime.date.day);
-                                cell.appendChild(cellText);
+                                //var cellText = document.createTextNode(js.timeSlots[x].startTime.time.minute + " " + js.timeSlots[x].startTime.date.day);
+                                var scheduleButton = document.createElement("button");
+                                scheduleButton.id = js.timeSlots[x].timeslotID;
+                                scheduleButton.innerText = js.timeSlots[x].timeslotID;
+                                scheduleButton.className = "meetingButton";
+                                scheduleButton.addEventListener('click',createMeeting(), false);
+                                cell.appendChild(scheduleButton);
                                 row.appendChild(cell);
                             }
                         }
@@ -254,10 +261,32 @@
             if (calDiv.hasChildNodes())
                 calDiv.removeChild(calDiv.firstChild);
             calDiv.appendChild(ourTable);
+            attachEventListeners();
         }else {
             alert("You have reached the limit of the Schedule. No schedule left to be generated.");
             weekNum = weekNum - weekNumIndicator;
         }
+    }
+
+    function attachEventListeners(){
+        //$('.meetingButton').on('click', function(this))
+        // var allButtons = document.getElementsByClassName("meetingButton");
+        //
+        //
+        // for (var i = 0; i < allButtons.length; i++) {
+        //     allButtons[i].addEventListener('click', createMeeting(), false);
+        // }
+        //$('.meetingButton').on('click', createMeeting());
+        var meetingButtons = document.getElementsByClassName('meetingButton');
+        for (var x = 0; x < meetingButtons.length; x++) {
+            meetingButtons[x].addEventListener('click', function () {
+                alert(this.id);
+
+            });
+        }
+    }
+
+        function createMeeting(){
     }
 
 
@@ -266,6 +295,11 @@
         document.getElementById("createScheduleDiv").style.visibility = "visible";
         document.getElementById('errMessage').innerText = 'No Schedule with an id of ' + document.getElementById("scheduleID").value + ' found. Try again or create your own.';
         document.getElementById("scheduleID").value = '';
+    }
+
+
+    function meetingPanel(){
+        
     }
 
 
