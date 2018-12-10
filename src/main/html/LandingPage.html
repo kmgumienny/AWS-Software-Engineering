@@ -55,11 +55,12 @@
 </div>
 
 <div id="OrganizerButtonToggle" style="text-align: center; display: none; margin-top: 5%;">
-    <input type="button" value="If you are the organizer, click here" onclick="JavaScript:showOrganizerDiv()">
+    <input type="button" value="If you are the organizer, click here" onclick="JavaScript:toggleOrganizerDiv()">
 </div>
 
-<div id="organizerDiv" style="text-align: center;width: 33%;float: left; ;border-width: 2px; border-color: black; margin-top: 20px; display: none;">
-    <div>
+<div id="organizerDiv" style="text-align: center; border-width: 2px; border-color: black; margin-top: 20px; display: none;">
+
+    <div style="width: 33%; margin-left: auto; margin-right: auto;"">
     <h3>Delete Schedule</h3>
     <form id="deleteForm" onsubmit="JavaScript:deleteSchedule()">
         <label>
@@ -77,6 +78,31 @@
     </form>
     <P id="deleteErrorMessage" style="color: red;"></P>
     </div>
+
+    <div style="width: 33%; margin-left: auto; margin-right: auto;">
+        <h3>Cancel Meeting</h3>
+        <form onsubmit="JavaScript:organizerCancelMeeting()">
+            <label>
+                What is the Schedule Secret Key?
+                <input id="cancelMeetingSecretKey" type="text" required/>
+            </label>
+            <label style="margin-bottom: 15px; display: block;">
+                Selected Time Slot has an ID of:
+                <input id="organizerCancelMeetingID" type="text" readonly>
+            </label>
+            <label style="margin-bottom: 15px; display: block;">
+                <input id="organizerCancelMeetingButton" type="button" value="Submit" onClick="JavaScript:organizerCancelMeeting()">
+                <br>
+            </label>
+        </form>
+        <P id="organizerDeleteErrorMessage" style="color: red;"></P>
+        <label id="organizerDeleteReload" style="margin-bottom: 15px; display: none;">
+            <input type="button" value="Reload" onClick="JavaScript:handleGetClick()">
+            <br>
+        </label>
+
+    </div>
+
 </div>
 
 
@@ -160,6 +186,7 @@
     var deleteURL = 'https://gh13hei2z1.execute-api.us-east-2.amazonaws.com/alpha/deleteschedule';
     var scheduleMeetingURL = 'https://bf8e9h7l2j.execute-api.us-east-2.amazonaws.com/alpha/schedulemeeting'
     var deleteMeetingsURL = 'https://ejsjv6iale.execute-api.us-east-2.amazonaws.com/alpha/deletemeeting';
+    var deleteMeetingOrganizerURL = 'https://rfz4c5o1lf.execute-api.us-east-2.amazonaws.com/alpha/deletemeetingbyorginizer';
 
     function handleGetClick(){
         event.preventDefault();
@@ -370,6 +397,7 @@
             alert("You have reached the limit of the Schedule. No schedule left to be generated.");
             weekNum = weekNum - weekNumIndicator;
         }
+        document.getElementById('organizerDiv').style.display = 'none';
         hideDivs();
     }
 
@@ -378,7 +406,14 @@
         var meetingButtons = document.getElementsByClassName('meetingButton');
         for (var x = 0; x < meetingButtons.length; x++) {
             meetingButtons[x].addEventListener('click', function () {
-                if(this.innerText == 'OPEN') {
+                if(document.getElementById("organizerDiv").style.display == "flex"){
+                    if (this.innerText == 'OPEN')
+                        document.getElementById('organizerCancelMeetingButton').disabled = true;
+                    else{
+                        document.getElementById('organizerCancelMeetingID').value = this.id;
+                    }
+
+                }else if(this.innerText == 'OPEN') {
                     document.getElementById("meetingDiv").style.display = "block";
                     document.getElementById("cancelMeetingDiv").style.display = "none";
                     document.getElementById("timeslotKeyField").value = this.id;
@@ -387,7 +422,6 @@
                     document.getElementById("cancelMeetingDiv").style.display = "block";
                     document.getElementById("timeslotKeyField2").value = this.id;
                     document.getElementById("nameTimeslot2").value = this.innerText;
-
                 }
             });
         }
@@ -470,9 +504,41 @@
         };
     }
 
-    function handleCopiedKey(){
+    function organizerCancelMeeting(){
+        var meetingID = document.getElementById('organizerCancelMeetingID').value;
+        var secretCode = document.getElementById('cancelMeetingSecretKey').value;
 
-        handleGetClick();
+        var organizerDeleteMeetingData = {
+            'meetingID': meetingID,
+            'orginizerSecretCode': secretCode
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", deleteMeetingOrganizerURL, true);
+
+        var stringified = JSON.stringify(organizerDeleteMeetingData);
+
+        xhr.send(stringified);
+        xhr.onloadend = function () {
+            console.log(xhr);
+            console.log(xhr.request);
+
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                console.log ("XHR:" + xhr.responseText);
+                var jsonResponse = JSON.parse(xhr.responseText);
+
+                if (jsonResponse.httpCode == 500)
+                    document.getElementById('scheduleMeetingErrorMessage').innerText = "Error canceling meeting by organizer";
+                else if (jsonResponse.httpCode == 200) {
+                    document.getElementById('organizerDeleteReload').style.display = "block";
+                    document.getElementById('organizerDeleteErrorMessage').innerText = "Meeting Canceled by Organizer";
+
+                }
+                else
+                    alert(jsonResponse.message);
+
+            }
+        };
     }
 
     function hideDivs(){
@@ -480,10 +546,14 @@
         document.getElementById('confirmMeetingForm').style.display = 'none';
         document.getElementById("cancelMeetingDiv").style.display = "none";
         document.getElementById("cancelMeetingDiv").style.display = "none";
+        document.getElementById("organizerDeleteReload").style.display = "none";
         document.getElementById("cancelScheduleMeetingErrorMessage").value = "";
+        document.getElementById("cancelMeetingSecretKey").value = "";
+        document.getElementById("organizerDeleteErrorMessage").innerText = "";
         document.getElementById("confirmCancelMeetingForm").value = "";
         document.getElementById("meetingSecretKey").value = "";
     }
+
 
 
     function noScheduleFound(){
@@ -536,10 +606,11 @@
         };
     }
 
-    function showOrganizerDiv(){
-        if (document.getElementById("organizerDiv").style.display == "none")
-            document.getElementById("organizerDiv").style.display = "block";
-        else
+    function toggleOrganizerDiv(){
+        if (document.getElementById("organizerDiv").style.display == "none") {
+            document.getElementById("organizerDiv").style.display = "flex";
+            hideDivs();
+        }else
             document.getElementById("organizerDiv").style.display = "none";
     }
 

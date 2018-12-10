@@ -94,23 +94,8 @@
             <br>
         </label>
 
-        <!--<label id="keyLabel" style="margin-bottom: 15px; display: block; visibility: hidden">-->
-            <!--<br>-->
-            <!--Enter Key to see Schedule-->
-            <!--<input id="keyID" type="text" required>-->
-            <!--<input type="button" value="submit" onClick="JavaScript:handleCreateSchedule()">-->
-
-            <!--<br>-->
-        <!--</label>-->
-
-</div>
-<div>
-    <p id="dateP"></p>
 </div>
 
-<div id="calendarDiv" style="text-align: center; margin-top: 5%;">
-
-</div>
 
 <div style="position: fixed; left: 0; bottom: 15px; width: 100%; color: white; text-align: center;">
     <a href="./AdminPanel.html">Enter the Admin Panel by clicking here!</a>
@@ -153,7 +138,6 @@
             document.getElementById("scheduleForm").innerHTML = wait;
 
             var js = JSON.stringify(data);
-            alert('stringified' + js);
             var xhr = new XMLHttpRequest();
             xhr.open("POST", createURL, true);
 
@@ -167,7 +151,6 @@
 
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     console.log ("XHR:" + xhr.responseText);
-                    alert(xhr.responseText)
                     xhr.response.valueOf();
                     var jsonResponse = JSON.parse(xhr.responseText);
                     var responseRecieved = '<h3> Copy these values down! You will need the ID for participants to find your schedule and the key to edit your schedule in the future!</h3>';
@@ -178,57 +161,11 @@
                     document.getElementById("idField").value = jsonResponse['ID'];
                     document.getElementById("keyField").value = jsonResponse['secret'];
 
-                    //alert("Success!");
-
-
-                    // function handleAddClick(e) {
-                    //     var form = document.addForm;
-                    //     var arg1 = form.arg1.value;
-                    //     var arg2 = form.arg2.value;
-                    //
-                    //     var data = {};
-                    //     data["arg1"] = arg1;
-                    //     data["arg2"] = arg2;
-                    //
-                    //     var js = JSON.stringify(data);
-                    //     console.log("JS:" + js);
-                    //     var xhr = new XMLHttpRequest();
-                    //     xhr.open("POST", add_url, true);
-                    //
-                    //     // send the collected data as JSON
-                    //     xhr.send(js);
-                    //
-                    //     // This will process results and update HTML as appropriate.
-                    //     xhr.onloadend = function () {
-                    //         console.log(xhr);
-                    //         console.log(xhr.request);
-                    //
-                    //         if (xhr.readyState == XMLHttpRequest.DONE) {
-                    //             console.log ("XHR:" + xhr.responseText);
-                    //             processAddResponse(arg1, arg2, xhr.responseText);
-                    //         } else {
-                    //             processAddResponse(arg1, arg2, "N/A");
-                    //         }
-                    //     };
-                    // }
 
                 }
             };
         }
     }
-
-    // function confirmCopy() {
-    //     var code = 'abc123';
-    //     var ask = window.confirm("The following is your code " + code + ". \n " +
-    //         "Confirm Once you have copied it as you will need it to view schedule");
-    //     if (ask) {
-    //
-    //         //window.location.href = "/landingPage.html";
-    //
-    //     }
-    // }
-
-
 
 </script>
 
