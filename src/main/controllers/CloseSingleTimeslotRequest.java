@@ -9,11 +9,11 @@ package main.controllers;
 
 public class CloseSingleTimeslotRequest {
 	String timeSlotID;
-	String originizerSecretCode;
+	String organizerSecretCode;
 	
-	public CloseSingleTimeslotRequest (String timeSlotID, String originizerSecretCode) {
+	public CloseSingleTimeslotRequest (String timeSlotID, String organizerSecretCode) {
 		this.timeSlotID = timeSlotID;
-		this.originizerSecretCode = originizerSecretCode;
+		this.organizerSecretCode = organizerSecretCode;
 	}
 	
 	public String toString() {
