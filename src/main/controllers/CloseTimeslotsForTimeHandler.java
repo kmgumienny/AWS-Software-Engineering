@@ -92,7 +92,7 @@ public class CloseTimeslotsForTimeHandler implements RequestStreamHandler {
 			
 			LocalTime closeTime = LocalTime.of(req.hour, req.minute);
 			
-			closeTimeSlotsForTime(req.scheduleID, req.originizerSecretCode, closeTime);
+			closeTimeSlotsForTime(req.scheduleID, req.organizerSecretCode, closeTime);
 			
 			//Response creation
 			if(status.equals("OK")){
@@ -120,7 +120,7 @@ public class CloseTimeslotsForTimeHandler implements RequestStreamHandler {
 	
 ////////////////////////////////////////////////////////////////////////////////////
 	
-	void closeTimeSlotsForTime(String scheduleID, String originizerSecretCode, LocalTime closeTime) {
+	void closeTimeSlotsForTime(String scheduleID, String organizerSecretCode, LocalTime closeTime) {
 		TimeslotDAO timeSlotDAO = new TimeslotDAO();
 		ScheduleDAO scheduleDAO = new ScheduleDAO();
 		boolean timeExists = false;
@@ -136,7 +136,7 @@ public class CloseTimeslotsForTimeHandler implements RequestStreamHandler {
 		}
 		
 		if(schedule != null) {
-			if(schedule.getSecretCode().equals(originizerSecretCode)) {
+			if(schedule.getSecretCode().equals(organizerSecretCode)) {
 				try {
 					List<Timeslot> timeSlots = timeSlotDAO.getAllTimeslotsWithScheduleID(scheduleID);
 					List<Timeslot> corretTimeSlots = new ArrayList<Timeslot>();
