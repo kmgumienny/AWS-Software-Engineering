@@ -339,7 +339,7 @@
         var ourTableBody = document.createElement("tbody");
 
         var timeSlotDate = new Date(1776, 6, 4);
-        var startWeekDate = new Date(startDate.getTime())
+        var startWeekDate = new Date(beginningDate.getTime())
         //Add this to the function call
         startWeekDate = new Date(startWeekDate.getTime() + (604800000)*weekNum);
         if(weekNum != 0) {
@@ -361,15 +361,20 @@
         var shouldAdd = false;
         var shouldBuild = false;
         var shouldDatesBuild = true;
-
+        var current = 0;
+        var startWeekDateDay = startWeekDate.getDay();
 
         for (var j = 0; j < numMeetings; j++) {
 
             var row = document.createElement("tr");
 
-                for (var i = startWeekDate.getDay() - 1; i < 7; i++) {
+                for (var i = startWeekDateDay - 1; i < 7; i++) {
 
-                    testDate.setDate(startWeekDate.getDate() + i - startWeekDate.getDay() - 1);
+
+                    current = i - startWeekDateDay - 1;
+                    testDate = new Date(startWeekDate.getTime() + (current*86400000));
+                    console.log(testDate);
+
 
                     if (testDate <= endDate) {
                         for (var x = 0; x < js.timeSlots.length; x++) {
@@ -422,6 +427,13 @@
 
                                 shouldBuild = true;
                                 shouldAdd = true;
+                                var slotNum = js.timeSlots[x].startTime.date.year == startWeekDate.getFullYear();
+                                var slotNum2 = js.timeSlots[x].startTime.date.month == startWeekDate.getMonth()+1;
+                                var slotNum3= js.timeSlots[x].startTime.date.day == startWeekDate.getDate();
+                                var slotNum31= js.timeSlots[x].startTime.date.day ;
+                                var slotNum32= startWeekDate.getDate();
+
+                                var slotNum4 = js.timeSlots[x].slotNumInDay == j+1;
 
                                 //Create time slots in the beginning of rows
                                 if(js.timeSlots[x].startTime.date.year == startWeekDate.getFullYear()
