@@ -174,7 +174,7 @@
 
 
 <div id="meetingDiv" style="display: none">
-    <h3>For Attendee</h3>
+    <h3>For Attendee: Create Meeting</h3>
     <form id="meetingForm" name="meetingForm" onsubmit="JavaScript:createMeeting()">
         <label>
             Your selected Timeslot has an ID of:
@@ -187,7 +187,7 @@
         </label>
 
         <label style="margin-bottom: 15px; display: block;">
-            <input id="createMeetingButton" type="button" value="Submit" onClick="JavaScript:createMeeting()">
+            <input id="createMeetingButton" type="button" value="Create Meeting" onClick="JavaScript:createMeeting()">
             <br>
         </label>
     </form>
@@ -208,7 +208,7 @@
 </div>
 
 <div id="cancelMeetingDiv" style="display: none">
-    <h3>For Attendee</h3>
+    <h3>For Attendee: Cancel Meeting</h3>
     <form id="cancelMeetingForm" name="meetingForm" onsubmit="JavaScript:deleteMeeting()">
         <label>
             Your selected Timeslot has an ID of:
@@ -220,12 +220,12 @@
         </label>
 
         <label>
-            Enter your secret key to continue:
+            Enter the secret key you were given when scheduled to continue:
             <input id="meetingSecretKey" type="text" required>
         </label>
 
         <label style="margin-bottom: 15px; display: block;">
-            <input id="cancelMeetingButton" type="button" value="Submit" onClick="JavaScript:deleteMeeting()">
+            <input id="cancelMeetingButton" type="button" value="Delete Meeting" onClick="JavaScript:deleteMeeting()">
             <br>
         </label>
     </form>
