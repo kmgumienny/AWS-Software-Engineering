@@ -4,7 +4,9 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +26,46 @@ public class ScheduleDAO
     	}
     }
     
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
+    public boolean addSchedule(Schedule schedule) throws Exception
+    {
+    	try
+    	{
+    		PreparedStatement ps = connection.prepareStatement("SELECT * FROM Schedules WHERE scheduleID = ?;");
+    		ps.setString(1, schedule.getScheduleID());
+    		ResultSet resultSet = ps.executeQuery();
+
+    		// Schedule already present?
+    		while (resultSet.next())
+    		{
+    			resultSet.close();
+    			return false;
+    		}
+
+    		//TODO: cannot yet do the RDS calls, as do not yet have the database up and running
+    		ps = connection.prepareStatement("INSERT INTO Schedules (scheduleName, scheduleID, organizerSecretCode, startDate, "
+    				+ "endDate, dailyStartTime, dailyEndTime, timeSlotDuration, creationDateTime)"
+    				+ " values(?,?,?,?,?,?,?,?,?);");
+    		ps.setString(1,  schedule.getScheduleName());
+    		ps.setString(2,  schedule.getScheduleID());
+    		ps.setString(3, schedule.getSecretCode());
+    		ps.setDate(4, Date.valueOf(schedule.getStartDate()));
+    		ps.setDate(5, Date.valueOf(schedule.getEndDate()));
+    		ps.setInt(6, schedule.getDayStartTime());
+    		ps.setInt(7, schedule.getDayEndTime());
+    		ps.setInt(8, schedule.getTimeSlotDuration());
+    		ps.setTimestamp(9, Timestamp.valueOf(schedule.getCreationDate()));
+    		ps.execute();
+
+    		return true;
+
+    	} catch (Exception e)
+    	{
+    		throw new Exception("Failed to insert schedule: " + e.getMessage());
+    	}
+    }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public Schedule getSchedule(String scheduleID) throws Exception
@@ -143,47 +184,9 @@ public class ScheduleDAO
         int startTime = resultSet.getInt("dailyStartTime");
         int endTime = resultSet.getInt("dailyEndTime");
         int duration = resultSet.getInt("timeSlotDuration");
+        LocalDateTime creationDateTime = resultSet.getTimestamp("creationDateTime").toLocalDateTime();
 
-        return new Schedule(name, ID, secretCode, startDate, endDate, startTime, endTime, duration);
+        return new Schedule(name, ID, secretCode, startDate, endDate, startTime, endTime, duration, creationDateTime);
     }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    public boolean addSchedule(Schedule schedule) throws Exception
-    {
-        try
-        {
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Schedules WHERE scheduleID = ?;");
-            ps.setString(1, schedule.getScheduleID());
-            ResultSet resultSet = ps.executeQuery();
-            
-            // Schedule already present?
-            while (resultSet.next())
-            {
-                resultSet.close();
-                return false;
-            }
-
-            //TODO: cannot yet do the RDS calls, as do not yet have the database up and running
-            ps = connection.prepareStatement("INSERT INTO Schedules (scheduleName, scheduleID, organizerSecretCode, startDate, "
-            									+ "endDate, dailyStartTime, dailyEndTime, timeSlotDuration)"
-            									+ " values(?,?,?,?,?,?,?,?);");
-            ps.setString(1,  schedule.getScheduleName());
-            ps.setString(2,  schedule.getScheduleID());
-            ps.setString(3, schedule.getSecretCode());
-            ps.setDate(4, Date.valueOf(schedule.getStartDate()));
-            ps.setDate(5, Date.valueOf(schedule.getEndDate()));
-            ps.setInt(6, schedule.getDayStartTime());
-            ps.setInt(7, schedule.getDayEndTime());
-            ps.setInt(8, schedule.getTimeSlotDuration());
-            ps.execute();
-
-            return true;
-
-        } catch (Exception e)
-        {
-            throw new Exception("Failed to insert schedule: " + e.getMessage());
-        }
-    }
-    
 }

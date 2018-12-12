@@ -85,7 +85,7 @@ public class CloseSingleTimeslotHandler implements RequestStreamHandler {
 			logger.log(req.toString());
 			status = "OK";
 			
-			closeSingleTimeSlot(req.timeSlotID, req.organizerSecretCode);
+			closeSingleTimeSlot(req.timeSlotID, req.originizerSecretCode);
 			
 			//Response creation
 			if(status.equals("OK")){
@@ -113,7 +113,7 @@ public class CloseSingleTimeslotHandler implements RequestStreamHandler {
 	
 ////////////////////////////////////////////////////////////////////////////////////
 	
-	void closeSingleTimeSlot(String timeslotID, String organizerSecretCode) {
+	void closeSingleTimeSlot(String timeslotID, String originizerSecretCode) {
 		TimeslotDAO timeSlotDAO = new TimeslotDAO();
 		ScheduleDAO scheduleDAO = new ScheduleDAO();
 		String secretCode = null;
@@ -129,9 +129,7 @@ public class CloseSingleTimeslotHandler implements RequestStreamHandler {
 		}
 		
 		if(timeSlot != null) {
-			System.out.println(secretCode);
-			System.out.println(organizerSecretCode);
-			if(secretCode.equals(organizerSecretCode)) {
+			if(secretCode.equals(originizerSecretCode)) {
 				if(!timeSlot.getIsReserved()) {
 					if(timeSlot.getIsOpen()) {
 						timeSlot.setIsOpen(false);

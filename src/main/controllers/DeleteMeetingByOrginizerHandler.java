@@ -90,7 +90,7 @@ public class DeleteMeetingByOrginizerHandler implements RequestStreamHandler {
 			DeleteMeetingByOrginizerRequest req = new Gson().fromJson(body, DeleteMeetingByOrginizerRequest.class);
 			logger.log(req.toString());
 
-			String ans = deleteMeeting(req.meetingID, req.organizerSecretCode);
+			String ans = deleteMeeting(req.meetingID, req.orginizerSecretCode);
 			
 			// compute proper response:
 			if(ans.equals("Meeting is deleted successifully.")) {
@@ -121,7 +121,7 @@ public class DeleteMeetingByOrginizerHandler implements RequestStreamHandler {
 	
 ////////////////////////////////////////////////////////////////////////////////////
 	
-	String deleteMeeting(String meetingID, String organizerSecretCode) {
+	String deleteMeeting(String meetingID, String orginizerSecretCode) {
 		MeetingDAO meetingDAO = new MeetingDAO();
 		ScheduleDAO scheduleDAO = new ScheduleDAO();
 		Meeting meeting = null;
@@ -140,7 +140,7 @@ public class DeleteMeetingByOrginizerHandler implements RequestStreamHandler {
 				String secretCode = scheduleDAO.getSchedule(meeting.getScheduleID()).getSecretCode();
 
 				//check of the secret code is correct
-				if(organizerSecretCode.equals(secretCode)) {
+				if(orginizerSecretCode.equals(secretCode)) {
 					TimeslotDAO timeSlotDAO = new TimeslotDAO();
 					Timeslot timeSlot = null;
 

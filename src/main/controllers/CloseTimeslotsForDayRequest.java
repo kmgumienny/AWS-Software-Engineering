@@ -9,12 +9,12 @@ package main.controllers;
 
 public class CloseTimeslotsForDayRequest {
 	String scheduleID;
-	String organizerSecretCode;
+	String originizerSecretCode;
 	String closeDate;
 	
-	public CloseTimeslotsForDayRequest (String scheduleID, String organizerSecretCode, String closeDate) {
+	public CloseTimeslotsForDayRequest (String scheduleID, String originizerSecretCode, String closeDate) {
 		this.scheduleID = scheduleID;
-		this.organizerSecretCode = organizerSecretCode;
+		this.originizerSecretCode = originizerSecretCode;
 		this.closeDate = closeDate;
 	}
 	

@@ -9,14 +9,14 @@ package main.controllers;
 
 public class DeleteMeetingByOrginizerRequest {
 	String meetingID;
-	String organizerSecretCode;
+	String orginizerSecretCode;
 	
-	public DeleteMeetingByOrginizerRequest (String meetingID, String organizerSecretCode) {
+	public DeleteMeetingByOrginizerRequest (String meetingID, String orginizerSecretCode) {
 		this.meetingID = meetingID;
-		this.organizerSecretCode = organizerSecretCode;
+		this.orginizerSecretCode = orginizerSecretCode;
 	}
 	
 	public String toString() {
-		return "Get(Delete meeting with ID of:" + meetingID + " and with orginizer secrete code of:" + organizerSecretCode + ")";
+		return "Get(Delete meeting with ID of:" + meetingID + " and with orginizer secrete code of:" + orginizerSecretCode + ")";
 	}
 }

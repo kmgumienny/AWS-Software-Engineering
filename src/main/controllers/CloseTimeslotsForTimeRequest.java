@@ -9,14 +9,14 @@ package main.controllers;
 
 public class CloseTimeslotsForTimeRequest {
 	String scheduleID;
-	String organizerSecretCode;
+	String originizerSecretCode;
 	int hour;
 	int minute;
 	
 	
-	public CloseTimeslotsForTimeRequest (String scheduleID, String organizerSecretCode, int hour, int minute) {
+	public CloseTimeslotsForTimeRequest (String scheduleID, String originizerSecretCode, int hour, int minute) {
 		this.scheduleID = scheduleID;
-		this.organizerSecretCode = organizerSecretCode;
+		this.originizerSecretCode = originizerSecretCode;
 		this.hour = hour;
 		this.minute = minute;
 	}
