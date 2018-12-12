@@ -9,13 +9,13 @@ package main.controllers;
 
 public class ExtandEndDateRequest {
 	String scheduleID;
-	String organizerSecretCode;
+	String originizerSecretCode;
 	String newDate;
 	
 	
-	public ExtandEndDateRequest (String scheduleID, String organizerSecretCode, String newDate) {
+	public ExtandEndDateRequest (String scheduleID, String originizerSecretCode, String newDate) {
 		this.scheduleID = scheduleID;
-		this.organizerSecretCode = organizerSecretCode;
+		this.originizerSecretCode = originizerSecretCode;
 		this.newDate = newDate;
 	}
 	

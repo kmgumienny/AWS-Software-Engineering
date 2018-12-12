@@ -120,8 +120,11 @@ public class CreateScheduleHandler implements RequestStreamHandler {
 		ScheduleDAO dao = new ScheduleDAO();
 		
 		
+		//date of creation
+		LocalDateTime creationDate = LocalDateTime.now();
+		
 		//create new schedule only
-		Schedule schedule = new Schedule(scheduleName, startDate, endDate, dayStartTime, dayEndTime, timeSlotDuration);
+		Schedule schedule = new Schedule(scheduleName, startDate, endDate, dayStartTime, dayEndTime, timeSlotDuration, creationDate);
 		
 		//try to add to the RDS schedule table
 		try {

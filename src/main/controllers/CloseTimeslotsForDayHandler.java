@@ -91,7 +91,7 @@ public class CloseTimeslotsForDayHandler implements RequestStreamHandler {
 			logger.log(req.toString());
 			status = "OK";
 			
-			closeTimeSlotsForDay(req.scheduleID, req.organizerSecretCode, req.closeDate);
+			closeTimeSlotsForDay(req.scheduleID, req.originizerSecretCode, req.closeDate);
 			
 			//Response creation
 			if(status.equals("OK")){
@@ -119,7 +119,7 @@ public class CloseTimeslotsForDayHandler implements RequestStreamHandler {
 	
 ////////////////////////////////////////////////////////////////////////////////////
 	
-	void closeTimeSlotsForDay(String scheduleID, String organizerSecretCode, String closeDates) {
+	void closeTimeSlotsForDay(String scheduleID, String originizerSecretCode, String closeDates) {
 		TimeslotDAO timeSlotDAO = new TimeslotDAO();
 		ScheduleDAO scheduleDAO = new ScheduleDAO();
 		LocalDate date = parseDate(closeDates);
@@ -136,7 +136,7 @@ public class CloseTimeslotsForDayHandler implements RequestStreamHandler {
 		}
 		
 		if(schedule != null) {
-			if(schedule.getSecretCode().equals(organizerSecretCode)) {
+			if(schedule.getSecretCode().equals(originizerSecretCode)) {
 				try {
 					List<Timeslot> timeSlots = timeSlotDAO.getAllTimeslotsWithScheduleID(scheduleID);
 					List<Timeslot> corretTimeSlots = new ArrayList<Timeslot>();

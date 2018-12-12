@@ -2,12 +2,12 @@ package main.controllers;
 
 public class OpenTimeslotsForDayRequest {
 	String scheduleID;
-	String organizerSecretCode;
+	String originizerSecretCode;
 	String openDate;
 	
-	public OpenTimeslotsForDayRequest (String scheduleID, String organizerSecretCode, String openDate) {
+	public OpenTimeslotsForDayRequest (String scheduleID, String originizerSecretCode, String openDate) {
 		this.scheduleID = scheduleID;
-		this.organizerSecretCode = organizerSecretCode;
+		this.originizerSecretCode = originizerSecretCode;
 		this.openDate = openDate;
 	}
 	

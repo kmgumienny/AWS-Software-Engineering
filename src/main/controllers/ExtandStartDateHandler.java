@@ -93,7 +93,7 @@ public class ExtandStartDateHandler implements RequestStreamHandler {
 			
 			LocalDate newDate = parseDate(req.newStartDate);
 			
-			extandScheduleStartingDate(req.scheduleID, req.organizerSecretCode, newDate);
+			extandScheduleStartingDate(req.scheduleID, req.originizerSecretCode, newDate);
 			
 			//Response creation
 			if(status.equals("OK")){
@@ -121,7 +121,7 @@ public class ExtandStartDateHandler implements RequestStreamHandler {
 	
 ////////////////////////////////////////////////////////////////////////////////////
 	
-	void extandScheduleStartingDate(String scheduleID, String organizerSecretCode, LocalDate newDate) {
+	void extandScheduleStartingDate(String scheduleID, String originizerSecretCode, LocalDate newDate) {
 		ScheduleDAO scheduleDAO = new ScheduleDAO();
 		Schedule schedule = null;
 
@@ -133,7 +133,7 @@ public class ExtandStartDateHandler implements RequestStreamHandler {
 		}
 
 		if(schedule != null) {
-			if(schedule.getSecretCode().equals(organizerSecretCode)) {
+			if(schedule.getSecretCode().equals(originizerSecretCode)) {
 				if(newDate.isBefore(schedule.getStartDate())) {
 					LocalDate endDate = schedule.getEndDate();
 					int startTime = schedule.getDayStartTime();

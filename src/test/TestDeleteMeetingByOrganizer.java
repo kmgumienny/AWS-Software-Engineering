@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 
@@ -63,8 +64,8 @@ public class TestDeleteMeetingByOrganizer
 		// Add the Schedule to the database
 		try
 		{
-			scheduleDAO.addSchedule(new Schedule(SCHEDULE_NAME, SCHEDULE_ID, SECRET_CODE, START_DATE, END_DATE,
-					DAY_START_TIME, DAY_END_TIME, DURATION));
+			scheduleDAO.addSchedule(new Schedule(SCHEDULE_NAME, SCHEDULE_ID, SECRET_CODE, LocalDate.parse(START_DATE), LocalDate.parse(END_DATE),
+					DAY_START_TIME, DAY_END_TIME, DURATION, LocalDateTime.now()));
 		}
 		catch(Exception e)
 		{
@@ -98,7 +99,7 @@ public class TestDeleteMeetingByOrganizer
 		//create sample Json
 		JsonObject input = new JsonObject();
 		input.addProperty("meetingID", MEETING_ID);
-		input.addProperty("organizerSecretCode", SECRET_CODE);
+		input.addProperty("orginizerSecretCode", SECRET_CODE);
 		
 		// set the sample json as a ByteArrayInputStream, to be sent into handler.handleRequest(...);
 		InputStream inputVal = new ByteArrayInputStream(input.toString().getBytes());

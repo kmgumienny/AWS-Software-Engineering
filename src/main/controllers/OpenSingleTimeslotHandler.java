@@ -85,7 +85,7 @@ public class OpenSingleTimeslotHandler implements RequestStreamHandler {
 			logger.log(req.toString());
 			status = "OK";
 			
-			openSingleTimeSlot(req.timeSlotID, req.organizerSecretCode);
+			openSingleTimeSlot(req.timeSlotID, req.originizerSecretCode);
 			
 			//Response creation
 			if(status.equals("OK")){
@@ -113,7 +113,7 @@ public class OpenSingleTimeslotHandler implements RequestStreamHandler {
 	
 ////////////////////////////////////////////////////////////////////////////////////
 	
-	void openSingleTimeSlot(String timeslotID, String organizerSecretCode) {
+	void openSingleTimeSlot(String timeslotID, String originizerSecretCode) {
 		TimeslotDAO timeSlotDAO = new TimeslotDAO();
 		ScheduleDAO scheduleDAO = new ScheduleDAO();
 		String secretCode = null;
@@ -128,7 +128,7 @@ public class OpenSingleTimeslotHandler implements RequestStreamHandler {
 		}
 
 		if(timeSlot != null) {
-			if(secretCode.equals(organizerSecretCode)) {
+			if(secretCode.equals(originizerSecretCode)) {
 				if(!timeSlot.getIsOpen()) {
 					timeSlot.setIsOpen(true);
 					try {
@@ -145,7 +145,7 @@ public class OpenSingleTimeslotHandler implements RequestStreamHandler {
 			}
 			else {
 				logger.log("Secret code provided is incorrect.");
-				status = "Organizer secret code provided is not correct to complete this action. Please try again with the correct secret code.";
+				status = "Orginizer secret code provided is not correct to complete this action. Please try again with the correct secret code.";
 			}
 		}
 		else {

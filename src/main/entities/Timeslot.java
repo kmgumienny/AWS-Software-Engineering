@@ -1,9 +1,6 @@
 package main.entities;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Random;
 
 public class Timeslot
