@@ -201,74 +201,74 @@
     </div>
 </div>
 
-<!--<div id="filterDiv" style="text-align: center; border-width: 2px; border-color: black; margin-top: 20px; display: block;">-->
-    <!--&lt;!&ndash;<p style="color: salmon;">By having the organizer panel open, participant functions are disabled.</p>&ndash;&gt;-->
+<div id="filterDiv" style="text-align: center; border-width: 2px; border-color: black; margin-top: 20px; display: block;">
+    <!--<p style="color: salmon;">By having the organizer panel open, participant functions are disabled.</p>-->
 
-    <!--Search for a list of open time slots-->
-    <!--(filtered by Month, Year, Day-Of-Week, Day-Of-Month, or  Timeslot).-->
+    Search for a list of open time slots
+    (filtered by Month, Year, Day-Of-Week, Day-Of-Month, or  Timeslot).
 
-    <!--<div style="display: flex;">-->
-        <!--<div style="width: 33%; margin-left: auto; margin-right: auto;">-->
-            <!--<h3>Filter Results</h3>-->
-            <!--<form id="asdgadsf" onsubmit="JavaScript:something()">-->
-                <!--<label style="margin-bottom: 15px; display: block;">-->
-                    <!--Filter by Month:-->
-                    <!--<select id="monthFilter">-->
-                        <!--<option selected="selected" value=0>None</option>-->
-                        <!--<option value=1>January</option>-->
-                        <!--<option value=2>February</option>-->
-                        <!--<option value=3>March</option>-->
-                        <!--<option value=4>April</option>-->
-                        <!--<option value=5>May</option>-->
-                        <!--<option value=6>June</option>-->
-                        <!--<option value=7>July</option>-->
-                        <!--<option value=8>August</option>-->
-                        <!--<option value=9>September</option>-->
-                        <!--<option value=10>October</option>-->
-                        <!--<option value=11>November</option>-->
-                        <!--<option value=12>December</option>-->
-                    <!--</select>-->
-                <!--</label>-->
+    <div style="display: flex;">
+        <div style="width: 33%; margin-left: auto; margin-right: auto;">
+            <h3>Filter Results</h3>
+            <form id="asdgadsf" onsubmit="JavaScript:filterTimeslots()">
+                <label style="margin-bottom: 15px; display: block;">
+                    Filter by Month:
+                    <select id="monthFilter">
+                        <option selected="selected" value=0>None</option>
+                        <option value=1>January</option>
+                        <option value=2>February</option>
+                        <option value=3>March</option>
+                        <option value=4>April</option>
+                        <option value=5>May</option>
+                        <option value=6>June</option>
+                        <option value=7>July</option>
+                        <option value=8>August</option>
+                        <option value=9>September</option>
+                        <option value=10>October</option>
+                        <option value=11>November</option>
+                        <option value=12>December</option>
+                    </select>
+                </label>
 
-                <!--<label style="margin-bottom: 15px; display: block;">-->
-                    <!--Filter by Year:-->
-                    <!--<input id="yearFilter" placeholder="2018" style="width: 30px;" maxlength="4" pattern="\d*" id="gasdfasdf" type="text" required>-->
-                <!--</label>-->
+                <label style="margin-bottom: 15px; display: block;">
+                    Filter by Year:
+                    <input id="yearFilter" placeholder="2018" style="width: 30px;" maxlength="4" pattern="\d*" id="gasdfasdf" type="text" required>
+                </label>
 
-                <!--<label style="margin-bottom: 15px; display: block;">-->
-                    <!--Filter by Day:-->
-                    <!--<select id="dayFilter">-->
-                        <!--<option selected="selected" value=0>None</option>-->
-                        <!--<option value=1>Monday</option>-->
-                        <!--<option value=2>Tuesday</option>-->
-                        <!--<option value=3>Wednesday</option>-->
-                        <!--<option value=4>Thursday</option>-->
-                        <!--<option value=5>Friday</option>-->
-                    <!--</select>-->
-                <!--</label>-->
+                <label style="margin-bottom: 15px; display: block;">
+                    Filter by Day:
+                    <select id="dayFilter">
+                        <option selected="selected" value=0>None</option>
+                        <option value=1>Monday</option>
+                        <option value=2>Tuesday</option>
+                        <option value=3>Wednesday</option>
+                        <option value=4>Thursday</option>
+                        <option value=5>Friday</option>
+                    </select>
+                </label>
 
-                <!--<label style="margin-bottom: 15px; display: block;">-->
-                    <!--Filter by Day of Month:-->
-                    <!--<input id="dayOfMonthFilter" placeholder="12" style="width: 14px;" maxlength="2" pattern="\d*" type="text" required>-->
-                <!--</label>-->
+                <label style="margin-bottom: 15px; display: block;">
+                    Filter by Day of Month:
+                    <input id="dayOfMonthFilter" placeholder="23" style="width: 14px;" maxlength="2" pattern="\d*" type="text" required>
+                </label>
 
-                <!--<label style="margin-bottom: 15px; display: block;">-->
-                    <!--Filter by Timeslot:-->
-                    <!--<input id="Hour" placeholder="12" style="width: 14px;" maxlength="2" pattern="\d*" type="text" required>:-->
-                    <!--<input id="Minutes" placeholder="30" style="width: 14px;" maxlength="2" pattern="\d*" type="text" required>-->
+                <label style="margin-bottom: 15px; display: block;">
+                    Filter by Timeslot:
+                    <input id="hourFilter" placeholder="12" style="width: 14px;" maxlength="2" pattern="\d*" type="text" required>:
+                    <input id="minutesFilter" placeholder="30" style="width: 14px;" maxlength="2" pattern="\d*" type="text" required>
 
-                <!--</label>-->
+                </label>
 
-                <!--<label style="margin-bottom: 15px; display: block;">-->
-                    <!--<input type="button" value="Submit" onClick="JavaScript:something()">-->
-                <!--</label>-->
+                <label style="margin-bottom: 15px; display: block;">
+                    <input type="button" value="Submit" onClick="JavaScript:filterTimeslots()">
+                </label>
 
-                <!--<br>-->
-            <!--</form>-->
-            <!--<P id="asvadfvds" style="color: red;"></P>-->
-        <!--</div>-->
-    <!--</div>-->
-<!--</div>-->
+                <br>
+            </form>
+            <P id="asvadfvds" style="color: red;"></P>
+        </div>
+    </div>
+</div>
 
 
 <div id="meetingDiv" style="display: none">
@@ -497,7 +497,7 @@
                     current = i - startWeekDateDay - 1;
                     testDate = new Date(startWeekDate.getTime() + (current*86400000));
 
-                    if (testDate <= endDate) {
+                    if (testDate <= endDate && testDate >= beginningDate) {
                         for (var x = 0; x < js.timeSlots.length; x++) {
                             //get the date of a timeslot
                             timeSlotDate = new Date(js.timeSlots[x].startTime.date.year, parseInt(js.timeSlots[x].startTime.date.month) - 1, js.timeSlots[x].startTime.date.day);
@@ -820,6 +820,91 @@
             };
         }
 
+    }
+
+    function filterTimeslots(){
+        var filteredTimeslots= [];
+        var placementArray= [];
+        var numSelected = 0;
+
+        var monthFilter = parseInt(document.getElementById('monthFilter').value);
+        var yearFilter = parseInt(document.getElementById('yearFilter').value);
+        var dayFilter = parseInt(document.getElementById('dayFilter').value);
+        var dayOfMonthFilter = parseInt(document.getElementById('dayOfMonthFilter').value);
+        var hourFilter = parseInt(document.getElementById('hourFilter').value);
+        var minuteFilter = parseInt(document.getElementById('minutesFilter').value);
+
+
+        if(monthFilter != 0)
+            numSelected++;
+        if(yearFilter)
+            numSelected++;
+        if(dayFilter != 0)
+            numSelected++;
+        if(dayOfMonthFilter)
+            numSelected++;
+        if(hourFilter && minuteFilter)
+            numSelected++;
+
+        if(numSelected != 0) {
+            for (var x = 0; x < js.timeSlots.length; x++) {
+                if (js.timeSlots[x].isOpen == true && js.timeSlots[x].isReserved == false) ;
+                placementArray.push(js.timeSlots[x])
+            }
+
+            filteredTimeslots = placementArray;
+            placementArray = [];
+
+
+            if(monthFilter != 0){
+                for (var x = 0; x < filteredTimeslots.length; x++) {
+                    if (filteredTimeslots[x].startTime.date.month == monthFilter)
+                        placementArray.push(filteredTimeslots[x])
+                }
+                filteredTimeslots = placementArray;
+                placementArray = [];
+            }
+
+
+            if(yearFilter){
+                for (var x = 0; x < filteredTimeslots.length; x++) {
+                    if (filteredTimeslots[x].startTime.date.year == yearFilter)
+                        placementArray.push(filteredTimeslots[x])
+                }
+                filteredTimeslots = placementArray;
+                placementArray = [];
+            }
+
+            if(dayFilter != 0){
+                for (var x = 0; x < filteredTimeslots.length; x++) {
+                    if (filteredTimeslots[x].dayInWeek == dayFilter)
+                        placementArray.push(filteredTimeslots[x])
+                }
+                filteredTimeslots = placementArray;
+                placementArray = [];
+            }
+
+            if(dayOfMonthFilter){
+                for (var x = 0; x < filteredTimeslots.length; x++) {
+                    if (filteredTimeslots[x].startTime.date.day == dayOfMonthFilter)
+                        placementArray.push(filteredTimeslots[x])
+                }
+
+                filteredTimeslots = placementArray;
+                placementArray = [];
+            }
+
+            if(hourFilter && minuteFilter){
+                for (var x = 0; x < filteredTimeslots.length; x++) {
+                    if (filteredTimeslots[x].startTime.time.hour == hourFilter && filteredTimeslots[x].startTime.time.minute == minuteFilter)
+                        placementArray.push(filteredTimeslots[x])
+                }
+                filteredTimeslots = placementArray;
+            }
+
+            alert(filteredTimeslots.length);
+
+        }
     }
 
     function createMeeting(){
