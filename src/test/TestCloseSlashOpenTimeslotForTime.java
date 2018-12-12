@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 
@@ -92,8 +93,8 @@ public class TestCloseSlashOpenTimeslotForTime
 		// Add schedule to the database
 		try
 		{
-			scheduleDAO.addSchedule(new Schedule(SCHEDULE_NAME, SCHEDULE_ID, SECRET_CODE, START_DATE, END_DATE, SCHEDULE_START_TIME,
-					END_TIME, INCREMENT));
+			scheduleDAO.addSchedule(new Schedule(SCHEDULE_NAME, SCHEDULE_ID, SECRET_CODE, LocalDate.parse(START_DATE), LocalDate.parse(END_DATE), SCHEDULE_START_TIME,
+					END_TIME, INCREMENT, LocalDateTime.now()));
 		}
 		catch(Exception e1)
 		{
@@ -130,7 +131,7 @@ public class TestCloseSlashOpenTimeslotForTime
 		//create sample Json
 		JsonObject input = new JsonObject();
 		input.addProperty("scheduleID", SCHEDULE_ID);
-		input.addProperty("organizerSecretCode", SECRET_CODE);
+		input.addProperty("originizerSecretCode", SECRET_CODE);
 		input.addProperty("hour", 10);
 		input.addProperty("minute", 30);
 		System.out.println(input.toString());

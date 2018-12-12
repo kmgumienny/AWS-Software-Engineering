@@ -8,6 +8,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.junit.Test;
 
@@ -102,8 +104,8 @@ public class TestGetSchedule
 	{
 		ScheduleDAO dao = new ScheduleDAO();
 		Schedule schedule = new Schedule(name, SCHEDULE_ID,
-				SECRET_CODE, START_DATE, END_DATE,
-				DAY_START_TIME, DAY_END_TIME, TIME_SLOT_DURATION);
+				SECRET_CODE, LocalDate.parse(START_DATE), LocalDate.parse(END_DATE),
+				DAY_START_TIME, DAY_END_TIME, TIME_SLOT_DURATION, LocalDateTime.now());
 		try
 		{
 		dao.addSchedule(schedule);

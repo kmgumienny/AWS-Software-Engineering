@@ -5,6 +5,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import org.junit.Test;
 
 import main.database.ScheduleDAO;
@@ -41,7 +44,7 @@ public class TestDeleteSchedule
 		// Have to create a schedule to delete it, no?
 		try
 		{
-			Schedule schedule = new Schedule(SCHEDULE_NAME_1, SCHEDULE_ID_1, SECRET_CODE_1, START_DATE_1, END_DATE_1, START_TIME_1, END_TIME_1, INCREMENT_1);
+			Schedule schedule = new Schedule(SCHEDULE_NAME_1, SCHEDULE_ID_1, SECRET_CODE_1, LocalDate.parse(START_DATE_1), LocalDate.parse(END_DATE_1), START_TIME_1, END_TIME_1, INCREMENT_1, LocalDateTime.now());
 			boolean addBool = dao.addSchedule(schedule);
 			assertTrue(addBool);
 		}

@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 
@@ -58,8 +59,9 @@ public class TestOpenSlashCloseTimeslot
 		ScheduleDAO scheduleDAO = new ScheduleDAO();
 		
 		Timeslot timeslot = new Timeslot(TIMESLOT_ID, SCHEDULE_ID, WEEK, DAY_IN_WEEK, SLOT_NUM_IN_DAY, TIMESLOT_START_TIME, false, true);
-		Schedule schedule = new Schedule(SCHEDULE_NAME, SCHEDULE_ID, SECRET_CODE, START_DATE, END_DATE, 
-				SCHEDULE_START_TIME, END_TIME, INCREMENT);
+		Schedule schedule = new Schedule(SCHEDULE_NAME, SCHEDULE_ID, SECRET_CODE, LocalDate.parse(START_DATE), LocalDate.parse(END_DATE), 
+				SCHEDULE_START_TIME, END_TIME, INCREMENT, LocalDateTime.now());
+
 
 		// Add the schedule to the database
 		try
@@ -118,7 +120,7 @@ public class TestOpenSlashCloseTimeslot
 		//create sample Json
 		JsonObject openInput = new JsonObject();
 		openInput.addProperty("timeSlotID", TIMESLOT_ID);
-		openInput.addProperty("organizerSecretCode", SECRET_CODE);
+		openInput.addProperty("originizerSecretCode", SECRET_CODE);
 		System.out.println(openInput.toString());
 		
 		// set the sample json as a ByteArrayInputStream, to be sent into handler.handleRequest(...);

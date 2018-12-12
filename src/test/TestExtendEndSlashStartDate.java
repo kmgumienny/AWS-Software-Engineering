@@ -7,6 +7,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.junit.Test;
 
@@ -59,8 +61,8 @@ public class TestExtendEndSlashStartDate
 		// Add the Schedule to the database
 		try
 		{
-			scheduleDAO.addSchedule(new Schedule(SCHEDULE_NAME, SCHEDULE_ID, SECRET_CODE, START_DATE, END_DATE,
-					DAY_START_TIME, DAY_END_TIME, DURATION));
+			scheduleDAO.addSchedule(new Schedule(SCHEDULE_NAME, SCHEDULE_ID, SECRET_CODE, LocalDate.parse(START_DATE), LocalDate.parse(END_DATE),
+					DAY_START_TIME, DAY_END_TIME, DURATION, LocalDateTime.now()));
 		}
 		catch(Exception e)
 		{
@@ -75,7 +77,7 @@ public class TestExtendEndSlashStartDate
 		//create sample Json
 		JsonObject endInput = new JsonObject();
 		endInput.addProperty("scheduleID", SCHEDULE_ID);
-		endInput.addProperty("organizerSecretCode", SECRET_CODE);
+		endInput.addProperty("originizerSecretCode", SECRET_CODE);
 		endInput.addProperty("newDate", NEW_END_DATE);
 		
 		// set the sample json as a ByteArrayInputStream, to be sent into handler.handleRequest(...);
@@ -103,7 +105,7 @@ public class TestExtendEndSlashStartDate
 		//create sample Json
 		JsonObject startInput = new JsonObject();
 		startInput.addProperty("scheduleID", SCHEDULE_ID);
-		startInput.addProperty("organizerSecretCode", SECRET_CODE);
+		startInput.addProperty("originizerSecretCode", SECRET_CODE);
 		startInput.addProperty("newStartDate", NEW_START_DATE);
 		
 		// set the sample json as a ByteArrayInputStream, to be sent into handler.handleRequest(...);
