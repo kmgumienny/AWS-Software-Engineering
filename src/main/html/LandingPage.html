@@ -202,7 +202,7 @@
 </div>
 
 <!--<div id="filterDiv" style="text-align: center; border-width: 2px; border-color: black; margin-top: 20px; display: block;">-->
-    <!--<p style="color: salmon;">By having the organizer panel open, participant functions are disabled.</p>-->
+    <!--&lt;!&ndash;<p style="color: salmon;">By having the organizer panel open, participant functions are disabled.</p>&ndash;&gt;-->
 
     <!--Search for a list of open time slots-->
     <!--(filtered by Month, Year, Day-Of-Week, Day-Of-Month, or  Timeslot).-->
@@ -211,9 +211,10 @@
         <!--<div style="width: 33%; margin-left: auto; margin-right: auto;">-->
             <!--<h3>Filter Results</h3>-->
             <!--<form id="asdgadsf" onsubmit="JavaScript:something()">-->
-                <!--<label>-->
-                    <!--Filter by Month-->
+                <!--<label style="margin-bottom: 15px; display: block;">-->
+                    <!--Filter by Month:-->
                     <!--<select id="monthFilter">-->
+                        <!--<option selected="selected" value=0>None</option>-->
                         <!--<option value=1>January</option>-->
                         <!--<option value=2>February</option>-->
                         <!--<option value=3>March</option>-->
@@ -228,13 +229,40 @@
                         <!--<option value=12>December</option>-->
                     <!--</select>-->
                 <!--</label>-->
+
                 <!--<label style="margin-bottom: 15px; display: block;">-->
-                    <!--What is the Schedule ID?-->
-                    <!--<input id="gasdfasdf" type="text" required>-->
+                    <!--Filter by Year:-->
+                    <!--<input id="yearFilter" placeholder="2018" style="width: 30px;" maxlength="4" pattern="\d*" id="gasdfasdf" type="text" required>-->
                 <!--</label>-->
+
                 <!--<label style="margin-bottom: 15px; display: block;">-->
-                    <!--<input id="dgasdfasdf" type="button" value="Submit" onClick="JavaScript:something()">-->
+                    <!--Filter by Day:-->
+                    <!--<select id="dayFilter">-->
+                        <!--<option selected="selected" value=0>None</option>-->
+                        <!--<option value=1>Monday</option>-->
+                        <!--<option value=2>Tuesday</option>-->
+                        <!--<option value=3>Wednesday</option>-->
+                        <!--<option value=4>Thursday</option>-->
+                        <!--<option value=5>Friday</option>-->
+                    <!--</select>-->
                 <!--</label>-->
+
+                <!--<label style="margin-bottom: 15px; display: block;">-->
+                    <!--Filter by Day of Month:-->
+                    <!--<input id="dayOfMonthFilter" placeholder="12" style="width: 14px;" maxlength="2" pattern="\d*" type="text" required>-->
+                <!--</label>-->
+
+                <!--<label style="margin-bottom: 15px; display: block;">-->
+                    <!--Filter by Timeslot:-->
+                    <!--<input id="Hour" placeholder="12" style="width: 14px;" maxlength="2" pattern="\d*" type="text" required>:-->
+                    <!--<input id="Minutes" placeholder="30" style="width: 14px;" maxlength="2" pattern="\d*" type="text" required>-->
+
+                <!--</label>-->
+
+                <!--<label style="margin-bottom: 15px; display: block;">-->
+                    <!--<input type="button" value="Submit" onClick="JavaScript:something()">-->
+                <!--</label>-->
+
                 <!--<br>-->
             <!--</form>-->
             <!--<P id="asvadfvds" style="color: red;"></P>-->
@@ -520,13 +548,6 @@
 
                                 shouldBuild = true;
                                 shouldAdd = true;
-                                var slotNum = js.timeSlots[x].startTime.date.year == startWeekDate.getFullYear();
-                                var slotNum2 = js.timeSlots[x].startTime.date.month == startWeekDate.getMonth()+1;
-                                var slotNum3= js.timeSlots[x].startTime.date.day == startWeekDate.getDate();
-                                var slotNum31= js.timeSlots[x].startTime.date.day ;
-                                var slotNum32= startWeekDate.getDate();
-
-                                var slotNum4 = js.timeSlots[x].slotNumInDay == j+1;
 
                                 //Create time slots in the beginning of rows
                                 if(js.timeSlots[x].startTime.date.year == startWeekDate.getFullYear()
@@ -649,7 +670,7 @@
         document.getElementById('closeOpenTimeslotsDayMessage').innerText = '';
         var b = document.getElementById('closeOpenTimeslotDate').value.split(/\D/);
         var pickedDate = new Date(b[0], --b[1], b[2]);
-        var daysNum
+        var daysNum = pickedDate.getDate();
         if(pickedDate.getDate() <10)
             daysNum = '0'+pickedDate.getDate();
         var dateString = pickedDate.getFullYear() + '-' + parseInt(pickedDate.getMonth() + 1) + '-' + daysNum;
@@ -723,11 +744,12 @@
             extendStartEndDate()
     }
 
+
     function extendStartEndDate(){
         document.getElementById('extendStartEndDateMessage').innerText = '';
         var b = document.getElementById('extendStartEndDateDate').value.split(/\D/);
         var pickedDate = new Date(b[0], --b[1], b[2]);
-        var daysNum
+        var daysNum = pickedDate.getDate();
         if(pickedDate.getDate() <10)
             daysNum = '0'+pickedDate.getDate();
         var dateString = pickedDate.getFullYear() + '-' + parseInt(pickedDate.getMonth() + 1) + '-' + daysNum;
