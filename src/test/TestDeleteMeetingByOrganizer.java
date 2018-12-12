@@ -99,7 +99,7 @@ public class TestDeleteMeetingByOrganizer
 		//create sample Json
 		JsonObject input = new JsonObject();
 		input.addProperty("meetingID", MEETING_ID);
-		input.addProperty("originizerSecretCode", SECRET_CODE);
+		input.addProperty("orginizerSecretCode", SECRET_CODE);
 		
 		// set the sample json as a ByteArrayInputStream, to be sent into handler.handleRequest(...);
 		InputStream inputVal = new ByteArrayInputStream(input.toString().getBytes());
