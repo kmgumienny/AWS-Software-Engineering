@@ -85,7 +85,7 @@ public class CloseSingleTimeslotHandler implements RequestStreamHandler {
 			logger.log(req.toString());
 			status = "OK";
 			
-			closeSingleTimeSlot(req.timeSlotID, req.originizerSecretCode);
+			closeSingleTimeSlot(req.timeSlotID, req.organizerSecretCode);
 			
 			//Response creation
 			if(status.equals("OK")){
@@ -122,6 +122,8 @@ public class CloseSingleTimeslotHandler implements RequestStreamHandler {
 		try {
 			timeSlot = timeSlotDAO.getTimeslot(timeslotID);
 			secretCode = scheduleDAO.getSchedule(timeSlot.getScheduleID()).getSecretCode();
+			System.out.println(secretCode);
+			System.out.println(originizerSecretCode);
 		} catch (Exception e) {
 			logger.log("Failed to get timeslot or the schedule.");
 			status = "Something went wrong and request failed to exicute. Please retry";
