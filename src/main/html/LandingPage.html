@@ -41,10 +41,10 @@
 
 <div id="changeWeekButtons" style="margin-top: 10%; visibility: hidden;">
     <div style="float: left;">
-        <input type="button" value="Previous Week" onClick="JavaScript:generateSchedule(js, -1)">
+        <input type="button" value="Previous Week" onClick="JavaScript:generateSchedule(-1)">
     </div>
     <div style="float: right;">
-        <input type="button" value="Next Week" onClick="Javascript:generateSchedule(js, 1)">
+        <input type="button" value="Next Week" onClick="Javascript:generateSchedule(1)">
     </div>
     <br>
     <br>
@@ -167,10 +167,80 @@
             </label>
         </div>
 
+        <div style="width: 33%; margin-left: auto; margin-right: auto;">
+            <h3>Extend Start Date/End Date</h3>
+            <form onsubmit="JavaScript:checkExtendStartEndDate()">
+                <label>
+                    What is the Schedule Secret Key?
+                    <input id="extendStartEndDateSecretKey" type="text" required/>
+                    <br>
+                </label>
+                <label>
+                    Which would you like to extend?
+                    <select id="extendStartEndDateSelect">
+                        <option selected="selected" value='End Date'>End Date</option>
+                        <option value='Start Date'>Start Date</option>
+                    </select>
+                </label>
+                <label style="margin-bottom: 15px; display: block;">
+                    Date for which to apply to:
+                    <input id="extendStartEndDateDate" type="date" required>
+                </label>
 
+                <label style="margin-bottom: 15px; display: block;">
+                    <input id="extendStartEndDateButton" type="button" value="Submit" onClick="JavaScript:checkExtendStartEndDate()">
+                    <br>
+                </label>
+            </form>
+            <P id="extendStartEndDateMessage" style="color: red;"></P>
+            <label id="extendStartEndDateReload" style="margin-bottom: 15px; display: none;">
+                <input type="button" value="Reload" onClick="JavaScript:handleGetClick()">
+                <br>
+            </label>
+        </div>
     </div>
-
 </div>
+
+<!--<div id="filterDiv" style="text-align: center; border-width: 2px; border-color: black; margin-top: 20px; display: block;">-->
+    <!--<p style="color: salmon;">By having the organizer panel open, participant functions are disabled.</p>-->
+
+    <!--Search for a list of open time slots-->
+    <!--(filtered by Month, Year, Day-Of-Week, Day-Of-Month, or  Timeslot).-->
+
+    <!--<div style="display: flex;">-->
+        <!--<div style="width: 33%; margin-left: auto; margin-right: auto;">-->
+            <!--<h3>Filter Results</h3>-->
+            <!--<form id="asdgadsf" onsubmit="JavaScript:something()">-->
+                <!--<label>-->
+                    <!--Filter by Month-->
+                    <!--<select id="monthFilter">-->
+                        <!--<option value=1>January</option>-->
+                        <!--<option value=2>February</option>-->
+                        <!--<option value=3>March</option>-->
+                        <!--<option value=4>April</option>-->
+                        <!--<option value=5>May</option>-->
+                        <!--<option value=6>June</option>-->
+                        <!--<option value=7>July</option>-->
+                        <!--<option value=8>August</option>-->
+                        <!--<option value=9>September</option>-->
+                        <!--<option value=10>October</option>-->
+                        <!--<option value=11>November</option>-->
+                        <!--<option value=12>December</option>-->
+                    <!--</select>-->
+                <!--</label>-->
+                <!--<label style="margin-bottom: 15px; display: block;">-->
+                    <!--What is the Schedule ID?-->
+                    <!--<input id="gasdfasdf" type="text" required>-->
+                <!--</label>-->
+                <!--<label style="margin-bottom: 15px; display: block;">-->
+                    <!--<input id="dgasdfasdf" type="button" value="Submit" onClick="JavaScript:something()">-->
+                <!--</label>-->
+                <!--<br>-->
+            <!--</form>-->
+            <!--<P id="asvadfvds" style="color: red;"></P>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
 
 
 <div id="meetingDiv" style="display: none">
@@ -258,6 +328,11 @@
     var js = {};
     var beginningDate;
     var endingDate;
+    var startDate;
+    var endDate;
+
+
+
     var getURL = 'https://0ssnizv9l4.execute-api.us-east-2.amazonaws.com/alpha/getschedule';
     var deleteURL = 'https://gh13hei2z1.execute-api.us-east-2.amazonaws.com/alpha/deleteschedule';
     var scheduleMeetingURL = 'https://bf8e9h7l2j.execute-api.us-east-2.amazonaws.com/alpha/schedulemeeting'
@@ -267,6 +342,9 @@
     var openMeetingOrganizerURL = 'https://coph493euh.execute-api.us-east-2.amazonaws.com/alpha/opensingletimeslot';
     var closeTimeslotForDayURL = 'https://d5w374sfbg.execute-api.us-east-2.amazonaws.com/alpha/closetimeslotsforday';
     var openTimeslotForDayURL = 'https://0pnegnnijb.execute-api.us-east-2.amazonaws.com/alpha/opentimeslotsforday';
+    var extendScheduleEndURL = 'https://cq7o8jmsf7.execute-api.us-east-2.amazonaws.com/alpha/extandenddate';
+    var extendScheduleStartURL = 'https://5j7vupkxzd.execute-api.us-east-2.amazonaws.com/alpha/extendstartdate';
+
 
     function handleGetClick(){
         event.preventDefault();
@@ -305,7 +383,7 @@
                     else if (jsonResponse.httpCode == 200) {
                             js = jsonResponse;
                             weekNum = 0;
-                            generateSchedule(jsonResponse, 0);
+                        originalSetup(jsonResponse);
                         }
                     else
                         alert(jsonResponse.message);
@@ -314,14 +392,25 @@
         }
     }
 
-    function generateSchedule(json, weekNumIndicator) {
-        document.getElementById('errMessage').style.visibility = 'hidden';
+    function originalSetup(json){
         js = json;
+        startDate = new Date(js.schedule.startDate.year, parseInt(js.schedule.startDate.month) - 1,js.schedule.startDate.day);
+        endDate = new Date(js.schedule.endDate.year, parseInt(js.schedule.endDate.month) - 1, js.schedule.endDate.day);
+        beginningDate = new Date(js.schedule.startDate.year, parseInt(js.schedule.startDate.month) - 1,js.schedule.startDate.day);
+        endingDate = new Date(js.schedule.endDate.year, parseInt(js.schedule.endDate.month) - 1, js.schedule.endDate.day);
+        weekNum=0;
+
+
+        generateSchedule(0);
+
+    }
+
+    function generateSchedule(weekNumIndicator) {
+        document.getElementById('errMessage').style.visibility = 'hidden';
+
         document.getElementById('title').innerText = 'Welcome to the ' + js.schedule.scheduleName + ' schedule';
         document.getElementById('changeWeekButtons').style.visibility = "visible";
         weekNum += weekNumIndicator;
-        var startDate = new Date(js.schedule.startDate.year, parseInt(js.schedule.startDate.month) - 1,js.schedule.startDate.day);
-        var endDate = new Date(js.schedule.endDate.year, parseInt(js.schedule.endDate.month) - 1, js.schedule.endDate.day);
 
         if (startDate.getDay() == 0)
             startDate = new Date(startDate.getTime() + 86400000);
@@ -333,9 +422,6 @@
         else if (endDate.getDay() == 0)
             endDate = new Date(endDate.getTime() - (86400000*2));
 
-        beginningDate = startDate;
-        endingDate = endDate;
-        var numDays = (endDate - startDate) / 86400000;
 
         var startTime = js.schedule.dayStartTime;
         var endTime = js.schedule.dayEndTime;
@@ -380,11 +466,8 @@
 
                 for (var i = startWeekDateDay - 1; i < 7; i++) {
 
-
                     current = i - startWeekDateDay - 1;
                     testDate = new Date(startWeekDate.getTime() + (current*86400000));
-                    console.log(testDate);
-
 
                     if (testDate <= endDate) {
                         for (var x = 0; x < js.timeSlots.length; x++) {
@@ -566,15 +649,16 @@
         document.getElementById('closeOpenTimeslotsDayMessage').innerText = '';
         var b = document.getElementById('closeOpenTimeslotDate').value.split(/\D/);
         var pickedDate = new Date(b[0], --b[1], b[2]);
-        var dateString = pickedDate.getFullYear() + '-' + parseInt(pickedDate.getMonth() + 1) + '-' + pickedDate.getDate();
+        var daysNum
+        if(pickedDate.getDate() <10)
+            daysNum = '0'+pickedDate.getDate();
+        var dateString = pickedDate.getFullYear() + '-' + parseInt(pickedDate.getMonth() + 1) + '-' + daysNum;
 
-        if(pickedDate > endingDate || pickedDate < beginningDate){
+        if(pickedDate > endingDate || pickedDate < beginningDate)
             document.getElementById('closeOpenTimeslotsDayMessage').innerText = 'Date not a part of schedule. Try again.';
-        }
 
-        else {
+        else
             document.getElementById('closeOpenTimeslotsDayMessage').innerText = '';
-        }
 
         $("body").css("cursor", "progress");
 
@@ -629,6 +713,90 @@
 
             }
         };
+
+    }
+
+    function checkExtendStartEndDate(){
+        if(document.getElementById('extendStartEndDateDate').value == '' || document.getElementById('extendStartEndDateSecretKey').value == '' || document.getElementById('extendStartEndDateSelect').value == '')
+            document.getElementById('extendStartEndDateMessage').innerText = 'Fields are missing.';
+        else
+            extendStartEndDate()
+    }
+
+    function extendStartEndDate(){
+        document.getElementById('extendStartEndDateMessage').innerText = '';
+        var b = document.getElementById('extendStartEndDateDate').value.split(/\D/);
+        var pickedDate = new Date(b[0], --b[1], b[2]);
+        var daysNum
+        if(pickedDate.getDate() <10)
+            daysNum = '0'+pickedDate.getDate();
+        var dateString = pickedDate.getFullYear() + '-' + parseInt(pickedDate.getMonth() + 1) + '-' + daysNum;
+        var inputDateGood = false;
+
+        var dateModifyData;
+        var secretKey = document.getElementById('extendStartEndDateSecretKey').value;
+
+        var theURL;
+
+        if(document.getElementById('extendStartEndDateSelect').value == 'End Date') {
+            if(pickedDate < endingDate)
+                document.getElementById('extendStartEndDateMessage').innerText = 'Date must be past the current end date.';
+            else
+                inputDateGood = true;
+
+            theURL = extendScheduleEndURL;
+            dateModifyData = {
+                'scheduleID': js.schedule.scheduleID,
+                'originizerSecretCode': secretKey,
+                'newDate': dateString
+            };
+        } else {
+            if (pickedDate > beginningDate)
+                document.getElementById('extendStartEndDateMessage').innerText = 'Date must be before the current end date.';
+            else
+                inputDateGood = true;
+
+            theURL = extendScheduleStartURL;
+            dateModifyData = {
+                'scheduleID': js.schedule.scheduleID,
+                'originizerSecretCode': secretKey,
+                'newStartDate': dateString
+            };
+        }
+
+        if(inputDateGood) {
+            $("body").css("cursor", "progress");
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", theURL, true);
+
+            var stringified = JSON.stringify(dateModifyData);
+
+            xhr.send(stringified);
+            xhr.onloadend = function () {
+                console.log(xhr);
+                console.log(xhr.request);
+
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                    console.log("XHR:" + xhr.responseText);
+                    $("body").css("cursor", "default");
+                    var jsonResponse = JSON.parse(xhr.responseText);
+
+                    if (jsonResponse.httpCode == 500)
+                        document.getElementById('extendStartEndDateMessage').innerText = "Error Making Meeting";
+                    else if (jsonResponse.httpCode == 200) {
+                        document.getElementById('extendStartEndDateMessage').innerText = "Extension has been made.";
+                        document.getElementById('extendStartEndDateSecretKey').value = '';
+                        document.getElementById('extendStartEndDateReload').style.display = "block";
+                    }
+                    else if (jsonResponse.httpCode == 422)
+                        document.getElementById('extendStartEndDateMessage').innerText = jsonResponse.message;
+                    else
+                        alert(jsonResponse.message);
+
+                }
+            };
+        }
 
     }
 
@@ -849,9 +1017,11 @@
         document.getElementById("organizerDeleteReload").style.display = "none";
         document.getElementById("cancelScheduleMeetingErrorMessage").value = "";
         document.getElementById("organizerCloseReload").style.display = "none";
+        document.getElementById("extendStartEndDateReload").style.display = "none";
         document.getElementById("closeOpenTimeslotsDayReload").style.display = "none";
         document.getElementById("cancelScheduleMeetingErrorMessage").value = "";
         document.getElementById("closeOpenTimeslotsDayMessage").value = "";
+        document.getElementById("extendStartEndDateMessage").innerText = "";
         document.getElementById("cancelMeetingSecretKey").value = "";
         document.getElementById("closeMeetingSecretKey").value = "";
         document.getElementById("organizerDeleteErrorMessage").innerText = "";
@@ -859,10 +1029,10 @@
         document.getElementById("meetingSecretKey").value = "";
         document.getElementById("organizerCloseMeetingID").value = "";
         document.getElementById("closeOpenTimeslotDate").value = "";
+        document.getElementById("extendStartEndDateSelect").value = "";
         document.getElementById("organizerCloseErrorMessage").innerText = "";
         document.getElementById('closeOpenH3').innerText = 'Close/Open TimeSlot';
         document.getElementById('closeOpenTimeslotsDayMessage').innerText = '';
-
 
     }
 
