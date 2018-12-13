@@ -154,4 +154,50 @@ public class Schedule
 	{
 		timeSlotDuration = newDuration;
 	}
+	
+///////////////////////////////////////////////////////////////////////////////////////
+
+	//Helper
+	public boolean dayWithinRange(int hoursPassed, LocalDateTime now)
+	{
+		//if the date past n hours is within 24 hours
+		if(hoursPassed < 24) {
+			
+			//if 
+			if(this.getCreationDate().getHour() + hoursPassed > now.getHour()) {
+				return true;
+			}
+			
+			if(this.getCreationDate().getHour() + hoursPassed == now.getHour()) {
+				if(this.getCreationDate().getMinute() > now.getMinute()) {
+					return true;
+				}
+			}
+		}
+		//if the date past n hours is longer than 24 hours
+		else {
+			int daysPassed = hoursPassed / 24;					
+		
+			if(this.getCreationDate().getDayOfYear() + daysPassed > now.getDayOfYear()) {
+				return true;
+			}
+			
+			//if the days passed are the same, the process is the same for checking on the same day
+			if(this.getCreationDate().getDayOfYear() + daysPassed == now.getDayOfYear()) {
+				if(this.getCreationDate().getHour() + hoursPassed > now.getHour()) {
+					return true;
+				}
+				
+				
+				if(this.getCreationDate().getHour() + hoursPassed == now.getHour()) {
+					if(this.getCreationDate().getMinute() > now.getMinute()) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+
 }

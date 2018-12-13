@@ -91,7 +91,7 @@ public class GetOldSchedulesHandler implements RequestStreamHandler{
 			
 			for(int i = 0; i < schedules.size(); i++) {
 				Schedule aSchedule = schedules.get(i);
-				if(!dayWithinRange(aSchedule, req.hoursPassed, timeNow)) {
+				if(!aSchedule.dayWithinRange(req.hoursPassed, timeNow)) {
 					schedules.remove(aSchedule);
 					
 				}
@@ -143,46 +143,5 @@ public class GetOldSchedulesHandler implements RequestStreamHandler{
 	
 ////////////////////////////////////////////////////////////////////////////////////
 	
-	boolean dayWithinRange(Schedule aSchedule, int hoursPassed, LocalDateTime now)
-	{
-		//if the date past n hours is within 24 hours
-		if(hoursPassed < 24) {
-			
-			//if 
-			if(aSchedule.getCreationDate().getHour() + hoursPassed > now.getHour()) {
-				return true;
-			}
-			
-			if(aSchedule.getCreationDate().getHour() + hoursPassed == now.getHour()) {
-				if(aSchedule.getCreationDate().getMinute() > now.getMinute()) {
-					return true;
-				}
-			}
-		}
-		//if the date past n hours is longer than 24 hours
-		else {
-			int daysPassed = hoursPassed / 24;					
-		
-			if(aSchedule.getCreationDate().getDayOfYear() + daysPassed > now.getDayOfYear()) {
-				return true;
-			}
-			
-			//if the days passed are the same, the process is the same for checking on the same day
-			if(aSchedule.getCreationDate().getDayOfYear() + daysPassed == now.getDayOfYear()) {
-				if(aSchedule.getCreationDate().getHour() + hoursPassed > now.getHour()) {
-					return true;
-				}
-				
-				
-				if(aSchedule.getCreationDate().getHour() + hoursPassed == now.getHour()) {
-					if(aSchedule.getCreationDate().getMinute() > now.getMinute()) {
-						return true;
-					}
-				}
-			}
-		}
-		
-		return false;
-	}
-
+	
 }
