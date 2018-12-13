@@ -517,7 +517,7 @@
 
 
                                     for (var y = 0; y < lastOccurance-firstOccurance + 1; y++) {
-                                        builderDate.setDate(testDate.getDate() + y);
+                                        builderDate= new Date(testDate.getTime() + (y*86400000));
                                         if ((builderDate.getTime() <= endDate.getTime()) && builderDate.getDay() < 6) {
 
                                             //Create empty cell top right corner
@@ -673,9 +673,12 @@
         var b = document.getElementById('closeOpenTimeslotDate').value.split(/\D/);
         var pickedDate = new Date(b[0], --b[1], b[2]);
         var daysNum = pickedDate.getDate();
+        var monthNum = parseInt(pickedDate.getMonth()+1);
+        if(parseInt(pickedDate.getMonth()+1) < 10)
+            monthNum = '0'+ parseInt(pickedDate.getMonth()+1);
         if(pickedDate.getDate() <10)
             daysNum = '0'+pickedDate.getDate();
-        var dateString = pickedDate.getFullYear() + '-' + parseInt(pickedDate.getMonth() + 1) + '-' + daysNum;
+        var dateString = pickedDate.getFullYear() + '-' + monthNum + '-' + daysNum;
 
         if(pickedDate > endingDate || pickedDate < beginningDate)
             document.getElementById('closeOpenTimeslotsDayMessage').innerText = 'Date not a part of schedule. Try again.';
@@ -752,9 +755,12 @@
         var b = document.getElementById('extendStartEndDateDate').value.split(/\D/);
         var pickedDate = new Date(b[0], --b[1], b[2]);
         var daysNum = pickedDate.getDate();
+        var monthNum = parseInt(pickedDate.getMonth()+1);
+        if(parseInt(pickedDate.getMonth()+1) < 10)
+            monthNum = '0'+ parseInt(pickedDate.getMonth()+1);
         if(pickedDate.getDate() <10)
             daysNum = '0'+pickedDate.getDate();
-        var dateString = pickedDate.getFullYear() + '-' + parseInt(pickedDate.getMonth() + 1) + '-' + daysNum;
+        var dateString = pickedDate.getFullYear() + '-' + monthNum + '-' + daysNum;
         var inputDateGood = false;
 
         var dateModifyData;
