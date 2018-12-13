@@ -200,30 +200,5 @@ public class Schedule
 		
 		return false;
 	}
-	
-///////////////////////////////////////////////////////////////////////////////////////
-	
-	//helper
-	public boolean scheduleOverRange(int daysPassed, LocalDateTime now)
-	{
-		
-		if(this.getCreationDate().getDayOfYear() + daysPassed > now.getDayOfYear()) {
-			return true;
-		}
-		
-		if(this.getCreationDate().getDayOfYear() + daysPassed == now.getDayOfYear()) {
-			if(this.creationDate.getHour() > now.getHour()) {
-				return true;
-			}
-			
-			if(this.creationDate.getHour() == now.getHour()) {
-				if(this.creationDate.getMinute() >= now.getMinute()) {
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
 
 }

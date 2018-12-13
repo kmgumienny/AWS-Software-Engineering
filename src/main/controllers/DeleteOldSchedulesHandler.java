@@ -88,11 +88,12 @@ public class DeleteOldSchedulesHandler implements RequestStreamHandler{
 
 			List<Schedule> schedules = getSchedules();
 			LocalDateTime timeNow = LocalDateTime.now();
+			LocalDateTime compareTime = timeNow.minusDays(req.daysPassed);
 			ScheduleDAO scheduleDAO = new ScheduleDAO();
 			
 			for(int i = 0; i < schedules.size(); i++) {
 				Schedule aSchedule = schedules.get(i);
-				if(aSchedule.scheduleOverRange(req.daysPassed, timeNow)) {
+				if(aSchedule.getCreationDate().isBefore(compareTime)) {
 					try {
 						scheduleDAO.deleteSchedule(aSchedule.getScheduleID());
 					} catch (Exception e) {
