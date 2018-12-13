@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -83,26 +84,22 @@ public class GetOldSchedulesHandler implements RequestStreamHandler{
 			status = "OK";
 
 			List<Schedule> schedules = getSchedules();
+			List<Schedule> resultList = new ArrayList<Schedule>();
 			LocalDateTime timeNow = LocalDateTime.now();
 			LocalDateTime compareTime = timeNow.minusHours(req.hoursPassed);
 
 
 				for(int i = 0; i < schedules.size(); i++) {
-					boolean worked = false;
 					Schedule aSchedule = schedules.get(i);
 					if(aSchedule.getCreationDate().isAfter(compareTime) && aSchedule.getCreationDate().isBefore(timeNow)) {
-						worked = true;
+						resultList.add(aSchedule);
 					}
 					else if(aSchedule.getCreationDate().toLocalDate().equals(compareTime.toLocalDate())) {
 						if(aSchedule.getCreationDate().getHour() == compareTime.getHour()) {
 							if(aSchedule.getCreationDate().getMinute() == compareTime.getMinute()) {
-								worked = true;
+								resultList.add(aSchedule);
 							}
 						}
-					}
-					
-					if(!worked) {
-						schedules.remove(aSchedule);
 					}
 				}
 			
@@ -110,17 +107,13 @@ public class GetOldSchedulesHandler implements RequestStreamHandler{
 				response = new GetOldSchedulesResponse(status, 500);
 		        responseJson.put("body", new Gson().toJson(response));
 			}
-			else if(schedules != null && req.hoursPassed != 0) {
+			else if(resultList.size() > 0) {
 				// compute proper response for success
-				GetOldSchedulesResponse resp = new GetOldSchedulesResponse("Schedules retrieved", schedules);
+				GetOldSchedulesResponse resp = new GetOldSchedulesResponse("Schedules retrieved", resultList);
 		        responseJson.put("body", new Gson().toJson(resp));  
 			}
-			else if(req.hoursPassed == 0) {
-				response = new GetOldSchedulesResponse("Cannot get schedules created within " + req.hoursPassed + "hours", 422);
-				responseJson.put("body", new Gson().toJson(response));
-			}
 			else {
-				response = new GetOldSchedulesResponse("No schedules have been created within " + req.hoursPassed + "hours.", 422);
+				response = new GetOldSchedulesResponse("No schedules have been created within " + req.hoursPassed + " hours.", 422);
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 		}
