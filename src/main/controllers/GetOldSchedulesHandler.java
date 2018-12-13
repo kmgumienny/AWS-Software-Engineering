@@ -88,23 +88,27 @@ public class GetOldSchedulesHandler implements RequestStreamHandler{
 
 			List<Schedule> schedules = getSchedules();
 			LocalDateTime timeNow = LocalDateTime.now();
-			
-			for(int i = 0; i < schedules.size(); i++) {
-				Schedule aSchedule = schedules.get(i);
-				if(!aSchedule.scheduleWithinRange(req.hoursPassed, timeNow)) {
-					schedules.remove(aSchedule);
-					
+
+				for(int i = 0; i < schedules.size(); i++) {
+					Schedule aSchedule = schedules.get(i);
+					if(!aSchedule.scheduleWithinRange(req.hoursPassed, timeNow)) {
+						schedules.remove(aSchedule);
+						
+					}
 				}
-			}
 			
 			if(status.equals("Something went wrong and request failed to exicute. Please retry")){
 				response = new GetOldSchedulesResponse(status, 500);
 		        responseJson.put("body", new Gson().toJson(response));
 			}
-			else if(schedules != null) {
+			else if(schedules != null && req.hoursPassed != 0) {
 				// compute proper response for success
 				GetOldSchedulesResponse resp = new GetOldSchedulesResponse("Schedules retrieved", schedules);
 		        responseJson.put("body", new Gson().toJson(resp));  
+			}
+			else if(req.hoursPassed == 0) {
+				response = new GetOldSchedulesResponse("Cannot get schedules created within " + req.hoursPassed + "hours", 422);
+				responseJson.put("body", new Gson().toJson(response));
 			}
 			else {
 				response = new GetOldSchedulesResponse("No schedules have been created within " + req.hoursPassed + "hours.", 422);
