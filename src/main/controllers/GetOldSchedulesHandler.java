@@ -87,13 +87,13 @@ public class GetOldSchedulesHandler implements RequestStreamHandler{
 			String status = "OK";
 
 			List<Schedule> schedules = getSchedules();
-			List<Schedule> oldSchedules = null;
 			LocalDateTime timeNow = LocalDateTime.now();
 			
 			for(int i = 0; i < schedules.size(); i++) {
 				Schedule aSchedule = schedules.get(i);
-				if(dayWithinRange(aSchedule, req.hoursPassed, timeNow)) {
-					schedules.add(aSchedule);
+				if(!dayWithinRange(aSchedule, req.hoursPassed, timeNow)) {
+					schedules.remove(aSchedule);
+					
 				}
 			}
 			
