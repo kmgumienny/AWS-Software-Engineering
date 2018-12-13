@@ -14,7 +14,7 @@
         Create Schedule</button>
     </div>
 
-    <div  style="text-align: center; margin-top: 5%;">
+    <div style="text-align: center; margin-top: 5%;">
         <p id="errMessage" style="color: red;">
 
         </p>
@@ -39,16 +39,16 @@
         </form>
     </div>
 
-<div id="changeWeekButtons" style="margin-top: 10%; visibility: hidden;">
-    <div style="float: left;">
-        <input type="button" value="Previous Week" onClick="JavaScript:generateSchedule(-1)">
+    <div id="changeWeekButtons" style="margin-top: 10%; visibility: hidden;">
+        <div style="float: left;">
+            <input type="button" value="Previous Week" onClick="JavaScript:generateSchedule(-1)">
+        </div>
+        <div style="float: right;">
+            <input type="button" value="Next Week" onClick="Javascript:generateSchedule(1)">
+        </div>
+        <br>
+        <br>
     </div>
-    <div style="float: right;">
-        <input type="button" value="Next Week" onClick="Javascript:generateSchedule(1)">
-    </div>
-    <br>
-    <br>
-</div>
     <div id="calendarDiv"></div>
 
 
@@ -60,85 +60,87 @@
 
 </div>
 
-<div id="organizerDiv" style="text-align: center; border-width: 2px; border-color: black; margin-top: 20px; display: none;">
-<p style="color: salmon;">By having the organizer panel open, participant functions are disabled.</p>
+<div id="organizerDiv"
+     style="text-align: center; border-width: 2px; border-color: black; margin-top: 20px; display: none;">
+    <p style="color: salmon;">By having the organizer panel open, participant functions are disabled.</p>
 
 
     <div style="display: flex;">
-    <div style="width: 33%; margin-left: auto; margin-right: auto;">
-    <h3>Delete Schedule</h3>
-    <form id="deleteForm" onsubmit="JavaScript:deleteSchedule()">
-        <label>
-            What is the Secret Key?
-            <input id="secretKey" type="text" required/>
-        </label>
-        <label style="margin-bottom: 15px; display: block;">
-            What is the Schedule ID?
-            <input id="scheduleIDDelete" type="text" required>
-        </label>
-        <label style="margin-bottom: 15px; display: block;">
-            <input id="deleteMeetingButton" type="button" value="Submit" onClick="JavaScript:deleteSchedule()">
-            <br>
-        </label>
-    </form>
-    <P id="deleteErrorMessage" style="color: red;"></P>
-    </div>
-
-    <div style="width: 33%; margin-left: auto; margin-right: auto;">
-        <h3>Cancel Meeting</h3>
-        <form onsubmit="JavaScript:organizerCancelMeeting()">
-            <label>
-                What is the Schedule Secret Key?
-                <input id="cancelMeetingSecretKey" type="text" required/>
-            </label>
-            <label style="margin-bottom: 15px; display: block;">
-                Selected Time Slot has an ID of:
-                <input id="organizerCancelMeetingID" type="text" readonly>
-            </label>
-            <label style="margin-bottom: 15px; display: block;">
-                <input id="organizerCancelMeetingButton" type="button" value="Submit" onClick="JavaScript:organizerCancelMeeting()">
-                <br>
-            </label>
-        </form>
-        <P id="organizerDeleteErrorMessage" style="color: red;"></P>
-        <label id="organizerDeleteReload" style="margin-bottom: 15px; display: none;">
-            <input type="button" value="Reload" onClick="JavaScript:handleGetClick()">
-            <br>
-        </label>
-    </div>
-
-<div style="width: 33%; margin-left: auto; margin-right: auto;">
-    <h3 id="closeOpenH3">Close/Open TimeSlot</h3>
-    <form onsubmit="JavaScript:chooseOpenClose()">
-        <label>
-            What is the Schedule Secret Key?
-            <input id="closeMeetingSecretKey" type="text" required/>
-        </label>
-        <label style="margin-bottom: 15px; display: block;">
-            Selected Time Slot has an ID of:
-            <input id="organizerCloseMeetingID" type="text" readonly>
-        </label>
-        <label style="margin-bottom: 15px; display: block;">
-            <input id="organizerCloseMeetingButton" type="button" value="Submit" onClick="JavaScript:chooseOpenClose()">
-            <br>
-        </label>
-    </form>
-    <P id="organizerCloseErrorMessage" style="color: red;"></P>
-    <label id="organizerCloseReload" style="margin-bottom: 15px; display: none;">
-        <input type="button" value="Reload" onClick="JavaScript:handleGetClick()">
-        <br>
-    </label>
-
-</div>
-
-</div>
-
-
-    <div style="display: flex;">
-
+        <div style="width: 33%; margin-left: auto; margin-right: auto;">
+            <h3>Delete Schedule</h3>
+            <form id="deleteForm" onsubmit="JavaScript:deleteSchedule()">
+                <label>
+                    What is the Secret Key?
+                    <input id="secretKey" type="text" required/>
+                </label>
+                <label style="margin-bottom: 15px; display: block;">
+                    What is the Schedule ID?
+                    <input id="scheduleIDDelete" type="text" required>
+                </label>
+                <label style="margin-bottom: 15px; display: block;">
+                    <input id="deleteMeetingButton" type="button" value="Submit" onClick="JavaScript:deleteSchedule()">
+                    <br>
+                </label>
+            </form>
+            <P id="deleteErrorMessage" style="color: red;"></P>
+        </div>
 
         <div style="width: 33%; margin-left: auto; margin-right: auto;">
-            <h3>Cancel/Open Timeslots for a whole day</h3>
+            <h3>Cancel Meeting</h3>
+            <form onsubmit="JavaScript:organizerCancelMeeting()">
+                <label>
+                    What is the Schedule Secret Key?
+                    <input id="cancelMeetingSecretKey" type="text" required/>
+                </label>
+                <label style="margin-bottom: 15px; display: block;">
+                    Selected Time Slot has an ID of:
+                    <input id="organizerCancelMeetingID" type="text" readonly>
+                </label>
+                <label style="margin-bottom: 15px; display: block;">
+                    <input id="organizerCancelMeetingButton" type="button" value="Submit"
+                           onClick="JavaScript:organizerCancelMeeting()">
+                    <br>
+                </label>
+            </form>
+            <P id="organizerDeleteErrorMessage" style="color: red;"></P>
+            <label id="organizerDeleteReload" style="margin-bottom: 15px; display: none;">
+                <input type="button" value="Reload" onClick="JavaScript:handleGetClick()">
+                <br>
+            </label>
+        </div>
+
+        <div style="width: 33%; margin-left: auto; margin-right: auto;">
+            <h3 id="closeOpenH3">Close/Open TimeSlot</h3>
+            <form onsubmit="JavaScript:chooseOpenClose()">
+                <label>
+                    What is the Schedule Secret Key?
+                    <input id="closeMeetingSecretKey" type="text" required/>
+                </label>
+                <label style="margin-bottom: 15px; display: block;">
+                    Selected Time Slot has an ID of:
+                    <input id="organizerCloseMeetingID" type="text" readonly>
+                </label>
+                <label style="margin-bottom: 15px; display: block;">
+                    <input id="organizerCloseMeetingButton" type="button" value="Submit"
+                           onClick="JavaScript:chooseOpenClose()">
+                    <br>
+                </label>
+            </form>
+            <P id="organizerCloseErrorMessage" style="color: red;"></P>
+            <label id="organizerCloseReload" style="margin-bottom: 15px; display: none;">
+                <input type="button" value="Reload" onClick="JavaScript:handleGetClick()">
+                <br>
+            </label>
+
+        </div>
+
+    </div>
+
+
+    <div style="display: flex;">
+
+        <div style="width: 33%; margin-left: auto; margin-right: auto;">
+            <h3>Close/Open Timeslots for a whole day</h3>
             <form onsubmit="JavaScript:closeOpenTimeslotsDay()">
                 <label>
                     What is the Schedule Secret Key?
@@ -158,7 +160,8 @@
                 </label>
 
                 <label style="margin-bottom: 15px; display: block;">
-                    <input id="closeOpenTimeslotButton" type="button" value="Submit" onClick="JavaScript:closeOpenTimeslotsDay()">
+                    <input id="closeOpenTimeslotButton" type="button" value="Submit"
+                           onClick="JavaScript:closeOpenTimeslotsDay()">
                     <br>
                 </label>
             </form>
@@ -190,7 +193,8 @@
                 </label>
 
                 <label style="margin-bottom: 15px; display: block;">
-                    <input id="extendStartEndDateButton" type="button" value="Submit" onClick="JavaScript:checkExtendStartEndDate()">
+                    <input id="extendStartEndDateButton" type="button" value="Submit"
+                           onClick="JavaScript:checkExtendStartEndDate()">
                     <br>
                 </label>
             </form>
@@ -200,14 +204,52 @@
                 <br>
             </label>
         </div>
+
+        <div style="width: 33%; margin-left: auto; margin-right: auto;">
+            <h3>Close/Open all Timeslots for a Time </h3>
+            <form onsubmit="JavaScript:closeOpenTime()">
+                <label>
+                    What is the Schedule Secret Key?
+                    <input id="closeOpenTimeSecretKey" type="text" required/>
+                    <br>
+                </label>
+                <label>
+                    What would you like to do?
+                    <select id="closeOpenTimeDateID" name="startTime">
+                        <option selected='selected' value=Close>Close</option>
+                        <option value=Open>Open</option>
+                    </select>
+                </label>
+                <label style="margin-bottom: 15px; display: block;">
+                    Time for which to apply to:
+                    <input id="hourCloseOpen" placeholder="12" style="width: 14px;" maxlength="2" pattern="\d*" type="text"
+                           required>:
+                    <input id="minutesCloseOpen" placeholder="30" style="width: 14px;" maxlength="2" pattern="\d*"
+                           type="text" required>
+                </label>
+
+                <label style="margin-bottom: 15px; display: block;">
+                    <input id="closeOpenTimeButton" type="button" value="Submit"
+                           onClick="JavaScript:closeOpenTime()">
+                    <br>
+                </label>
+            </form>
+            <P id="closeOpenTimeDayMessage" style="color: red;"></P>
+            <label id="closeOpenTimeDayReload" style="margin-bottom: 15px; display: none;">
+                <input type="button" value="Reload" onClick="JavaScript:handleGetClick()">
+                <br>
+            </label>
+        </div>
+
     </div>
 </div>
 
-<div id="filterDiv" style="text-align: center; border-width: 2px; border-color: black; margin-top: 20px; display: none;">
+<div id="filterDiv"
+     style="text-align: center; border-width: 2px; border-color: black; margin-top: 20px; display: none;">
     <!--<p style="color: salmon;">By having the organizer panel open, participant functions are disabled.</p>-->
 
     Search for a list of open time slots
-    (filtered by any combination of Month, Year, Day-Of-Week, Day-Of-Month, or  Timeslot).
+    (filtered by any combination of Month, Year, Day-Of-Week, Day-Of-Month, or Timeslot).
 
     <div style="display: flex;">
         <div style="width: 33%; margin-left: auto; margin-right: auto;">
@@ -234,7 +276,8 @@
 
                 <label style="margin-bottom: 15px; display: block;">
                     Filter by Year:
-                    <input id="yearFilter" placeholder="2018" style="width: 30px;" maxlength="4" pattern="\d*" id="gasdfasdf" type="text" required>
+                    <input id="yearFilter" placeholder="2018" style="width: 30px;" maxlength="4" pattern="\d*"
+                           id="gasdfasdf" type="text" required>
                 </label>
 
                 <label style="margin-bottom: 15px; display: block;">
@@ -251,13 +294,16 @@
 
                 <label style="margin-bottom: 15px; display: block;">
                     Filter by Day of Month:
-                    <input id="dayOfMonthFilter" placeholder="23" style="width: 14px;" maxlength="2" pattern="\d*" type="text" required>
+                    <input id="dayOfMonthFilter" placeholder="23" style="width: 14px;" maxlength="2" pattern="\d*"
+                           type="text" required>
                 </label>
 
                 <label style="margin-bottom: 15px; display: block;">
                     Filter by Timeslot:
-                    <input id="hourFilter" placeholder="12" style="width: 14px;" maxlength="2" pattern="\d*" type="text" required>:
-                    <input id="minutesFilter" placeholder="30" style="width: 14px;" maxlength="2" pattern="\d*" type="text" required>
+                    <input id="hourFilter" placeholder="12" style="width: 14px;" maxlength="2" pattern="\d*" type="text"
+                           required>:
+                    <input id="minutesFilter" placeholder="30" style="width: 14px;" maxlength="2" pattern="\d*"
+                           type="text" required>
 
                 </label>
 
@@ -278,7 +324,7 @@
     <form id="meetingForm" name="meetingForm" onsubmit="JavaScript:createMeeting()">
         <label>
             Your selected Timeslot has an ID of:
-            <input id="timeslotKeyField" style="" readonly />
+            <input id="timeslotKeyField" style="" readonly/>
         </label>
         <label style="margin-bottom: 15px; display: block;">
             If you are a participant, enter your name below to reserve the timeslot:
@@ -295,7 +341,7 @@
     <form id="confirmMeetingForm" style="display: none;" onsubmit="JavaScript:handleGetClick()">
         <label>
             Your secret key is:
-            <input id="meetingSecretKeyField" style="" readonly />
+            <input id="meetingSecretKeyField" style="" readonly/>
         </label>
         <p>
             Press 'Reload' to reload once you have copied down your key.
@@ -312,7 +358,7 @@
     <form id="cancelMeetingForm" name="meetingForm" onsubmit="JavaScript:deleteMeeting()">
         <label>
             Your selected Timeslot has an ID of:
-            <input id="timeslotKeyField2" style="" readonly />
+            <input id="timeslotKeyField2" style="" readonly/>
         </label>
         <label style="margin-bottom: 15px; display: block;">
             This timeslot is reserved by:
@@ -340,17 +386,16 @@
         </label>
     </form>
 </div>
+<div>
+    <p style="color: salmon; display: none;" id="filterMessage">Sorry, no timeslots match your criteria. Try Again!</p>
 
-<div id="filterDivResults" style="display: none">
+    <div id="filterDivResults" style="display: none; text-align: center">
 
-
+    </div>
 </div>
-
 <div style="height: 150px;">
 
 </div>
-
-
 
 
 <div style="position: fixed;z-index: -1; left: 0; bottom: 15px; width: 100%; margin-top: 5%; color: white; text-align: center;">
@@ -367,7 +412,6 @@
     var endDate;
 
 
-
     var getURL = 'https://0ssnizv9l4.execute-api.us-east-2.amazonaws.com/alpha/getschedule';
     var deleteURL = 'https://gh13hei2z1.execute-api.us-east-2.amazonaws.com/alpha/deleteschedule';
     var scheduleMeetingURL = 'https://bf8e9h7l2j.execute-api.us-east-2.amazonaws.com/alpha/schedulemeeting'
@@ -379,20 +423,22 @@
     var openTimeslotForDayURL = 'https://0pnegnnijb.execute-api.us-east-2.amazonaws.com/alpha/opentimeslotsforday';
     var extendScheduleEndURL = 'https://cq7o8jmsf7.execute-api.us-east-2.amazonaws.com/alpha/extandenddate';
     var extendScheduleStartURL = 'https://5j7vupkxzd.execute-api.us-east-2.amazonaws.com/alpha/extendstartdate';
+    var closeAllForTimeURL = 'https://9rr7plmv95.execute-api.us-east-2.amazonaws.com/alpha/closetimeslotsfortime';
+    var openAllForTimeURL = 'https://7sps76eb4e.execute-api.us-east-2.amazonaws.com/alpha/opentimeslotsfortime';
 
 
-    function handleGetClick(){
+    function handleGetClick() {
         event.preventDefault();
-        if(document.getElementById("scheduleID").value == "")
+        if (document.getElementById("scheduleID").value == "")
             alert("Please Enter a Valid ScheduleID");
-        else{
+        else {
             $("body").css("cursor", "progress");
             var scheduleID = document.getElementById("scheduleID").value;
             //document.getElementById("scheduleForm").style.visibility = "hidden";
             document.getElementById("scheduleForm").style.display = "none";
             //document.getElementById("createScheduleDiv").style.visibility = "hidden";
             document.getElementById("createScheduleDiv").style.display = "none";
-            var getString= {};
+            var getString = {};
             getString["scheduleID"] = scheduleID;
             var js = JSON.stringify(getString);
 
@@ -410,16 +456,16 @@
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     $("body").css("cursor", "default");
 
-                    console.log ("XHR:" + xhr.responseText);
+                    console.log("XHR:" + xhr.responseText);
                     var jsonResponse = JSON.parse(xhr.responseText);
 
                     if (jsonResponse.httpCode == 422)
                         noScheduleFound();
                     else if (jsonResponse.httpCode == 200) {
-                            js = jsonResponse;
-                            weekNum = 0;
+                        js = jsonResponse;
+                        weekNum = 0;
                         originalSetup(jsonResponse);
-                        }
+                    }
                     else
                         alert(jsonResponse.message);
                 }
@@ -427,13 +473,13 @@
         }
     }
 
-    function originalSetup(json){
+    function originalSetup(json) {
         js = json;
-        startDate = new Date(js.schedule.startDate.year, parseInt(js.schedule.startDate.month) - 1,js.schedule.startDate.day);
+        startDate = new Date(js.schedule.startDate.year, parseInt(js.schedule.startDate.month) - 1, js.schedule.startDate.day);
         endDate = new Date(js.schedule.endDate.year, parseInt(js.schedule.endDate.month) - 1, js.schedule.endDate.day);
-        beginningDate = new Date(js.schedule.startDate.year, parseInt(js.schedule.startDate.month) - 1,js.schedule.startDate.day);
+        beginningDate = new Date(js.schedule.startDate.year, parseInt(js.schedule.startDate.month) - 1, js.schedule.startDate.day);
         endingDate = new Date(js.schedule.endDate.year, parseInt(js.schedule.endDate.month) - 1, js.schedule.endDate.day);
-        weekNum=0;
+        weekNum = 0;
 
 
         generateSchedule(0);
@@ -450,12 +496,12 @@
         if (startDate.getDay() == 0)
             startDate = new Date(startDate.getTime() + 86400000);
         else if (startDate.getDay() == 6)
-            startDate = new Date(startDate.getTime() + (86400000*2));
+            startDate = new Date(startDate.getTime() + (86400000 * 2));
 
         if (endDate.getDay() == 6)
             endDate = new Date(endDate.getTime() - 86400000);
         else if (endDate.getDay() == 0)
-            endDate = new Date(endDate.getTime() - (86400000*2));
+            endDate = new Date(endDate.getTime() - (86400000 * 2));
 
 
         var startTime = js.schedule.dayStartTime;
@@ -472,19 +518,19 @@
         var timeSlotDate = new Date(1776, 6, 4);
         var startWeekDate = new Date(beginningDate.getTime())
         //Add this to the function call
-        startWeekDate = new Date(startWeekDate.getTime() + (604800000)*weekNum);
-        if(weekNum != 0) {
+        startWeekDate = new Date(startWeekDate.getTime() + (604800000) * weekNum);
+        if (weekNum != 0) {
             var testFirstDay = startWeekDate.getDay();
-            startWeekDate.setDate(startWeekDate.getDate() - testFirstDay+1)
+            startWeekDate.setDate(startWeekDate.getDate() - testFirstDay + 1)
         }
         var testDate = new Date(startWeekDate.getTime());
 
         var firstOccurance = 5;
         var lastOccurance = 0;
         for (var x = 0; x < js.timeSlots.length; x++) {
-            if (js.timeSlots[x].dayInWeek < firstOccurance && js.timeSlots[x].week -1 == weekNum)
+            if (js.timeSlots[x].dayInWeek < firstOccurance && js.timeSlots[x].week - 1 == weekNum)
                 firstOccurance = js.timeSlots[x].dayInWeek;
-            if (js.timeSlots[x].dayInWeek > lastOccurance && js.timeSlots[x].week -1 == weekNum)
+            if (js.timeSlots[x].dayInWeek > lastOccurance && js.timeSlots[x].week - 1 == weekNum)
                 lastOccurance = js.timeSlots[x].dayInWeek;
         }
 
@@ -499,119 +545,113 @@
 
             var row = document.createElement("tr");
 
-                for (var i = startWeekDateDay - 1; i < 7; i++) {
+            for (var i = startWeekDateDay - 1; i < 7; i++) {
 
-                    current = i - startWeekDateDay - 1;
-                    testDate = new Date(startWeekDate.getTime() + (current*86400000));
+                current = i - startWeekDateDay - 1;
+                testDate = new Date(startWeekDate.getTime() + (current * 86400000));
 
-                    if (testDate <= endDate && testDate >= beginningDate) {
-                        for (var x = 0; x < js.timeSlots.length; x++) {
-                            //get the date of a timeslot
-                            timeSlotDate = new Date(js.timeSlots[x].startTime.date.year, parseInt(js.timeSlots[x].startTime.date.month) - 1, js.timeSlots[x].startTime.date.day);
+                if (testDate <= endDate && testDate >= beginningDate) {
+                    for (var x = 0; x < js.timeSlots.length; x++) {
+                        //get the date of a timeslot
+                        timeSlotDate = new Date(js.timeSlots[x].startTime.date.year, parseInt(js.timeSlots[x].startTime.date.month) - 1, js.timeSlots[x].startTime.date.day);
 
-                            if ((timeSlotDate.valueOf() === testDate.valueOf()) && ((js.timeSlots[x].slotNumInDay - 1) == j)) {
+                        if ((timeSlotDate.valueOf() === testDate.valueOf()) && ((js.timeSlots[x].slotNumInDay - 1) == j)) {
 
-                                //Building Dates on top of the table, only runs once
-                                if (js.timeSlots[x].slotNumInDay == 1 && j == 0 && shouldDatesBuild) {
-                                    shouldDatesBuild = false;
-                                    var dateRow = document.createElement("tr");
-                                    var builderDate = new Date(testDate.getTime());
+                            //Building Dates on top of the table, only runs once
+                            if (js.timeSlots[x].slotNumInDay == 1 && j == 0 && shouldDatesBuild) {
+                                shouldDatesBuild = false;
+                                var dateRow = document.createElement("tr");
+                                var builderDate = new Date(testDate.getTime());
 
-                                    //Set empty cell top right corner
-                                    var emptyCell = true;
+                                //Set empty cell top right corner
+                                var emptyCell = true;
 
 
-                                    for (var y = 0; y < lastOccurance-firstOccurance + 1; y++) {
-                                        builderDate= new Date(testDate.getTime() + (y*86400000));
-                                        if ((builderDate.getTime() <= endDate.getTime()) && builderDate.getDay() < 6) {
+                                for (var y = 0; y < lastOccurance - firstOccurance + 1; y++) {
+                                    builderDate = new Date(testDate.getTime() + (y * 86400000));
+                                    if ((builderDate.getTime() <= endDate.getTime()) && builderDate.getDay() < 6) {
 
-                                            //Create empty cell top right corner
-                                            if(emptyCell){
-                                                emptyCell = false;
-                                                var cellDate = document.createElement("td");
-                                                dateRow.appendChild(cellDate);
-                                            }
-                                            var dayString;
-                                            if(builderDate.getDay() == 1)
-                                                dayString = 'Monday'
-                                            else if(builderDate.getDay() == 2)
-                                                dayString = 'Tuesday';
-                                            else if(builderDate.getDay() == 3)
-                                                dayString = 'Wednesday';
-                                            else if(builderDate.getDay() == 4)
-                                                dayString = 'Thursday';
-                                            else if(builderDate.getDay() == 5)
-                                                dayString = 'Friday';
-
+                                        //Create empty cell top right corner
+                                        if (emptyCell) {
+                                            emptyCell = false;
                                             var cellDate = document.createElement("td");
-                                            cellDate.style.whiteSpace = 'pre';
-                                            var cellDateText = document.createTextNode(builderDate.getMonth() + 1 + '-' + builderDate.getDate() + '-' + builderDate.getFullYear() + '\u000a' + dayString);
-                                            cellDate.appendChild(cellDateText);
                                             dateRow.appendChild(cellDate);
                                         }
+                                        var dayString;
+                                        if (builderDate.getDay() == 1)
+                                            dayString = 'Monday'
+                                        else if (builderDate.getDay() == 2)
+                                            dayString = 'Tuesday';
+                                        else if (builderDate.getDay() == 3)
+                                            dayString = 'Wednesday';
+                                        else if (builderDate.getDay() == 4)
+                                            dayString = 'Thursday';
+                                        else if (builderDate.getDay() == 5)
+                                            dayString = 'Friday';
+
+                                        var cellDate = document.createElement("td");
+                                        cellDate.style.whiteSpace = 'pre';
+                                        var cellDateText = document.createTextNode(builderDate.getMonth() + 1 + '-' + builderDate.getDate() + '-' + builderDate.getFullYear() + '\u000a' + dayString);
+                                        cellDate.appendChild(cellDateText);
+                                        dateRow.appendChild(cellDate);
                                     }
-                                    ourTableBody.appendChild(dateRow);
                                 }
-
-                                shouldBuild = true;
-                                shouldAdd = true;
-
-                                //Create time slots in the beginning of rows
-                                if(js.timeSlots[x].startTime.date.year == startWeekDate.getFullYear()
-                                    && js.timeSlots[x].startTime.date.month == startWeekDate.getMonth()+1
-                                    && js.timeSlots[x].startTime.date.day == startWeekDate.getDate()
-                                    && js.timeSlots[x].slotNumInDay == j+1){
-                                    var cellTime = document.createElement("td");
-                                    if (js.timeSlots[x].startTime.time.minute == 0)
-                                        var cellTimeText = document.createTextNode(js.timeSlots[x].startTime.time.hour+  ":00");
-                                    else
-                                        var cellTimeText = document.createTextNode(js.timeSlots[x].startTime.time.hour+  ":" + js.timeSlots[x].startTime.time.minute);
-                                    cellTime.appendChild(cellTimeText);
-                                    row.appendChild(cellTime);
-                                }
-
-                                var cell = document.createElement("td");
-                                //var cellText = document.createTextNode(js.timeSlots[x].startTime.time.minute + " " + js.timeSlots[x].startTime.date.day);
-                                var scheduleButton = document.createElement("button");
-                                scheduleButton.id = js.timeSlots[x].timeslotID;
-                                scheduleButton.name = 'aButton';
-
-                                if (js.timeSlots[x].isReserved == true) {
-                                    for(var k = 0; k < js.meetings.length; k++){
-                                        if( js.meetings[k].timeslotID == js.timeSlots[x].timeslotID){
-                                            scheduleButton.innerText = js.meetings[k].meetingName;
-                                            scheduleButton.id = js.meetings[k].meetingID;
-                                            cell.style.backgroundColor = 'rgba(59, 65, 255, 0.5)';
-                                            break;
-                                        }
-                                    }
-                                } else
-                                    if(js.timeSlots[x].isOpen == true) {
-                                        scheduleButton.innerText = 'OPEN';
-                                        cell.style.backgroundColor = 'rgba(11, 202, 11, 0.43)';
-                                    } else
-                                        if (js.timeSlots[x].isOpen == false) {
-                                            scheduleButton.innerText = 'CLOSED';
-                                            scheduleButton.disabled = true;
-                                            cell.style.backgroundColor = 'rgba(255, 0, 0, 0.44)';
-                                        }
-
-                                scheduleButton.className = "meetingButton";
-                                cell.appendChild(scheduleButton);
-                                row.appendChild(cell);
+                                ourTableBody.appendChild(dateRow);
                             }
+
+                            shouldBuild = true;
+                            shouldAdd = true;
+
+                            //Create time slots in the beginning of rows
+                            if (js.timeSlots[x].startTime.date.year == startWeekDate.getFullYear()
+                                && js.timeSlots[x].startTime.date.month == startWeekDate.getMonth() + 1
+                                && js.timeSlots[x].startTime.date.day == startWeekDate.getDate()
+                                && js.timeSlots[x].slotNumInDay == j + 1) {
+                                var cellTime = document.createElement("td");
+                                if (js.timeSlots[x].startTime.time.minute == 0)
+                                    var cellTimeText = document.createTextNode(js.timeSlots[x].startTime.time.hour + ":00");
+                                else
+                                    var cellTimeText = document.createTextNode(js.timeSlots[x].startTime.time.hour + ":" + js.timeSlots[x].startTime.time.minute);
+                                cellTime.appendChild(cellTimeText);
+                                row.appendChild(cellTime);
+                            }
+
+                            var cell = document.createElement("td");
+                            //var cellText = document.createTextNode(js.timeSlots[x].startTime.time.minute + " " + js.timeSlots[x].startTime.date.day);
+                            var scheduleButton = document.createElement("button");
+                            scheduleButton.id = js.timeSlots[x].timeslotID;
+                            scheduleButton.name = 'aButton';
+
+                            if (js.timeSlots[x].isReserved == true) {
+                                for (var k = 0; k < js.meetings.length; k++) {
+                                    if (js.meetings[k].timeslotID == js.timeSlots[x].timeslotID) {
+                                        scheduleButton.innerText = js.meetings[k].meetingName;
+                                        scheduleButton.id = js.meetings[k].meetingID;
+                                        cell.style.backgroundColor = 'rgba(59, 65, 255, 0.5)';
+                                        break;
+                                    }
+                                }
+                            } else if (js.timeSlots[x].isOpen == true) {
+                                scheduleButton.innerText = 'OPEN';
+                                cell.style.backgroundColor = 'rgba(11, 202, 11, 0.43)';
+                            } else if (js.timeSlots[x].isOpen == false) {
+                                scheduleButton.innerText = 'CLOSED';
+                                scheduleButton.disabled = true;
+                                cell.style.backgroundColor = 'rgba(255, 0, 0, 0.44)';
+                            }
+
+                            scheduleButton.className = "meetingButton";
+                            cell.appendChild(scheduleButton);
+                            row.appendChild(cell);
                         }
-
                     }
-
                 }
-
+            }
 
             if (shouldAdd)
                 ourTableBody.appendChild(row);
             shouldAdd = false;
         }
-
 
         if (shouldBuild) {
             ourTable.appendChild(ourTableBody);
@@ -626,7 +666,7 @@
             attachEventListeners();
             document.getElementById("OrganizerButtonToggle").style.display = "block";
 
-        }else {
+        } else {
             alert("You have reached the limit of the Schedule. No schedule left to be generated.");
             weekNum = weekNum - weekNumIndicator;
         }
@@ -635,16 +675,16 @@
     }
 
 
-    function attachEventListeners(){
+    function attachEventListeners() {
         var meetingButtons = document.getElementsByClassName('meetingButton');
         for (var x = 0; x < meetingButtons.length; x++) {
             meetingButtons[x].addEventListener('click', function () {
-                if(document.getElementById("organizerDiv").style.display == "block"){
+                if (document.getElementById("organizerDiv").style.display == "block") {
                     if (this.innerText == 'OPEN' || this.innerText == 'CLOSED') {
-                        if(this.innerText == 'OPEN'){
+                        if (this.innerText == 'OPEN') {
                             document.getElementById('closeOpenH3').innerText = 'Close Timeslot'
                         }
-                        else{
+                        else {
                             document.getElementById('closeOpenH3').innerText = 'Open Timeslot'
                         }
 
@@ -652,18 +692,18 @@
                         document.getElementById('organizerCloseMeetingButton').disabled = false;
                         document.getElementById('organizerCloseMeetingID').value = this.id;
                     }
-                    else{
+                    else {
                         document.getElementById('organizerCancelMeetingID').value = this.id;
                         document.getElementById('organizerCancelMeetingButton').disabled = false;
                         document.getElementById('organizerCloseMeetingButton').disabled = true;
 
                     }
 
-                }else if(this.innerText == 'OPEN') {
+                } else if (this.innerText == 'OPEN') {
                     document.getElementById("meetingDiv").style.display = "block";
                     document.getElementById("cancelMeetingDiv").style.display = "none";
                     document.getElementById("timeslotKeyField").value = this.id;
-                }else {
+                } else {
                     document.getElementById("meetingDiv").style.display = "none";
                     document.getElementById("cancelMeetingDiv").style.display = "block";
                     document.getElementById("timeslotKeyField2").value = this.id;
@@ -673,19 +713,19 @@
         }
     }
 
-    function closeOpenTimeslotsDay(){
+    function closeOpenTimeslotsDay() {
         document.getElementById('closeOpenTimeslotsDayMessage').innerText = '';
         var b = document.getElementById('closeOpenTimeslotDate').value.split(/\D/);
         var pickedDate = new Date(b[0], --b[1], b[2]);
         var daysNum = pickedDate.getDate();
-        var monthNum = parseInt(pickedDate.getMonth()+1);
-        if(parseInt(pickedDate.getMonth()+1) < 10)
-            monthNum = '0'+ parseInt(pickedDate.getMonth()+1);
-        if(pickedDate.getDate() <10)
-            daysNum = '0'+pickedDate.getDate();
+        var monthNum = parseInt(pickedDate.getMonth() + 1);
+        if (parseInt(pickedDate.getMonth() + 1) < 10)
+            monthNum = '0' + parseInt(pickedDate.getMonth() + 1);
+        if (pickedDate.getDate() < 10)
+            daysNum = '0' + pickedDate.getDate();
         var dateString = pickedDate.getFullYear() + '-' + monthNum + '-' + daysNum;
 
-        if(pickedDate > endingDate || pickedDate < beginningDate)
+        if (pickedDate > endingDate || pickedDate < beginningDate)
             document.getElementById('closeOpenTimeslotsDayMessage').innerText = 'Date not a part of schedule. Try again.';
 
         else
@@ -697,7 +737,7 @@
         var secretKey = document.getElementById('closeOpenTimeslotSecretKey').value;
 
         var theURL;
-        if(document.getElementById('closeOpenTimeslotDateID').value == 'Close') {
+        if (document.getElementById('closeOpenTimeslotDateID').value == 'Close') {
             theURL = closeTimeslotForDayURL;
             dateModifyData = {
                 'scheduleID': js.schedule.scheduleID,
@@ -726,7 +766,7 @@
             console.log(xhr.request);
 
             if (xhr.readyState == XMLHttpRequest.DONE) {
-                console.log ("XHR:" + xhr.responseText);
+                console.log("XHR:" + xhr.responseText);
                 $("body").css("cursor", "default");
                 var jsonResponse = JSON.parse(xhr.responseText);
 
@@ -737,34 +777,106 @@
                     document.getElementById('closeOpenTimeslotSecretKey').value = '';
                     document.getElementById('closeOpenTimeslotsDayReload').style.display = "block";
                 }
-                else if(jsonResponse.httpCode == 422)
+                else if (jsonResponse.httpCode == 422)
                     document.getElementById('closeOpenTimeslotsDayMessage').innerText = jsonResponse.message;
                 else
                     alert(jsonResponse.message);
-
             }
         };
-
     }
 
-    function checkExtendStartEndDate(){
-        if(document.getElementById('extendStartEndDateDate').value == '' || document.getElementById('extendStartEndDateSecretKey').value == '' || document.getElementById('extendStartEndDateSelect').value == '')
+    function closeOpenTime() {
+        document.getElementById('closeOpenTimeDayMessage').innerText = '';
+        
+        if (document.getElementById('hourCloseOpen').value == '' || document.getElementById('minutesCloseOpen').value == ''){
+            document.getElementById('closeOpenTimeDayMessage').innerText = 'Missing Arguments. Try Again.';
+            return;
+        }
+        var pickedHour = parseInt(document.getElementById('hourCloseOpen').value);
+        var pickedMinutes = parseInt(document.getElementById('minutesCloseOpen').value);
+
+        var selectedTime = new Date((pickedHour * 3600000) + ((pickedMinutes)*60000));
+        var scheduleStartTime = new Date((js.schedule.dayStartTime * 3600000));
+        var scheduleEndTime = new Date((js.schedule.dayEndTime * 3600000));
+
+        if (selectedTime >= scheduleStartTime && selectedTime <= scheduleEndTime)
+            document.getElementById('closeOpenTimeDayMessage').innerText = '';
+        else {
+            document.getElementById('closeOpenTimeDayMessage').innerText = 'Time does not exist within schedule';
+            return;
+        }
+
+        var secretKey = document.getElementById('closeOpenTimeSecretKey').value;
+
+        var theURL;
+        if (document.getElementById('closeOpenTimeDateID').value == 'Close') {
+            theURL = closeAllForTimeURL;
+            dateModifyData = {
+                'scheduleID': js.schedule.scheduleID,
+                'originizerSecretCode': secretKey,
+                "hour": pickedHour,
+                "minute": pickedMinutes
+            };
+        }
+        else {
+            theURL = openAllForTimeURL;
+            dateModifyData = {
+                'scheduleID': js.schedule.scheduleID,
+                'originizerSecretCode': secretKey,
+                "hour": pickedHour,
+                "minute": pickedMinutes
+            };
+        }
+
+        $("body").css("cursor", "progress");
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", theURL, true);
+
+        var stringified = JSON.stringify(dateModifyData);
+
+        xhr.send(stringified);
+        xhr.onloadend = function () {
+            console.log(xhr);
+            console.log(xhr.request);
+
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                console.log("XHR:" + xhr.responseText);
+                $("body").css("cursor", "default");
+                var jsonResponse = JSON.parse(xhr.responseText);
+
+                if (jsonResponse.httpCode == 500)
+                    document.getElementById('closeOpenTimeDayMessage').innerText = "Error Making Meeting";
+                else if (jsonResponse.httpCode == 200) {
+                    document.getElementById('closeOpenTimeDayMessage').innerText = "Date has been modified.";
+                    document.getElementById('closeOpenTimeSecretKey').value = '';
+                    document.getElementById('closeOpenTimeDayReload').style.display = "block";
+                }
+                else if (jsonResponse.httpCode == 422)
+                    document.getElementById('closeOpenTimeDayMessage').innerText = jsonResponse.message;
+                else
+                    alert(jsonResponse.message);
+            }
+        };
+    }
+
+    function checkExtendStartEndDate() {
+        if (document.getElementById('extendStartEndDateDate').value == '' || document.getElementById('extendStartEndDateSecretKey').value == '' || document.getElementById('extendStartEndDateSelect').value == '')
             document.getElementById('extendStartEndDateMessage').innerText = 'Fields are missing.';
         else
             extendStartEndDate()
     }
 
 
-    function extendStartEndDate(){
+    function extendStartEndDate() {
         document.getElementById('extendStartEndDateMessage').innerText = '';
         var b = document.getElementById('extendStartEndDateDate').value.split(/\D/);
         var pickedDate = new Date(b[0], --b[1], b[2]);
         var daysNum = pickedDate.getDate();
-        var monthNum = parseInt(pickedDate.getMonth()+1);
-        if(parseInt(pickedDate.getMonth()+1) < 10)
-            monthNum = '0'+ parseInt(pickedDate.getMonth()+1);
-        if(pickedDate.getDate() <10)
-            daysNum = '0'+pickedDate.getDate();
+        var monthNum = parseInt(pickedDate.getMonth() + 1);
+        if (parseInt(pickedDate.getMonth() + 1) < 10)
+            monthNum = '0' + parseInt(pickedDate.getMonth() + 1);
+        if (pickedDate.getDate() < 10)
+            daysNum = '0' + pickedDate.getDate();
         var dateString = pickedDate.getFullYear() + '-' + monthNum + '-' + daysNum;
         var inputDateGood = false;
 
@@ -773,8 +885,8 @@
 
         var theURL;
 
-        if(document.getElementById('extendStartEndDateSelect').value == 'End Date') {
-            if(pickedDate < endingDate)
+        if (document.getElementById('extendStartEndDateSelect').value == 'End Date') {
+            if (pickedDate < endingDate)
                 document.getElementById('extendStartEndDateMessage').innerText = 'Date must be past the current end date.';
             else
                 inputDateGood = true;
@@ -799,7 +911,7 @@
             };
         }
 
-        if(inputDateGood) {
+        if (inputDateGood) {
             $("body").css("cursor", "progress");
 
             var xhr = new XMLHttpRequest();
@@ -828,16 +940,17 @@
                         document.getElementById('extendStartEndDateMessage').innerText = jsonResponse.message;
                     else
                         alert(jsonResponse.message);
-
                 }
             };
         }
-
     }
 
-    function filterTimeslots(){
-        var filteredTimeslots= [];
-        var placementArray= [];
+    function filterTimeslots() {
+        document.getElementById("filterDivResults").innerHTML = '';
+        document.getElementById('filterMessage').style.display = 'none';
+
+        var filteredTimeslots = [];
+        var placementArray = [];
         var numSelected = 0;
 
         var monthFilter = parseInt(document.getElementById('monthFilter').value);
@@ -848,18 +961,18 @@
         var minuteFilter = parseInt(document.getElementById('minutesFilter').value);
 
 
-        if(monthFilter != 0)
+        if (monthFilter != 0)
             numSelected++;
-        if(yearFilter)
+        if (yearFilter)
             numSelected++;
-        if(dayFilter != 0)
+        if (dayFilter != 0)
             numSelected++;
-        if(dayOfMonthFilter)
+        if (dayOfMonthFilter)
             numSelected++;
-        if(hourFilter && minuteFilter)
+        if (hourFilter && minuteFilter)
             numSelected++;
 
-        if(numSelected != 0) {
+        if (numSelected != 0) {
             for (var x = 0; x < js.timeSlots.length; x++) {
                 if (js.timeSlots[x].isOpen == true && js.timeSlots[x].isReserved == false) ;
                 placementArray.push(js.timeSlots[x])
@@ -868,8 +981,7 @@
             filteredTimeslots = placementArray;
             placementArray = [];
 
-
-            if(monthFilter != 0){
+            if (monthFilter != 0) {
                 for (var x = 0; x < filteredTimeslots.length; x++) {
                     if (filteredTimeslots[x].startTime.date.month == monthFilter)
                         placementArray.push(filteredTimeslots[x])
@@ -878,8 +990,7 @@
                 placementArray = [];
             }
 
-
-            if(yearFilter){
+            if (yearFilter) {
                 for (var x = 0; x < filteredTimeslots.length; x++) {
                     if (filteredTimeslots[x].startTime.date.year == yearFilter)
                         placementArray.push(filteredTimeslots[x])
@@ -888,7 +999,7 @@
                 placementArray = [];
             }
 
-            if(dayFilter != 0){
+            if (dayFilter != 0) {
                 for (var x = 0; x < filteredTimeslots.length; x++) {
                     if (filteredTimeslots[x].dayInWeek == dayFilter)
                         placementArray.push(filteredTimeslots[x])
@@ -897,7 +1008,7 @@
                 placementArray = [];
             }
 
-            if(dayOfMonthFilter){
+            if (dayOfMonthFilter) {
                 for (var x = 0; x < filteredTimeslots.length; x++) {
                     if (filteredTimeslots[x].startTime.date.day == dayOfMonthFilter)
                         placementArray.push(filteredTimeslots[x])
@@ -907,7 +1018,7 @@
                 placementArray = [];
             }
 
-            if(hourFilter && minuteFilter){
+            if (hourFilter && minuteFilter) {
                 for (var x = 0; x < filteredTimeslots.length; x++) {
                     if (filteredTimeslots[x].startTime.time.hour == hourFilter && filteredTimeslots[x].startTime.time.minute == minuteFilter)
                         placementArray.push(filteredTimeslots[x])
@@ -915,46 +1026,120 @@
                 filteredTimeslots = placementArray;
             }
 
-            if(filteredTimeslots.length > 0){
-                var body = document.getElementsByTagName("filterDivResults");
+            var jsonTimeslots = {};
+            for (var i = 0; i < filteredTimeslots.length; i++) {
+                jsonTimeslots[i] = filteredTimeslots[i];
+            }
+
+            console.log(jsonTimeslots);
+
+            if (filteredTimeslots.length > 0) {
+                var body = document.getElementById("filterDivResults");
 
                 // creates a <table> element and a <tbody> element
                 var tbl = document.createElement("table");
                 var tblBody = document.createElement("tbody");
 
+                var firstRowBuilt = false;
+
                 // creating all cells
-                for (var i = 0; i < 2; i++) {
+                for (var i = 0; i < filteredTimeslots.length; i++) {
                     // creates a table row
+                    var aTimeslot = filteredTimeslots[i];
                     var row = document.createElement("tr");
 
-                    for (var j = 0; j < 2; j++) {
-                        // Create a <td> element and a text node, make the text
-                        // node the contents of the <td>, and put the <td> at
-                        // the end of the table row
-                        var cell = document.createElement("td");
-                        var cellText = document.createTextNode("cell in row "+i+", column "+j);
-                        cell.appendChild(cellText);
-                        row.appendChild(cell);
+                    if (!firstRowBuilt) {
+                        firstRowBuilt = true;
+                        var topRow = document.createElement("tr");
+                        var cell1 = document.createElement("td");
+                        var cell2 = document.createElement("td");
+                        var cell3 = document.createElement("td");
+                        var cell4 = document.createElement("td");
+                        var cellText1 = document.createTextNode("Selection Button");
+                        //var cellText2 = document.createTextNode("Day");
+                        var cellText3 = document.createTextNode("Date");
+                        var cellText4 = document.createTextNode("Time");
+                        cell1.appendChild(cellText1);
+                        //cell2.appendChild(cellText2);
+                        cell3.appendChild(cellText3);
+                        cell4.appendChild(cellText4);
+                        topRow.appendChild(cell1);
+                        //topRow.appendChild(cell2);
+                        topRow.appendChild(cell3);
+                        topRow.appendChild(cell4);
+
+                        tblBody.appendChild(topRow);
                     }
+
+                    var cell1 = document.createElement("td");
+                    var cell2 = document.createElement("td");
+                    var cell3 = document.createElement("td");
+                    var cell4 = document.createElement("td");
+
+                    var scheduleButton = document.createElement("button");
+                    scheduleButton.id = aTimeslot.timeslotID;
+                    scheduleButton.name = 'aButton';
+                    scheduleButton.className = "meetingButton";
+                    scheduleButton.innerText = 'OPEN';
+                    cell1.style.backgroundColor = 'rgba(11, 202, 11, 0.43)'
+
+
+                    var timeslotDate = new Date(aTimeslot.startTime.date.year, parseInt(aTimeslot.startTime.date.month) - 1, aTimeslot.startTime.date.day)
+                    // var dayString;
+                    // if(timeslotDate.getDay() == 1)
+                    //     dayString = 'Monday'
+                    // else if(timeslotDate.getDay() == 2)
+                    //     dayString = 'Tuesday';
+                    // else if(timeslotDate.getDay() == 3)
+                    //     dayString = 'Wednesday';
+                    // else if(timeslotDate.getDay() == 4)
+                    //     dayString = 'Thursday';
+                    // else if(timeslotDate.getDay() == 5)
+                    //     dayString = 'Friday';
+
+                    //var cellText2 = document.createTextNode(dayString);
+                    var cellText3 = document.createTextNode(timeslotDate.toDateString());
+                    var cellTimeText = '';
+                    if (aTimeslot.startTime.time.minute == 0)
+                        cellTimeText = aTimeslot.startTime.time.hour + ":00";
+                    else
+                        cellTimeText = aTimeslot.startTime.time.hour + ":" + aTimeslot.startTime.time.minute;
+
+                    var cellText4 = document.createTextNode(cellTimeText);
+                    cell1.appendChild(scheduleButton);
+                    //cell2.appendChild(cellText2);
+                    cell3.appendChild(cellText3);
+                    cell4.appendChild(cellText4);
+                    row.appendChild(cell1);
+                    //row.appendChild(cell2);
+                    row.appendChild(cell3);
+                    row.appendChild(cell4);
 
                     // add the row to the end of the table body
                     tblBody.appendChild(row);
+                    document.getElementById("filterDivResults").style.display = 'block';
+
                 }
 
                 // put the <tbody> in the <table>
                 tbl.appendChild(tblBody);
                 // appends <table> into <body>
+
+                tbl.setAttribute("width", "100%");
+                tbl.setAttribute("margin-right", "auto");
+                tbl.setAttribute("margin-left", "auto");
                 body.appendChild(tbl);
                 // sets the border attribute of tbl to 2;
                 tbl.setAttribute("border", "2");
-            }else{
-
+                attachEventListeners();
+            } else {
+                document.getElementById('filterMessage').style.display = 'block';
             }
 
         }
     }
 
-    function createMeeting(){
+    function createMeeting() {
         var timeslotID = document.getElementById('timeslotKeyField').value;
         var meetingName = document.getElementById('nameTimeslot').value;
         $("body").css("cursor", "progress");
@@ -975,7 +1160,7 @@
             console.log(xhr.request);
 
             if (xhr.readyState == XMLHttpRequest.DONE) {
-                console.log ("XHR:" + xhr.responseText);
+                console.log("XHR:" + xhr.responseText);
                 $("body").css("cursor", "default");
                 var jsonResponse = JSON.parse(xhr.responseText);
 
@@ -995,7 +1180,7 @@
         };
     }
 
-    function deleteMeeting(){
+    function deleteMeeting() {
         var meetingID = document.getElementById('timeslotKeyField2').value;
         var secretCode = document.getElementById('meetingSecretKey').value;
         $("body").css("cursor", "progress");
@@ -1017,7 +1202,7 @@
             console.log(xhr.request);
 
             if (xhr.readyState == XMLHttpRequest.DONE) {
-                console.log ("XHR:" + xhr.responseText);
+                console.log("XHR:" + xhr.responseText);
                 var jsonResponse = JSON.parse(xhr.responseText);
                 $("body").css("cursor", "default");
 
@@ -1036,7 +1221,7 @@
         };
     }
 
-    function organizerCancelMeeting(){
+    function organizerCancelMeeting() {
         var meetingID = document.getElementById('organizerCancelMeetingID').value;
         var secretCode = document.getElementById('cancelMeetingSecretKey').value;
         $("body").css("cursor", "progress");
@@ -1059,7 +1244,7 @@
 
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 $("body").css("cursor", "default");
-                console.log ("XHR:" + xhr.responseText);
+                console.log("XHR:" + xhr.responseText);
                 var jsonResponse = JSON.parse(xhr.responseText);
 
                 if (jsonResponse.httpCode == 500)
@@ -1076,15 +1261,15 @@
         };
     }
 
-    function chooseOpenClose(){
-        if(document.getElementById('closeOpenH3').innerText == 'Close Timeslot'){
+    function chooseOpenClose() {
+        if (document.getElementById('closeOpenH3').innerText == 'Close Timeslot') {
             organizerCloseMeeting()
-        }else {
+        } else {
             organizerOpenMeeting()
         }
     }
 
-    function organizerCloseMeeting(){
+    function organizerCloseMeeting() {
         var timeSlotID = document.getElementById('organizerCloseMeetingID').value;
         var secretCode = document.getElementById('closeMeetingSecretKey').value;
         $("body").css("cursor", "progress");
@@ -1107,7 +1292,7 @@
 
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 $("body").css("cursor", "default");
-                console.log ("XHR:" + xhr.responseText);
+                console.log("XHR:" + xhr.responseText);
                 var jsonResponse = JSON.parse(xhr.responseText);
 
                 if (jsonResponse.httpCode == 500)
@@ -1124,7 +1309,7 @@
         };
     }
 
-    function organizerOpenMeeting(){
+    function organizerOpenMeeting() {
         var timeSlotID = document.getElementById('organizerCloseMeetingID').value;
         var secretCode = document.getElementById('closeMeetingSecretKey').value;
         $("body").css("cursor", "progress");
@@ -1147,7 +1332,7 @@
 
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 $("body").css("cursor", "default");
-                console.log ("XHR:" + xhr.responseText);
+                console.log("XHR:" + xhr.responseText);
                 var jsonResponse = JSON.parse(xhr.responseText);
 
                 if (jsonResponse.httpCode == 500)
@@ -1164,7 +1349,7 @@
         };
     }
 
-    function hideDivs(){
+    function hideDivs() {
         document.getElementById('meetingDiv').style.display = 'none';
         document.getElementById('confirmMeetingForm').style.display = 'none';
         document.getElementById("cancelMeetingDiv").style.display = "none";
@@ -1173,8 +1358,11 @@
         document.getElementById("organizerCloseReload").style.display = "none";
         document.getElementById("extendStartEndDateReload").style.display = "none";
         document.getElementById("closeOpenTimeslotsDayReload").style.display = "none";
+        document.getElementById("closeOpenTimeDayReload").style.display = "none";
         document.getElementById("cancelScheduleMeetingErrorMessage").value = "";
         document.getElementById("closeOpenTimeslotsDayMessage").value = "";
+        document.getElementById("closeOpenTimeSecretKey").value = "";
+        document.getElementById("closeOpenTimeDayMessage").value = "";
         document.getElementById("extendStartEndDateMessage").innerText = "";
         document.getElementById("cancelMeetingSecretKey").value = "";
         document.getElementById("closeMeetingSecretKey").value = "";
@@ -1187,12 +1375,12 @@
         document.getElementById("organizerCloseErrorMessage").innerText = "";
         document.getElementById('closeOpenH3').innerText = 'Close/Open TimeSlot';
         document.getElementById('closeOpenTimeslotsDayMessage').innerText = '';
+        document.getElementById('closeOpenTimeDayMessage').innerText = '';
 
     }
 
 
-
-    function noScheduleFound(){
+    function noScheduleFound() {
         document.getElementById("scheduleForm").style.visibility = "visible";
         document.getElementById("createScheduleDiv").style.visibility = "visible";
         document.getElementById('errMessage').innerText = 'No Schedule with an id of ' + document.getElementById("scheduleID").value + ' found. Try again or create your own.';
@@ -1200,10 +1388,7 @@
     }
 
 
-
-
-
-    function deleteSchedule(){
+    function deleteSchedule() {
         var secretKey = document.getElementById('secretKey').value;
         var scheduleID = document.getElementById('scheduleIDDelete').value;
         $("body").css("cursor", "progress");
@@ -1226,7 +1411,7 @@
 
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 $("body").css("cursor", "default");
-                console.log ("XHR:" + xhr.responseText);
+                console.log("XHR:" + xhr.responseText);
                 var jsonResponse = JSON.parse(xhr.responseText);
 
                 if (jsonResponse.httpCode == 500)
@@ -1244,7 +1429,7 @@
         };
     }
 
-    function toggleOrganizerDiv(){
+    function toggleOrganizerDiv() {
         var meetingButtons = document.getElementsByClassName('meetingButton');
         if (document.getElementById("organizerDiv").style.display == "none") {
             document.getElementById("organizerDiv").style.display = "block";
@@ -1254,7 +1439,7 @@
                     meetingButtons[x].disabled = false;
             }
             hideDivs();
-        }else {
+        } else {
             document.getElementById("organizerDiv").style.display = "none";
             for (var x = 0; x < meetingButtons.length; x++) {
                 if (meetingButtons[x].innerText == 'CLOSED')
@@ -1263,14 +1448,16 @@
         }
     }
 
-    function toggleFilterDiv(){
+    function toggleFilterDiv() {
         if (document.getElementById("filterDiv").style.display == "none") {
             document.getElementById("organizerDiv").style.display = "none";
             document.getElementById("filterDiv").style.display = "block";
 
             hideDivs();
-        }else {
+        } else {
             document.getElementById("filterDiv").style.display = "none";
+            document.getElementById("filterDivResults").innerHTML = '';
+            document.getElementById('filterMessage').style.display = 'none';
 
         }
     }
