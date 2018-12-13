@@ -56,6 +56,8 @@
 
 <div id="OrganizerButtonToggle" style="text-align: center; display: none; margin-top: 5%;">
     <input type="button" value="If you are the organizer, click here" onclick="JavaScript:toggleOrganizerDiv()">
+    <input type="button" value="Filtering results here" onclick="JavaScript:toggleFilterDiv()">
+
 </div>
 
 <div id="organizerDiv" style="text-align: center; border-width: 2px; border-color: black; margin-top: 20px; display: none;">
@@ -201,11 +203,11 @@
     </div>
 </div>
 
-<div id="filterDiv" style="text-align: center; border-width: 2px; border-color: black; margin-top: 20px; display: block;">
+<div id="filterDiv" style="text-align: center; border-width: 2px; border-color: black; margin-top: 20px; display: none;">
     <!--<p style="color: salmon;">By having the organizer panel open, participant functions are disabled.</p>-->
 
     Search for a list of open time slots
-    (filtered by Month, Year, Day-Of-Week, Day-Of-Month, or  Timeslot).
+    (filtered by any combination of Month, Year, Day-Of-Week, Day-Of-Month, or  Timeslot).
 
     <div style="display: flex;">
         <div style="width: 33%; margin-left: auto; margin-right: auto;">
@@ -1201,6 +1203,7 @@
         var meetingButtons = document.getElementsByClassName('meetingButton');
         if (document.getElementById("organizerDiv").style.display == "none") {
             document.getElementById("organizerDiv").style.display = "block";
+            document.getElementById("filterDiv").style.display = "none";
             for (var x = 0; x < meetingButtons.length; x++) {
                 if (meetingButtons[x].innerText == 'CLOSED')
                     meetingButtons[x].disabled = false;
@@ -1212,6 +1215,18 @@
                 if (meetingButtons[x].innerText == 'CLOSED')
                     meetingButtons[x].disabled = true;
             }
+        }
+    }
+
+    function toggleFilterDiv(){
+        if (document.getElementById("filterDiv").style.display == "none") {
+            document.getElementById("organizerDiv").style.display = "none";
+            document.getElementById("filterDiv").style.display = "block";
+
+            hideDivs();
+        }else {
+            document.getElementById("filterDiv").style.display = "none";
+
         }
     }
 
