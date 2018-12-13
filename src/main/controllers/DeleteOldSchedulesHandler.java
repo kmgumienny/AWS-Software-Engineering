@@ -25,7 +25,7 @@ import main.entities.Meeting;
 import main.entities.Schedule;
 import main.entities.Timeslot;
 
-public class GetOldSchedulesHandler implements RequestStreamHandler{
+public class DeleteOldSchedulesHandler implements RequestStreamHandler{
 
 	public LambdaLogger logger = null;
 	String status = "OK";
@@ -49,7 +49,7 @@ public class GetOldSchedulesHandler implements RequestStreamHandler{
 		JSONObject responseJson = new JSONObject();
 		responseJson.put("headers", headerJson);
 
-		GetOldSchedulesResponse response = null;
+		DeleteOldSchedulesResponse response = null;
 		
 		// extract body from incoming HTTP POST request. If any error, then return 422 error
 		String body;
@@ -63,7 +63,7 @@ public class GetOldSchedulesHandler implements RequestStreamHandler{
 			String method = (String) event.get("httpMethod");
 			if (method != null && method.equalsIgnoreCase("OPTIONS")) {
 				logger.log("Options request");
-				response = new GetOldSchedulesResponse("name", 200);  // OPTIONS needs a 200 response
+				response = new DeleteOldSchedulesResponse("name", 200);  // OPTIONS needs a 200 response
 		        responseJson.put("body", new Gson().toJson(response));
 		        processed = true;
 		        body = null;
@@ -75,39 +75,46 @@ public class GetOldSchedulesHandler implements RequestStreamHandler{
 			}
 		} catch (ParseException pe) {
 			logger.log(pe.toString());
-			response = new GetOldSchedulesResponse("Bad Request:" + pe.getMessage(), 422);  // unable to process input
+			response = new DeleteOldSchedulesResponse("Bad Request:" + pe.getMessage(), 422);  // unable to process input
 	        responseJson.put("body", new Gson().toJson(response));
 	        processed = true;
 	        body = null;
 		}
 
 		if (!processed) {
-			GetOldSchedulesRequest req = new Gson().fromJson(body, GetOldSchedulesRequest.class);
+			DeleteOldSchedulesRequest req = new Gson().fromJson(body, DeleteOldSchedulesRequest.class);
 			logger.log(req.toString());
 			String status = "OK";
 
 			List<Schedule> schedules = getSchedules();
 			LocalDateTime timeNow = LocalDateTime.now();
+			ScheduleDAO scheduleDAO = new ScheduleDAO();
 			
 			for(int i = 0; i < schedules.size(); i++) {
 				Schedule aSchedule = schedules.get(i);
-				if(!aSchedule.scheduleWithinRange(req.hoursPassed, timeNow)) {
+				if(aSchedule.scheduleOverRange(req.daysPassed, timeNow)) {
+					try {
+						scheduleDAO.deleteSchedule(aSchedule.getScheduleID());
+					} catch (Exception e) {
+						logger.log("Failed to delete the schedule.");
+						status = "Something went wrong and request failed to exicute. Please retry";
+					}
 					schedules.remove(aSchedule);
 					
 				}
 			}
 			
 			if(status.equals("Something went wrong and request failed to exicute. Please retry")){
-				response = new GetOldSchedulesResponse(status, 500);
+				response = new DeleteOldSchedulesResponse(status, 500);
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 			else if(schedules != null) {
 				// compute proper response for success
-				GetOldSchedulesResponse resp = new GetOldSchedulesResponse("Schedules retrieved", schedules);
+				DeleteOldSchedulesResponse resp = new DeleteOldSchedulesResponse("Schedules deleted", schedules);
 		        responseJson.put("body", new Gson().toJson(resp));  
 			}
 			else {
-				response = new GetOldSchedulesResponse("No schedules have been created within " + req.hoursPassed + "hours.", 422);
+				response = new DeleteOldSchedulesResponse("No schedules have been created over " + req.daysPassed + " days ago.", 422);
 		        responseJson.put("body", new Gson().toJson(response));
 			}
 		}
@@ -121,7 +128,7 @@ public class GetOldSchedulesHandler implements RequestStreamHandler{
 	
 	
 ////////////////////////////////////////////////////////////////////////////////////
-	
+
 	List<Schedule> getSchedules() {
 		ScheduleDAO scheduleDAO = new ScheduleDAO();
 		List<Schedule> schedules = null;
@@ -139,9 +146,5 @@ public class GetOldSchedulesHandler implements RequestStreamHandler{
 
 		return schedules;
 	}
-	
-	
-////////////////////////////////////////////////////////////////////////////////////
-	
 	
 }

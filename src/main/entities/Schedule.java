@@ -158,7 +158,7 @@ public class Schedule
 ///////////////////////////////////////////////////////////////////////////////////////
 
 	//Helper
-	public boolean dayWithinRange(int hoursPassed, LocalDateTime now)
+	public boolean scheduleWithinRange(int hoursPassed, LocalDateTime now)
 	{
 		//if the date past n hours is within 24 hours
 		if(hoursPassed < 24) {
@@ -193,6 +193,31 @@ public class Schedule
 					if(this.getCreationDate().getMinute() > now.getMinute()) {
 						return true;
 					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+///////////////////////////////////////////////////////////////////////////////////////
+	
+	//helper
+	public boolean scheduleOverRange(int daysPassed, LocalDateTime now)
+	{
+		
+		if(this.getCreationDate().getDayOfYear() + daysPassed > now.getDayOfYear()) {
+			return true;
+		}
+		
+		if(this.getCreationDate().getDayOfYear() + daysPassed == now.getDayOfYear()) {
+			if(this.creationDate.getHour() > now.getHour()) {
+				return true;
+			}
+			
+			if(this.creationDate.getHour() == now.getHour()) {
+				if(this.creationDate.getMinute() >= now.getMinute()) {
+					return true;
 				}
 			}
 		}
