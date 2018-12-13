@@ -340,12 +340,13 @@
         </label>
     </form>
 </div>
+<div>
+    <p style="color: salmon; display: none;" id="filterMessage">Sorry, no timeslots match your criteria. Try Again!</p>
 
-<div id="filterDivResults" style="display: none">
-
+    <div id="filterDivResults" style="display: none; text-align: center">
 
 </div>
-
+</div>
 <div style="height: 150px;">
 
 </div>
@@ -836,6 +837,9 @@
     }
 
     function filterTimeslots(){
+        document.getElementById("filterDivResults").innerHTML = '';
+        document.getElementById('filterMessage').style.display = 'none';
+
         var filteredTimeslots= [];
         var placementArray= [];
         var numSelected = 0;
@@ -915,40 +919,116 @@
                 filteredTimeslots = placementArray;
             }
 
+            var jsonTimeslots = {};
+            for (var i = 0; i < filteredTimeslots.length; i++) {
+                jsonTimeslots[i] = filteredTimeslots[i];
+            }
+
+            console.log(jsonTimeslots);
+
             if(filteredTimeslots.length > 0){
-                var body = document.getElementsByTagName("filterDivResults");
+                var body = document.getElementById("filterDivResults");
 
                 // creates a <table> element and a <tbody> element
                 var tbl = document.createElement("table");
                 var tblBody = document.createElement("tbody");
 
+                var firstRowBuilt = false;
+
                 // creating all cells
-                for (var i = 0; i < 2; i++) {
+                for (var i = 0; i < filteredTimeslots.length; i++) {
                     // creates a table row
+                    var aTimeslot = filteredTimeslots[i];
                     var row = document.createElement("tr");
 
-                    for (var j = 0; j < 2; j++) {
-                        // Create a <td> element and a text node, make the text
-                        // node the contents of the <td>, and put the <td> at
-                        // the end of the table row
-                        var cell = document.createElement("td");
-                        var cellText = document.createTextNode("cell in row "+i+", column "+j);
-                        cell.appendChild(cellText);
-                        row.appendChild(cell);
+                    if(!firstRowBuilt) {
+                        firstRowBuilt = true;
+                        var topRow = document.createElement("tr");
+                        var cell1 = document.createElement("td");
+                        var cell2 = document.createElement("td");
+                        var cell3 = document.createElement("td");
+                        var cell4 = document.createElement("td");
+                        var cellText1 = document.createTextNode("Selection Button");
+                        //var cellText2 = document.createTextNode("Day");
+                        var cellText3 = document.createTextNode("Date");
+                        var cellText4 = document.createTextNode("Time");
+                        cell1.appendChild(cellText1);
+                        //cell2.appendChild(cellText2);
+                        cell3.appendChild(cellText3);
+                        cell4.appendChild(cellText4);
+                        topRow.appendChild(cell1);
+                        //topRow.appendChild(cell2);
+                        topRow.appendChild(cell3);
+                        topRow.appendChild(cell4);
+
+                        tblBody.appendChild(topRow);
                     }
+
+                    var cell1 = document.createElement("td");
+                    var cell2 = document.createElement("td");
+                    var cell3 = document.createElement("td");
+                    var cell4 = document.createElement("td");
+
+                    var scheduleButton = document.createElement("button");
+                    scheduleButton.id = aTimeslot.timeslotID;
+                    scheduleButton.name = 'aButton';
+                    scheduleButton.className = "meetingButton";
+                    scheduleButton.innerText = 'OPEN';
+                    cell1.style.backgroundColor = 'rgba(11, 202, 11, 0.43)'
+
+
+                    var timeslotDate = new Date(aTimeslot.startTime.date.year, parseInt(aTimeslot.startTime.date.month) - 1, aTimeslot.startTime.date.day)
+                    // var dayString;
+                    // if(timeslotDate.getDay() == 1)
+                    //     dayString = 'Monday'
+                    // else if(timeslotDate.getDay() == 2)
+                    //     dayString = 'Tuesday';
+                    // else if(timeslotDate.getDay() == 3)
+                    //     dayString = 'Wednesday';
+                    // else if(timeslotDate.getDay() == 4)
+                    //     dayString = 'Thursday';
+                    // else if(timeslotDate.getDay() == 5)
+                    //     dayString = 'Friday';
+
+
+
+                    //var cellText2 = document.createTextNode(dayString);
+                    var cellText3 = document.createTextNode(timeslotDate.toDateString());
+                    var cellTimeText = '';
+                    if (aTimeslot.startTime.time.minute == 0)
+                        cellTimeText = aTimeslot.startTime.time.hour +  ":00";
+                    else
+                        cellTimeText = aTimeslot.startTime.time.hour +  ":" + aTimeslot.startTime.time.minute;
+
+                    var cellText4 = document.createTextNode(cellTimeText);
+                    cell1.appendChild(scheduleButton);
+                    //cell2.appendChild(cellText2);
+                    cell3.appendChild(cellText3);
+                    cell4.appendChild(cellText4);
+                    row.appendChild(cell1);
+                    //row.appendChild(cell2);
+                    row.appendChild(cell3);
+                    row.appendChild(cell4);
 
                     // add the row to the end of the table body
                     tblBody.appendChild(row);
+                    document.getElementById("filterDivResults").style.display = 'block';
+
                 }
 
                 // put the <tbody> in the <table>
                 tbl.appendChild(tblBody);
                 // appends <table> into <body>
+
+                tbl.setAttribute("width", "100%");
+                tbl.setAttribute("margin-right", "auto");
+                tbl.setAttribute("margin-left", "auto");
                 body.appendChild(tbl);
                 // sets the border attribute of tbl to 2;
                 tbl.setAttribute("border", "2");
+                attachEventListeners();
             }else{
-
+                document.getElementById('filterMessage').style.display = 'block';
             }
 
         }
@@ -1271,6 +1351,8 @@
             hideDivs();
         }else {
             document.getElementById("filterDiv").style.display = "none";
+            document.getElementById("filterDivResults").innerHTML = '';
+            document.getElementById('filterMessage').style.display = 'none';
 
         }
     }
