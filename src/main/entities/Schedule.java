@@ -176,7 +176,8 @@ public class Schedule
 		}
 		//if the date past n hours is longer than 24 hours
 		else {
-			int daysPassed = hoursPassed / 24;					
+			int daysPassed = hoursPassed / 24;
+			int newHoursPassed = (hoursPassed % 24);
 		
 			if(this.getCreationDate().getDayOfYear() + daysPassed > now.getDayOfYear()) {
 				return true;
@@ -184,12 +185,12 @@ public class Schedule
 			
 			//if the days passed are the same, the process is the same for checking on the same day
 			if(this.getCreationDate().getDayOfYear() + daysPassed == now.getDayOfYear()) {
-				if(this.getCreationDate().getHour() + hoursPassed > now.getHour()) {
+				if(this.getCreationDate().getHour() + newHoursPassed > now.getHour()) {
 					return true;
 				}
 				
 				
-				if(this.getCreationDate().getHour() + hoursPassed == now.getHour()) {
+				if(this.getCreationDate().getHour() + newHoursPassed == now.getHour()) {
 					if(this.getCreationDate().getMinute() > now.getMinute()) {
 						return true;
 					}
