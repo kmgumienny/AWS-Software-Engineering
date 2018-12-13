@@ -84,16 +84,25 @@ public class GetOldSchedulesHandler implements RequestStreamHandler{
 		if (!processed) {
 			GetOldSchedulesRequest req = new Gson().fromJson(body, GetOldSchedulesRequest.class);
 			logger.log(req.toString());
-			String status = "OK";
+			status = "OK";
 
 			List<Schedule> schedules = getSchedules();
 			LocalDateTime timeNow = LocalDateTime.now();
+			LocalDateTime compareTime = timeNow.minusHours(req.hoursPassed);
 
 				for(int i = 0; i < schedules.size(); i++) {
 					Schedule aSchedule = schedules.get(i);
-					if(!aSchedule.scheduleWithinRange(req.hoursPassed, timeNow)) {
+					if(aSchedule.getCreationDate().isAfter(compareTime) && aSchedule.getCreationDate().isBefore(timeNow)) {
+					}
+					else if(aSchedule.getCreationDate().toLocalDate().equals(compareTime.toLocalDate())) {
+						if(aSchedule.getCreationDate().getHour() == compareTime.getHour()) {
+							if(aSchedule.getCreationDate().getMinute() == compareTime.getMinute()) {
+							}
+						}
+					}
+					
+					else {
 						schedules.remove(aSchedule);
-						
 					}
 				}
 			

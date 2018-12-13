@@ -82,6 +82,7 @@ public class DeleteOldSchedulesHandler implements RequestStreamHandler{
 		}
 
 		if (!processed) {
+			int count = 0;
 			DeleteOldSchedulesRequest req = new Gson().fromJson(body, DeleteOldSchedulesRequest.class);
 			logger.log(req.toString());
 			String status = "OK";
@@ -89,19 +90,12 @@ public class DeleteOldSchedulesHandler implements RequestStreamHandler{
 			List<Schedule> schedules = getSchedules();
 			LocalDateTime timeNow = LocalDateTime.now();
 			LocalDateTime compareTime = timeNow.minusDays(req.daysPassed);
-			ScheduleDAO scheduleDAO = new ScheduleDAO();
 			
 			for(int i = 0; i < schedules.size(); i++) {
 				Schedule aSchedule = schedules.get(i);
 				if(aSchedule.getCreationDate().isBefore(compareTime)) {
-					try {
-						scheduleDAO.deleteSchedule(aSchedule.getScheduleID());
-					} catch (Exception e) {
-						logger.log("Failed to delete the schedule.");
-						status = "Something went wrong and request failed to exicute. Please retry";
-					}
-					schedules.remove(aSchedule);
-					
+					boolean worked = deleteSchedule(aSchedule.getScheduleID());
+					count++;
 				}
 			}
 			
@@ -109,9 +103,9 @@ public class DeleteOldSchedulesHandler implements RequestStreamHandler{
 				response = new DeleteOldSchedulesResponse(status, 500);
 		        responseJson.put("body", new Gson().toJson(response));
 			}
-			else if(schedules != null) {
+			else if(schedules.size() > 0) {
 				// compute proper response for success
-				DeleteOldSchedulesResponse resp = new DeleteOldSchedulesResponse("Schedules deleted", schedules);
+				DeleteOldSchedulesResponse resp = new DeleteOldSchedulesResponse(response.numDeleted, "Schedules deleted successfully");
 		        responseJson.put("body", new Gson().toJson(resp));  
 			}
 			else {
@@ -146,6 +140,26 @@ public class DeleteOldSchedulesHandler implements RequestStreamHandler{
 		}
 
 		return schedules;
+	}
+	
+////////////////////////////////////////////////////////////////////////////////////
+	
+	boolean deleteSchedule(String scheduleID) {
+		MeetingDAO meetingDAO = new MeetingDAO();
+		TimeslotDAO timeSlotDAO = new TimeslotDAO();
+		ScheduleDAO scheduleDAO = new ScheduleDAO();
+		boolean worked = false;
+		
+			try {
+				worked = meetingDAO.deleteMeetingWithScheduleID(scheduleID);
+				worked = timeSlotDAO.deleteTimeslotWithScheduleID(scheduleID);
+				worked = scheduleDAO.deleteSchedule(scheduleID);
+			} catch (Exception e) {
+				logger.log("Failed to delete schedule.");
+				status = "Something went wrong and request failed to exicute. Please retry";
+			}
+		
+		return worked;
 	}
 	
 }
