@@ -18,12 +18,8 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 
-import main.database.MeetingDAO;
 import main.database.ScheduleDAO;
-import main.database.TimeslotDAO;
-import main.entities.Meeting;
 import main.entities.Schedule;
-import main.entities.Timeslot;
 
 public class GetOldSchedulesHandler implements RequestStreamHandler{
 
@@ -90,18 +86,22 @@ public class GetOldSchedulesHandler implements RequestStreamHandler{
 			LocalDateTime timeNow = LocalDateTime.now();
 			LocalDateTime compareTime = timeNow.minusHours(req.hoursPassed);
 
+
 				for(int i = 0; i < schedules.size(); i++) {
+					boolean worked = false;
 					Schedule aSchedule = schedules.get(i);
 					if(aSchedule.getCreationDate().isAfter(compareTime) && aSchedule.getCreationDate().isBefore(timeNow)) {
+						worked = true;
 					}
 					else if(aSchedule.getCreationDate().toLocalDate().equals(compareTime.toLocalDate())) {
 						if(aSchedule.getCreationDate().getHour() == compareTime.getHour()) {
 							if(aSchedule.getCreationDate().getMinute() == compareTime.getMinute()) {
+								worked = true;
 							}
 						}
 					}
 					
-					else {
+					if(!worked) {
 						schedules.remove(aSchedule);
 					}
 				}
