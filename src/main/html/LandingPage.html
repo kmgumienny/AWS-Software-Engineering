@@ -393,13 +393,54 @@
 
     </div>
 </div>
+
+<div>
+    <p style="color: salmon; display: none;" id="adminMessage">Sorry that is invalid</p>
+
+    <div id="adminDiv" style="display: none; text-align: center">
+
+        <div style="width: 33%; margin-left: auto; margin-right: auto;">
+            <h3>Close/Open all Timeslots for a Time </h3>
+            <form onsubmit="JavaScript:adminDeleteSchedules()">
+                <label>
+                    What is the Admin Secret Key (doesn't matter ATM)?
+                    <input id="adminSecretKey" type="text" required/>
+                    <br>
+                </label>
+                <label style="margin-bottom: 15px; display: block;">
+                    Delete schedules created in the past amount of days:
+                    <input id="deleteDaysBefore" placeholder="5" style="width: 14px;" maxlength="2" pattern="\d*" type="text"
+                           required>
+                </label>
+
+                <label style="margin-bottom: 15px; display: block;">
+                    <input id="adminDeleteButton" type="button" value="Submit"
+                           onClick="JavaScript:adminDeleteSchedules()">
+                    <br>
+                </label>
+            </form>
+            <P id="adminDeleteMessage" style="color: red;"></P>
+            <label id="adminDeleteReload" style="margin-bottom: 15px; display: none;">
+                <input type="button" value="Reload" onClick="reload()">
+                <br>
+            </label>
+        </div>
+
+
+    </div>
+    <div id="adminResultDiv" style="display: none; text-align: center">
+
+    </div>
+
+</div>
+
 <div style="height: 150px;">
 
 </div>
 
 
 <div style="position: fixed;z-index: -1; left: 0; bottom: 15px; width: 100%; margin-top: 5%; color: white; text-align: center;">
-    <a href="./AdminPanel.html">Enter the Admin Panel by clicking here!</a>
+    <input type="button" value="Enter Admin panel here" onclick="JavaScript:toggleAdminDiv()">
 </div>
 
 <script>
@@ -425,6 +466,7 @@
     var extendScheduleStartURL = 'https://5j7vupkxzd.execute-api.us-east-2.amazonaws.com/alpha/extendstartdate';
     var closeAllForTimeURL = 'https://9rr7plmv95.execute-api.us-east-2.amazonaws.com/alpha/closetimeslotsfortime';
     var openAllForTimeURL = 'https://7sps76eb4e.execute-api.us-east-2.amazonaws.com/alpha/opentimeslotsfortime';
+    var adminDeleteURL = 'https://j0kosd3lx6.execute-api.us-east-2.amazonaws.com/alpha/deleteoldschedules';
 
 
     function handleGetClick() {
@@ -1349,6 +1391,54 @@
         };
     }
 
+    function adminDeleteSchedules() {
+        var deleteDaysBefore = document.getElementById('deleteDaysBefore').value;
+        document.getElementById('adminDeleteMessage').innerText = "";
+
+        if(deleteDaysBefore == '') {
+            document.getElementById('adminDeleteMessage').innerText = "Please enter an integer";
+            return;
+        }
+        $("body").css("cursor", "progress");
+
+
+        var organizerDeleteMeetingData = {
+            'daysPassed': deleteDaysBefore
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", adminDeleteURL, true);
+
+        var stringified = JSON.stringify(organizerDeleteMeetingData);
+
+        xhr.send(stringified);
+        xhr.onloadend = function () {
+            console.log(xhr);
+            console.log(xhr.request);
+
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                $("body").css("cursor", "default");
+                console.log("XHR:" + xhr.responseText);
+                var jsonResponse = JSON.parse(xhr.responseText);
+
+                if (jsonResponse.httpCode == 500)
+                    document.getElementById('adminDeleteMessage').innerText = "Error deleting schedules";
+                else if (jsonResponse.httpCode == 200) {
+                    document.getElementById('adminDeleteReload').style.display = "block";
+                    document.getElementById('adminDeleteMessage').innerText =  jsonResponse.numDeleted + " Schedules Successfully Deleted.";
+
+                }
+                else
+                    alert(jsonResponse.message);
+
+            }
+        };
+    }
+    function reload(){
+        document.getElementById('adminDeleteMessage').innerText = "";
+        location.reload();
+    }
+
     function hideDivs() {
         document.getElementById('meetingDiv').style.display = 'none';
         document.getElementById('confirmMeetingForm').style.display = 'none';
@@ -1357,6 +1447,7 @@
         document.getElementById("cancelScheduleMeetingErrorMessage").value = "";
         document.getElementById("organizerCloseReload").style.display = "none";
         document.getElementById("extendStartEndDateReload").style.display = "none";
+        document.getElementById("adminDeleteReload").style.display = "none";
         document.getElementById("closeOpenTimeslotsDayReload").style.display = "none";
         document.getElementById("closeOpenTimeDayReload").style.display = "none";
         document.getElementById("cancelScheduleMeetingErrorMessage").value = "";
@@ -1434,6 +1525,7 @@
         if (document.getElementById("organizerDiv").style.display == "none") {
             document.getElementById("organizerDiv").style.display = "block";
             document.getElementById("filterDiv").style.display = "none";
+            document.getElementById("adminDiv").style.display = "none";
             for (var x = 0; x < meetingButtons.length; x++) {
                 if (meetingButtons[x].innerText == 'CLOSED')
                     meetingButtons[x].disabled = false;
@@ -1451,6 +1543,7 @@
     function toggleFilterDiv() {
         if (document.getElementById("filterDiv").style.display == "none") {
             document.getElementById("organizerDiv").style.display = "none";
+            document.getElementById("adminDiv").style.display = "none";
             document.getElementById("filterDiv").style.display = "block";
 
             hideDivs();
@@ -1458,6 +1551,21 @@
             document.getElementById("filterDiv").style.display = "none";
             document.getElementById("filterDivResults").innerHTML = '';
             document.getElementById('filterMessage').style.display = 'none';
+
+        }
+    }
+
+    function toggleAdminDiv() {
+        if (document.getElementById("adminDiv").style.display == "none") {
+            document.getElementById("organizerDiv").style.display = "none";
+            document.getElementById("filterDiv").style.display = "none";
+            document.getElementById("adminDiv").style.display = "block";
+
+            hideDivs();
+        } else {
+            document.getElementById("adminDiv").style.display = "none";
+            document.getElementById("adminResultDiv").innerHTML = '';
+            document.getElementById('adminMessage').style.display = 'none';
 
         }
     }
