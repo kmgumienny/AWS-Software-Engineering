@@ -104,8 +104,8 @@ public class DeleteOldSchedulesHandler implements RequestStreamHandler{
 			}
 			else if(schedules.size() > 0) {
 				// compute proper response for success
-				DeleteOldSchedulesResponse resp = new DeleteOldSchedulesResponse(response.numDeleted, "Schedules deleted successfully");
-		        responseJson.put("body", new Gson().toJson(resp));  
+				response = new DeleteOldSchedulesResponse(count, "Schedules deleted successfully");
+		        responseJson.put("body", new Gson().toJson(response));  
 			}
 			else {
 				response = new DeleteOldSchedulesResponse("No schedules have been created over " + req.daysPassed + " days ago.", 422);
