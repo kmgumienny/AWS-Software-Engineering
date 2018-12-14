@@ -85,7 +85,7 @@ public class GetOldSchedulesHandler implements RequestStreamHandler{
 
 			List<Schedule> schedules = getSchedules();
 			List<Schedule> resultList = new ArrayList<Schedule>();
-			LocalDateTime timeNow = LocalDateTime.now();
+			LocalDateTime timeNow = LocalDateTime.now().minusHours(4);
 			LocalDateTime compareTime = timeNow.minusHours(req.hoursPassed);
 
 
