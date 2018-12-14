@@ -18,7 +18,7 @@ import main.controllers.GetOldSchedulesHandler;
 
 public class TestGetOldSchedules
 {
-	static final int HOURS_PASSED = 1;
+	static final int HOURS_PASSED = 6;
 	
 	@Test
 	public void testGetOldSchedulesHandler() throws IOException

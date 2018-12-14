@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -21,9 +22,7 @@ import com.google.gson.Gson;
 import main.database.MeetingDAO;
 import main.database.ScheduleDAO;
 import main.database.TimeslotDAO;
-import main.entities.Meeting;
 import main.entities.Schedule;
-import main.entities.Timeslot;
 
 public class DeleteOldSchedulesHandler implements RequestStreamHandler{
 
@@ -88,7 +87,7 @@ public class DeleteOldSchedulesHandler implements RequestStreamHandler{
 			String status = "OK";
 
 			List<Schedule> schedules = getSchedules();
-			LocalDateTime timeNow = LocalDateTime.now();
+			LocalDateTime timeNow = LocalDateTime.now(ZoneId.of("UTC-5"));
 			LocalDateTime compareTime = timeNow.minusDays(req.daysPassed);
 			
 			for(int i = 0; i < schedules.size(); i++) {

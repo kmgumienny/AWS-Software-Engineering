@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,7 +86,7 @@ public class GetOldSchedulesHandler implements RequestStreamHandler{
 
 			List<Schedule> schedules = getSchedules();
 			List<Schedule> resultList = new ArrayList<Schedule>();
-			LocalDateTime timeNow = LocalDateTime.now().minusHours(4);
+			LocalDateTime timeNow = LocalDateTime.now(ZoneId.of("UTC-5"));
 			LocalDateTime compareTime = timeNow.minusHours(req.hoursPassed);
 
 
