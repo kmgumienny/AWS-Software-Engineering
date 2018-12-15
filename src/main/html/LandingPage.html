@@ -436,7 +436,7 @@
                 </label>
                 <label style="margin-bottom: 15px; display: block;">
                     Get schedules created in the past amount of hours:
-                    <input id="getCreated" placeholder="2" style="width: 14px;" maxlength="2" pattern="\d*" type="text"
+                    <input id="getCreated" placeholder="2" style="width: 14px;" maxlength="4" pattern="\d*" type="text"
                            required>
                 </label>
 
@@ -625,7 +625,7 @@
                         //get the date of a timeslot
                         timeSlotDate = new Date(js.timeSlots[x].startTime.date.year, parseInt(js.timeSlots[x].startTime.date.month) - 1, js.timeSlots[x].startTime.date.day);
 
-                        if ((timeSlotDate.valueOf() === testDate.valueOf()) && ((js.timeSlots[x].slotNumInDay - 1) == j)) {
+                        if ((timeSlotDate.toDateString() === testDate.toDateString()) && ((js.timeSlots[x].slotNumInDay - 1) == j)) {
 
                             //Building Dates on top of the table, only runs once
                             if (js.timeSlots[x].slotNumInDay == 1 && j == 0 && shouldDatesBuild) {
