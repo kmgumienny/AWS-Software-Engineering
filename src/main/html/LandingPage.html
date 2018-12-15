@@ -398,12 +398,12 @@
     <p style="color: salmon; display: none;" id="adminMessage">Sorry that is invalid</p>
 
     <div id="adminDiv" style="display: none; text-align: center">
-
+        <div style="display: flex;">
         <div style="width: 33%; margin-left: auto; margin-right: auto;">
             <h3>Close/Open all Timeslots for a Time </h3>
             <form onsubmit="JavaScript:adminDeleteSchedules()">
                 <label>
-                    What is the Admin Secret Key (doesn't matter ATM)?
+                    What is the Admin Secret Key (Hint: Type anything)?
                     <input id="adminSecretKey" type="text" required/>
                     <br>
                 </label>
@@ -426,7 +426,34 @@
             </label>
         </div>
 
+        <div style="width: 33%; margin-left: auto; margin-right: auto;">
+            <h3>Get Recent Schedules </h3>
+            <form onsubmit="JavaScript:getAdminSchedules()">
+                <label>
+                    What is the Admin Secret Key (Hint: Type anything)?
+                    <input id="getSchedulesAdminSecretKey" type="text" required/>
+                    <br>
+                </label>
+                <label style="margin-bottom: 15px; display: block;">
+                    Get schedules created in the past amount of hours:
+                    <input id="getCreated" placeholder="2" style="width: 14px;" maxlength="2" pattern="\d*" type="text"
+                           required>
+                </label>
 
+                <label style="margin-bottom: 15px; display: block;">
+                    <input  type="button" value="Submit"
+                           onClick="JavaScript:getAdminSchedules()">
+                    <br>
+                </label>
+            </form>
+            <P id="adminGetSchedulesMessage" style="color: red;"></P>
+            <label id="adminGetReload" style="margin-bottom: 15px; display: none;">
+                <input type="button" value="Clear Results" onClick="clearDiv()">
+                <br>
+            </label>
+        </div>
+
+        </div>
     </div>
     <div id="adminResultDiv" style="display: none; text-align: center">
 
@@ -467,6 +494,7 @@
     var closeAllForTimeURL = 'https://9rr7plmv95.execute-api.us-east-2.amazonaws.com/alpha/closetimeslotsfortime';
     var openAllForTimeURL = 'https://7sps76eb4e.execute-api.us-east-2.amazonaws.com/alpha/opentimeslotsfortime';
     var adminDeleteURL = 'https://j0kosd3lx6.execute-api.us-east-2.amazonaws.com/alpha/deleteoldschedules';
+    var adminGetURL = 'https://l50g67ple9.execute-api.us-east-2.amazonaws.com/alpha/getoldschedules\n';
 
 
     function handleGetClick() {
@@ -1127,19 +1155,7 @@
 
 
                     var timeslotDate = new Date(aTimeslot.startTime.date.year, parseInt(aTimeslot.startTime.date.month) - 1, aTimeslot.startTime.date.day)
-                    // var dayString;
-                    // if(timeslotDate.getDay() == 1)
-                    //     dayString = 'Monday'
-                    // else if(timeslotDate.getDay() == 2)
-                    //     dayString = 'Tuesday';
-                    // else if(timeslotDate.getDay() == 3)
-                    //     dayString = 'Wednesday';
-                    // else if(timeslotDate.getDay() == 4)
-                    //     dayString = 'Thursday';
-                    // else if(timeslotDate.getDay() == 5)
-                    //     dayString = 'Friday';
 
-                    //var cellText2 = document.createTextNode(dayString);
                     var cellText3 = document.createTextNode(timeslotDate.toDateString());
                     var cellTimeText = '';
                     if (aTimeslot.startTime.time.minute == 0)
@@ -1430,10 +1446,155 @@
                 }
                 else
                     alert(jsonResponse.message);
-
             }
         };
     }
+
+    function clearDiv(){
+        document.getElementById('adminResultDiv').innerHTML = '';
+        document.getElementById('adminGetSchedulesMessage').innerHTML = '';
+        document.getElementById('adminGetReload').style.display = 'none';
+    }
+
+    function getAdminSchedules() {
+        var getSchedulesCreatedIn = document.getElementById('getCreated').value;
+        document.getElementById('adminGetSchedulesMessage').innerText = "";
+
+        if(deleteDaysBefore == '') {
+            document.getElementById('adminGetSchedulesMessage').innerText = "Please enter an integer";
+            return;
+        }
+        $("body").css("cursor", "progress");
+
+
+        var organizerGetScheduleData = {
+            'hoursPassed': getSchedulesCreatedIn
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", adminGetURL, true);
+
+        var stringified = JSON.stringify(organizerGetScheduleData);
+
+        xhr.send(stringified);
+        xhr.onloadend = function () {
+            console.log(xhr);
+            console.log(xhr.request);
+
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                $("body").css("cursor", "default");
+                console.log("XHR:" + xhr.responseText);
+                var jsonResponse = JSON.parse(xhr.responseText);
+
+                if (jsonResponse.httpCode == 500)
+                    document.getElementById('adminGetSchedulesMessage').innerText = "Error deleting schedules";
+                else if (jsonResponse.httpCode == 200) {
+                    document.getElementById('adminGetReload').style.display = "block";
+                    var numGot = jsonResponse.schedules.length;
+                    if(numGot > 0) {
+                        buildAdminDiv(jsonResponse);
+                        document.getElementById('adminGetSchedulesMessage').innerText = numGot + " Schedules Pulled.";
+                    }else{
+                        document.getElementById('adminGetSchedulesMessage').innerText = "The function worked but there are no schedules. This site just doesn't get the traffic it used to.";
+                    }
+                }
+                else
+                    alert(jsonResponse.message);
+            }
+        };
+    }
+
+    function buildAdminDiv(someJS){
+
+        document.getElementById("adminResultDiv").style.display = 'block';
+        var body = document.getElementById("adminResultDiv");
+
+        // creates a <table> element and a <tbody> element
+        var tbl = document.createElement("table");
+        var tblBody = document.createElement("tbody");
+
+        var firstRowBuilt = false;
+
+        // creating all cells
+        for (var i = 0; i < someJS.schedules.length; i++) {
+            // creates a table row
+            var aSchedule = someJS.schedules[i];
+            var row = document.createElement("tr");
+
+            if (!firstRowBuilt) {
+                firstRowBuilt = true;
+                var topRow = document.createElement("tr");
+                var cell1 = document.createElement("td");
+                var cell2 = document.createElement("td");
+                var cell3 = document.createElement("td");
+                var cell4 = document.createElement("td");
+                var cell5 = document.createElement("td");
+                var cellText1 = document.createTextNode("Selection Name");
+                var cellText2 = document.createTextNode("Schedule ID");
+                var cellText3 = document.createTextNode("Start Date");
+                var cellText4 = document.createTextNode("End Date");
+                var cellText5 = document.createTextNode("Time Created");
+                cell1.appendChild(cellText1);
+                cell2.appendChild(cellText2);
+                cell3.appendChild(cellText3);
+                cell4.appendChild(cellText4);
+                cell5.appendChild(cellText5);
+                topRow.appendChild(cell1);
+                topRow.appendChild(cell2);
+                topRow.appendChild(cell3);
+                topRow.appendChild(cell4);
+                topRow.appendChild(cell5);
+
+                tblBody.appendChild(topRow);
+            }
+
+            var cell1 = document.createElement("td");
+            var cell2 = document.createElement("td");
+            var cell3 = document.createElement("td");
+            var cell4 = document.createElement("td");
+            var cell5 = document.createElement("td");
+
+            var timeslotDateStart = new Date(aSchedule.startDate.year, parseInt(aSchedule.startDate.month) - 1, aSchedule.startDate.day)
+            var timeslotDateEnd = new Date(aSchedule.endDate.year, parseInt(aSchedule.endDate.month) - 1, aSchedule.endDate.day)
+            var timeSlotCreation = aSchedule.creationDate.time.hour + ":" + aSchedule.creationDate.time.minute + ' ' + aSchedule.creationDate.date.month + '/'
+                + aSchedule.creationDate.date.day + "/" + aSchedule.creationDate.date.year;
+
+            var cellText1 = document.createTextNode(aSchedule.scheduleName);
+            var cellText2 = document.createTextNode(aSchedule.scheduleID);
+            var cellText3 = document.createTextNode(timeslotDateStart.toDateString());
+            var cellText4 = document.createTextNode(timeslotDateEnd.toDateString());
+            var cellText5 = document.createTextNode(timeSlotCreation);
+
+            cell1.appendChild(cellText1);
+            cell2.appendChild(cellText2);
+            cell3.appendChild(cellText3);
+            cell4.appendChild(cellText4);
+            cell5.appendChild(cellText5);
+            row.appendChild(cell1);
+            row.appendChild(cell2);
+            row.appendChild(cell3);
+            row.appendChild(cell4);
+            row.appendChild(cell5);
+
+            // add the row to the end of the table body
+            tblBody.appendChild(row);
+            document.getElementById("adminResultDiv").style.display = 'block';
+        }
+
+        // put the <tbody> in the <table>
+        tbl.appendChild(tblBody);
+        // appends <table> into <body>
+
+        tbl.setAttribute("width", "100%");
+        tbl.setAttribute("margin-right", "auto");
+        tbl.setAttribute("margin-left", "auto");
+        body.appendChild(tbl);
+        // sets the border attribute of tbl to 2;
+        tbl.setAttribute("border", "2");
+
+
+    }
+
     function reload(){
         document.getElementById('adminDeleteMessage').innerText = "";
         location.reload();
@@ -1455,6 +1616,7 @@
         document.getElementById("closeOpenTimeSecretKey").value = "";
         document.getElementById("closeOpenTimeDayMessage").value = "";
         document.getElementById("extendStartEndDateMessage").innerText = "";
+        document.getElementById("adminGetSchedulesMessage").innerText = "";
         document.getElementById("cancelMeetingSecretKey").value = "";
         document.getElementById("closeMeetingSecretKey").value = "";
         document.getElementById("organizerDeleteErrorMessage").innerText = "";
