@@ -547,8 +547,17 @@
         js = json;
         startDate = new Date(js.schedule.startDate.year, parseInt(js.schedule.startDate.month) - 1, js.schedule.startDate.day);
         endDate = new Date(js.schedule.endDate.year, parseInt(js.schedule.endDate.month) - 1, js.schedule.endDate.day);
-        beginningDate = new Date(js.schedule.startDate.year, parseInt(js.schedule.startDate.month) - 1, js.schedule.startDate.day);
-        endingDate = new Date(js.schedule.endDate.year, parseInt(js.schedule.endDate.month) - 1, js.schedule.endDate.day);
+
+        if (startDate.getDay() == 0)
+            startDate = new Date(startDate.getTime() + 86400000);
+        else if (startDate.getDay() == 6)
+            startDate = new Date(startDate.getTime() + (86400000 * 2));
+        if (endDate.getDay() == 6)
+            endDate = new Date(endDate.getTime() - 86400000);
+        else if (endDate.getDay() == 0)
+            endDate = new Date(endDate.getTime() - (86400000 * 2));
+        beginningDate = new Date(startDate.getTime());
+        endingDate = new Date(endDate.getTime());
         weekNum = 0;
 
 
